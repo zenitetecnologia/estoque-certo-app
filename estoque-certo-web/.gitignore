@@ -7,30 +7,18 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Dependências
 node_modules
 dist
 dist-ssr
 *.local
 
-# Editor de código
+# Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
 *.suo
-*.ntvs
+*.ntvs*
 *.njsproj
 *.sln
 *.sw?
-
-# Variáveis de ambiente
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Vite
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
