@@ -30,7 +30,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         setLoading(true);
         setErro('');
         try {
-            const response = await fetch(`http://localhost:5120/v1/espacos?unidadeOrganizacionalId=${unidadeOrganizacionalId}&top=50`, {
+            const response = await fetch(`https://estoque-certo.onrender.com/v1/espacos?unidadeOrganizacionalId=${unidadeOrganizacionalId}&top=50`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
@@ -61,7 +61,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         };
 
         try {
-            const response = await fetch('http://localhost:5120/v1/espacos', {
+            const response = await fetch('https://estoque-certo.onrender.com/v1/espacos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(payload)
@@ -88,7 +88,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
 
         setLoadingItens(true);
         try {
-            const res = await fetch(`http://localhost:5120/v1/itens-estoque?espacoId=${espaco.espacoId}&top=50`, {
+            const res = await fetch(`https://estoque-certo.onrender.com/v1/itens-estoque?espacoId=${espaco.espacoId}&top=50`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
@@ -122,7 +122,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         };
 
         try {
-            const response = await fetch(`http://localhost:5120/v1/espacos/${espacoSelecionado.espacoId}`, {
+            const response = await fetch(`https://estoque-certo.onrender.com/v1/espacos/${espacoSelecionado.espacoId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(payload)
@@ -143,7 +143,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     const handleExcluirEspaco = async () => {
         setErro(''); setSucesso('');
         try {
-            const response = await fetch(`http://localhost:5120/v1/espacos/${espacoSelecionado.espacoId}`, {
+            const response = await fetch(`https://estoque-certo.onrender.com/v1/espacos/${espacoSelecionado.espacoId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

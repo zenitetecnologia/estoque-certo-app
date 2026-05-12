@@ -30,10 +30,10 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
         setLoading(true);
         setErro('');
         try {
-            const resItens = await fetch(`http://localhost:5120/v1/itens-estoque?unidadeOrganizacionalId=${unidadeOrganizacionalId}&top=50`, {
+            const resItens = await fetch(`https://estoque-certo.onrender.com/v1/itens-estoque?unidadeOrganizacionalId=${unidadeOrganizacionalId}&top=50`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            const resEspacos = await fetch(`http://localhost:5120/v1/espacos?unidadeOrganizacionalId=${unidadeOrganizacionalId}&top=50`, {
+            const resEspacos = await fetch(`https://estoque-certo.onrender.com/v1/espacos?unidadeOrganizacionalId=${unidadeOrganizacionalId}&top=50`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -89,7 +89,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
             quantidade: parseFloat(formData.quantidade)
         };
 
-        const url = modalMode === 'create' ? 'http://localhost:5120/v1/itens-estoque' : `http://localhost:5120/v1/itens-estoque/${formData.itemEstoqueId}`;
+        const url = modalMode === 'create' ? 'https://estoque-certo.onrender.com/v1/itens-estoque' : `https://estoque-certo.onrender.com/v1/itens-estoque/${formData.itemEstoqueId}`;
         const method = modalMode === 'create' ? 'POST' : 'PUT';
 
         try {
@@ -113,7 +113,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     const handleExcluir = async () => {
         setErro(''); setSucesso('');
         try {
-            const response = await fetch(`http://localhost:5120/v1/itens-estoque/${itemAtivo.itemEstoqueId}`, {
+            const response = await fetch(`https://estoque-certo.onrender.com/v1/itens-estoque/${itemAtivo.itemEstoqueId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -140,7 +140,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
         };
 
         try {
-            const response = await fetch(`http://localhost:5120/v1/itens-estoque/${itemAtivo.itemEstoqueId}`, {
+            const response = await fetch(`https://estoque-certo.onrender.com/v1/itens-estoque/${itemAtivo.itemEstoqueId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(payload)

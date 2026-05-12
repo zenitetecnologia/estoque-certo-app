@@ -14,7 +14,7 @@ export default function RegisterPage({ onNavigate }) {
         setErro('');
 
         try {
-            const response = await fetch('http://localhost:5120/v1/usuarios', {
+            const response = await fetch('https://estoque-certo.onrender.com/v1/usuarios', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

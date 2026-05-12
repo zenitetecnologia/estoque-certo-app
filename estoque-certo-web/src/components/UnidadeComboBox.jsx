@@ -6,7 +6,7 @@ export default function UnidadeComboBox({ value, onChange }) {
     const [search, setSearch] = useState('');
 
     useEffect(() => {
-        fetch('http://localhost:5120/v1/unidades-organizacionais')
+        fetch('https://estoque-certo.onrender.com/v1/unidades-organizacionais')
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -15,13 +15,21 @@ export default function UnidadeComboBox({ value, onChange }) {
                     setUnidades([]);
                 }
             })
-            .catch(() => setUnidades([]));
+            .catch((err) => {
+                console.error("Erro ao buscar unidades:", err);
+                setUnidades([]);
+            });
     }, []);
 
     const unidadesSeguras = Array.isArray(unidades) ? unidades : [];
 
+    const getNomeExibicao = (u) => {
+        if (!u) return '';
+        return u.nomeFantasia || u.razaoSocial || 'Unidade sem nome';
+    };
+
     const selected = unidadesSeguras.find(u => u.unidadeOrganizacionalId === value);
-    const displayValue = isOpen ? search : (selected ? selected.nomeFantasia : '');
+    const displayValue = isOpen ? search : getNomeExibicao(selected);
 
     return (
         <div style={{ marginBottom: '1rem' }}>
@@ -43,23 +51,25 @@ export default function UnidadeComboBox({ value, onChange }) {
                     style={{ width: '100%', marginBottom: 0 }}
                 />
                 <ul className="zf-combobox-list">
-                    {unidadesSeguras.filter(u => u.nomeFantasia?.toLowerCase().includes(search.toLowerCase())).map(u => (
-                        <li
-                            key={u.unidadeOrganizacionalId}
-                            className="zf-combobox-item"
-                            onMouseDown={(e) => e.preventDefault()}
-                            onClick={() => {
-                                onChange(u.unidadeOrganizacionalId);
-                                setSearch('');
-                                setIsOpen(false);
-                            }}
-                        >
-                            <div className="zf-cb-left">
-                                <span className="zf-cb-name">{u.nomeFantasia}</span>
-                                <span className="zf-cb-cpf">{u.cnpj}</span>
-                            </div>
-                        </li>
-                    ))}
+                    {unidadesSeguras
+                        .filter(u => getNomeExibicao(u).toLowerCase().includes(search.toLowerCase()))
+                        .map(u => (
+                            <li
+                                key={u.unidadeOrganizacionalId}
+                                className="zf-combobox-item"
+                                onMouseDown={(e) => e.preventDefault()}
+                                onClick={() => {
+                                    onChange(u.unidadeOrganizacionalId);
+                                    setSearch('');
+                                    setIsOpen(false);
+                                }}
+                            >
+                                <div className="zf-cb-left">
+                                    <span className="zf-cb-name">{getNomeExibicao(u)}</span>
+                                    <span className="zf-cb-cpf">{u.cnpj || 'Sem CNPJ'}</span>
+                                </div>
+                            </li>
+                        ))}
                 </ul>
             </div>
         </div>

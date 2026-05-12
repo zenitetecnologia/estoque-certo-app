@@ -34,7 +34,7 @@ export default function HomePage({ token, onLogout }) {
         setSucesso('');
 
         try {
-            const response = await fetch(`http://localhost:5120/v1/usuarios/${usuarioId}`, {
+            const response = await fetch(`https://estoque-certo.onrender.com/v1/usuarios/${usuarioId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

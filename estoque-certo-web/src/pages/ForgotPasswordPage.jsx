@@ -14,7 +14,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
         e.preventDefault();
         setErro('');
         try {
-            const res = await fetch('http://localhost:5120/v1/auth/forgot', {
+            const res = await fetch('https://estoque-certo.onrender.com/v1/auth/forgot', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username: data.username, unidadeOrganizacionalId: data.unidadeOrganizacionalId })
@@ -34,7 +34,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
         e.preventDefault();
         setErro('');
         try {
-            const res = await fetch('http://localhost:5120/v1/auth/verify', {
+            const res = await fetch('https://estoque-certo.onrender.com/v1/auth/verify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code: data.code })
@@ -60,7 +60,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
             return;
         }
         try {
-            const res = await fetch('http://localhost:5120/v1/auth/reset', {
+            const res = await fetch('https://estoque-certo.onrender.com/v1/auth/reset', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ codigoAcessoId: data.codigoAcessoId, senha: data.senha })
