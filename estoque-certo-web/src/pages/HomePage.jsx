@@ -6,6 +6,7 @@ import PhoneInput from '../components/PhoneInput';
 import { extrairErro } from '../utils/apiUtils';
 import EspacoView from '../components/EspacoView';
 import ItemEstoqueView from '../components/ItemEstoqueView';
+import ThemeToggle from '../components/ThemeToggle'; // Adicionado
 
 export default function HomePage({ token, onLogout }) {
     const [view, setView] = useState('home');
@@ -81,11 +82,15 @@ export default function HomePage({ token, onLogout }) {
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', margin: 0, padding: 0, width: '100%' }}>
             <input type="checkbox" id="menu-toggle" className="sidebar-checkbox" />
 
-            <header style={{ padding: '1rem 2rem', borderBottom: '1px solid rgba(212, 175, 55, 0.2)', display: 'flex', alignItems: 'center' }}>
-                <label htmlFor="menu-toggle" className="button button-outline" style={{ margin: 0, cursor: 'pointer', padding: '0.5rem 1.5rem' }}>
-                    ☰ Menu
-                </label>
-                <h3 style={{ margin: '0 0 0 1.5rem', color: 'var(--zf-accent)' }}>Estoque Certo</h3>
+            <header style={{ padding: '1rem 2rem', borderBottom: '1px solid rgba(212, 175, 55, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <label htmlFor="menu-toggle" className="button button-outline" style={{ margin: 0, cursor: 'pointer', padding: '0.5rem 1.5rem' }}>
+                        ☰ Menu
+                    </label>
+                    <h3 style={{ margin: '0 0 0 1.5rem', color: 'var(--zf-accent)' }}>Estoque Certo</h3>
+                </div>
+
+                <ThemeToggle />
             </header>
 
             <div className="sidebar-overlay">
@@ -136,7 +141,6 @@ export default function HomePage({ token, onLogout }) {
                 {view === 'profile' && (
                     <div className="zf-row" style={{ justifyContent: 'center' }}>
                         <div className="zf-col-xs-12 zf-col-md-8 zf-col-lg-6 zf-col-xl-5">
-                            {/* Card com padding zerado e Wrapper Interno para blindar o mobile */}
                             <div className="card" style={{ width: '100%', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
                                 <div style={{ padding: '2rem' }}>
                                     <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Alterar Meus Dados</h2>

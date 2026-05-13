@@ -3,6 +3,7 @@ import UnidadeComboBox from '../components/UnidadeComboBox';
 import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
 import { extrairErro } from '../utils/apiUtils';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function LoginPage({ onLogin, onNavigate }) {
     const [formData, setFormData] = useState({ username: '', senha: '', unidadeOrganizacionalId: '' });
@@ -62,6 +63,9 @@ export default function LoginPage({ onLogin, onNavigate }) {
     };
 
     return (
+        <>
+        <ThemeToggle />
+        <div className="login-container"></div>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
             <div className="card auth-card">
                 <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Login</h2>
@@ -100,5 +104,6 @@ export default function LoginPage({ onLogin, onNavigate }) {
                 </form>
             </div>
         </div>
+        </>
     );
 }

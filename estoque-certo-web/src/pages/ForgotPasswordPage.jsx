@@ -3,6 +3,7 @@ import UnidadeComboBox from '../components/UnidadeComboBox';
 import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
 import { extrairErro } from '../utils/apiUtils';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function ForgotPasswordPage({ onNavigate }) {
     const [step, setStep] = useState(1);
@@ -68,60 +69,65 @@ export default function ForgotPasswordPage({ onNavigate }) {
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-            <div className="card auth-card">
-                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Recuperar Acesso</h2>
-                {erro && <div className="alert alert-error" style={{ marginBottom: '1.5rem' }}>{erro}</div>}
+            <>
+            <ThemeToggle />
+            <div className="container">
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                    <div className="card auth-card">
+                        <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Recuperar Acesso</h2>
+                        {erro && <div className="alert alert-error" style={{ marginBottom: '1.5rem' }}>{erro}</div>}
 
-                {step === 1 && (
-                    <form onSubmit={handleForgot} noValidate>
-                        <PhoneInput
-                            value={data.username}
-                            onChange={e => setData({ ...data, username: e.target.value })}
-                            error={!!fieldErrors.Username}
-                            errorMessage={fieldErrors.Username}
-                        />
-                        <UnidadeComboBox
-                            value={data.unidadeOrganizacionalId}
-                            onChange={val => setData({ ...data, unidadeOrganizacionalId: val })}
-                            error={!!fieldErrors.UnidadeOrganizacionalId}
-                            errorMessage={fieldErrors.UnidadeOrganizacionalId}
-                        />
-                        <button type="submit" className="button" style={{ width: '100%', marginTop: '1rem' }}>Enviar Código</button>
-                        <button type="button" className="button button-outline" style={{ width: '100%', marginTop: '0.5rem' }} onClick={() => onNavigate('login')}>Cancelar</button>
-                    </form>
-                )}
+                        {step === 1 && (
+                            <form onSubmit={handleForgot} noValidate>
+                                <PhoneInput
+                                    value={data.username}
+                                    onChange={e => setData({ ...data, username: e.target.value })}
+                                    error={!!fieldErrors.Username}
+                                    errorMessage={fieldErrors.Username}
+                                />
+                                <UnidadeComboBox
+                                    value={data.unidadeOrganizacionalId}
+                                    onChange={val => setData({ ...data, unidadeOrganizacionalId: val })}
+                                    error={!!fieldErrors.UnidadeOrganizacionalId}
+                                    errorMessage={fieldErrors.UnidadeOrganizacionalId}
+                                />
+                                <button type="submit" className="button" style={{ width: '100%', marginTop: '1rem' }}>Enviar Código</button>
+                                <button type="button" className="button button-outline" style={{ width: '100%', marginTop: '0.5rem' }} onClick={() => onNavigate('login')}>Cancelar</button>
+                            </form>
+                        )}
 
-                {step === 2 && (
-                    <form onSubmit={(e) => { e.preventDefault(); setStep(3); }} noValidate>
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem' }}>Código Enviado</label>
-                            <input type="text" value={data.code} onChange={e => setData({ ...data, code: e.target.value })} style={{ width: '100%' }} />
-                        </div>
-                        <button type="submit" className="button" style={{ width: '100%' }}>Verificar</button>
-                    </form>
-                )}
+                        {step === 2 && (
+                            <form onSubmit={(e) => { e.preventDefault(); setStep(3); }} noValidate>
+                                <div style={{ marginBottom: '1rem' }}>
+                                    <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem' }}>Código Enviado</label>
+                                    <input type="text" value={data.code} onChange={e => setData({ ...data, code: e.target.value })} style={{ width: '100%' }} />
+                                </div>
+                                <button type="submit" className="button" style={{ width: '100%' }}>Verificar</button>
+                            </form>
+                        )}
 
-                {step === 3 && (
-                    <form onSubmit={handleReset} noValidate>
-                        <PasswordInput
-                            label="Nova Senha"
-                            value={data.senha}
-                            onChange={e => setData({ ...data, senha: e.target.value })}
-                            error={!!fieldErrors.Senha}
-                            errorMessage={fieldErrors.Senha}
-                        />
-                        <PasswordInput
-                            label="Confirmar Nova Senha"
-                            value={data.confirmaSenha}
-                            onChange={e => setData({ ...data, confirmaSenha: e.target.value })}
-                            error={!!fieldErrors.ConfirmaSenha}
-                            errorMessage={fieldErrors.ConfirmaSenha}
-                        />
-                        <button type="submit" className="button" style={{ width: '100%', marginTop: '1rem' }}>Redefinir Senha</button>
-                    </form>
-                )}
+                        {step === 3 && (
+                            <form onSubmit={handleReset} noValidate>
+                                <PasswordInput
+                                    label="Nova Senha"
+                                    value={data.senha}
+                                    onChange={e => setData({ ...data, senha: e.target.value })}
+                                    error={!!fieldErrors.Senha}
+                                    errorMessage={fieldErrors.Senha}
+                                />
+                                <PasswordInput
+                                    label="Confirmar Nova Senha"
+                                    value={data.confirmaSenha}
+                                    onChange={e => setData({ ...data, confirmaSenha: e.target.value })}
+                                    error={!!fieldErrors.ConfirmaSenha}
+                                    errorMessage={fieldErrors.ConfirmaSenha}
+                                />
+                                <button type="submit" className="button" style={{ width: '100%', marginTop: '1rem' }}>Redefinir Senha</button>
+                            </form>
+                        )}
+                    </div>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
