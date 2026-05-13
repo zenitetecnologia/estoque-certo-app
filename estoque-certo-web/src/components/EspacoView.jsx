@@ -15,7 +15,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     const [loading, setLoading] = useState(false);
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
-    const [fieldErrors, setFieldErrors] = useState({}); 
+    const [fieldErrors, setFieldErrors] = useState({});
 
     const [showModalNovo, setShowModalNovo] = useState(false);
     const [formDataNovo, setFormDataNovo] = useState({ nome: '', descricao: '' });
@@ -223,7 +223,6 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                     <div className="zf-row">
                         {espacos.map(espaco => (
                             <div key={espaco.espacoId} className="zf-col-xs-12 zf-col-md-6 zf-col-lg-4 zf-col-xl-3" style={{ marginBottom: '1rem' }}>
-                                {/* Card com padding zerado e overflow hidden para o Wrapper interno cuidar do espaçamento blindado */}
                                 <div className="card" style={{ height: '100%', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
                                     <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', height: '100%' }}>
                                         <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--zf-text-h)' }}>{espaco.nome}</h3>
@@ -240,7 +239,6 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                     </div>
                 )}
 
-                {/* Modal Novo Espaço com Wrapper Interno */}
                 {showModalNovo && (
                     <div style={overlayStyle}>
                         <div className="card" style={{ width: '100%', maxWidth: '500px', height: 'fit-content', margin: 'auto', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
@@ -249,21 +247,21 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                                 <form onSubmit={handleCriarEspaco} noValidate>
                                     <div style={{ marginBottom: '1rem' }}>
                                         <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Nome ? '#ff4444' : 'inherit' }}>Nome do Espaço (Obrigatório)</label>
-                                        <input 
-                                            type="text" 
-                                            value={formDataNovo.nome} 
-                                            onChange={e => setFormDataNovo({ ...formDataNovo, nome: e.target.value })} 
-                                            style={{ width: '100%', borderColor: fieldErrors.Nome ? '#ff4444' : undefined, outlineColor: fieldErrors.Nome ? '#ff4444' : undefined }} 
+                                        <input
+                                            type="text"
+                                            value={formDataNovo.nome}
+                                            onChange={e => setFormDataNovo({ ...formDataNovo, nome: e.target.value })}
+                                            style={{ width: '100%', borderColor: fieldErrors.Nome ? '#ff4444' : undefined, outlineColor: fieldErrors.Nome ? '#ff4444' : undefined }}
                                         />
                                         {fieldErrors.Nome && <small style={{ color: '#ff4444', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Nome}</small>}
                                     </div>
                                     <div style={{ marginBottom: '1.5rem' }}>
                                         <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Descricao ? '#ff4444' : 'inherit' }}>Descrição (Opcional)</label>
-                                        <input 
-                                            type="text" 
-                                            value={formDataNovo.descricao} 
-                                            onChange={e => setFormDataNovo({ ...formDataNovo, descricao: e.target.value })} 
-                                            style={{ width: '100%', borderColor: fieldErrors.Descricao ? '#ff4444' : undefined, outlineColor: fieldErrors.Descricao ? '#ff4444' : undefined }} 
+                                        <input
+                                            type="text"
+                                            value={formDataNovo.descricao}
+                                            onChange={e => setFormDataNovo({ ...formDataNovo, descricao: e.target.value })}
+                                            style={{ width: '100%', borderColor: fieldErrors.Descricao ? '#ff4444' : undefined, outlineColor: fieldErrors.Descricao ? '#ff4444' : undefined }}
                                         />
                                         {fieldErrors.Descricao && <small style={{ color: '#ff4444', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Descricao}</small>}
                                     </div>
