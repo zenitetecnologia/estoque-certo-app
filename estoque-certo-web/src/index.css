@@ -154,7 +154,7 @@ body {
   }
 }
 
-/*responsividade dos cards(teste)*/
+/*responsividade dos cards*/
 .auth-card {
   width: 100%;
   max-width: none;
@@ -193,4 +193,11 @@ body {
     max-width: 450px;
     margin: 6rem auto;
   }
+}
+:root {
+    --zf-accent-text: #000; 
+}
+
+[data-theme="light"] {
+    --zf-accent-text: #fff;
 }

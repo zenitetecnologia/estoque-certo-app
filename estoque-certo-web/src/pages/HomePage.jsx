@@ -89,8 +89,7 @@ export default function HomePage({ token, onLogout }) {
                     </label>
                     <h3 style={{ margin: '0 0 0 1.5rem', color: 'var(--zf-accent)' }}>Estoque Certo</h3>
                 </div>
-
-                <ThemeToggle />
+                <ThemeToggle fixo={false} />
             </header>
 
             <div className="sidebar-overlay">

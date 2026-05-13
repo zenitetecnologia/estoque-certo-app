@@ -289,7 +289,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                                     <div style={{ display: 'flex', flexDirection: 'column', padding: '1.5rem', height: '100%' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                             <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--zf-text-h)', fontSize: '1.2rem' }}>{item.descricao}</h3>
-                                            <span style={{ backgroundColor: 'var(--zf-accent)', color: '#000', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                                            <span style={{ backgroundColor: 'var(--zf-accent)', color: 'var(--zf-accent-text)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>
                                                 {parseFloat(item.quantidade)} {TIPO_UNIDADE[item.tipoUnidadeMedida] || 'UN'}
                                             </span>
                                         </div>
@@ -441,7 +441,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                                                 Responsável: <span style={{ color: '#f8fafc' }}>{nome}</span>
                                             </small>
                                         </div>
-                                        <div style={{ backgroundColor: tipo === 1 ? 'var(--zf-accent)' : '#ef4444', color: tipo === 1 ? '#000' : '#fff', padding: '0.4rem 0.8rem', borderRadius: '4px', fontWeight: 'bold' }}>
+                                        <div style={{ backgroundColor: tipo === 1 ? 'var(--zf-accent)' : '#ef4444', color: 'var(--zf-accent-text)', padding: '0.4rem 0.8rem', borderRadius: '4px', fontWeight: 'bold' }}>
                                             {tipo === 1 ? '+' : '-'}{parseFloat(qtd)}
                                         </div>
                                     </div>
@@ -452,14 +452,14 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 </div>
             )}
 
-            <div style={{ 
-                display: 'flex', 
-                gap: '1rem', 
-                position: 'sticky', 
-                bottom: 0, 
-                padding: '1.5rem 0', 
-                backgroundColor: 'var(--zf-background)', 
-                borderTop: '1px solid rgba(212, 175, 55, 0.2)', 
+            <div style={{
+                display: 'flex',
+                gap: '1rem',
+                position: 'sticky',
+                bottom: 0,
+                padding: '1.5rem 0',
+                backgroundColor: 'var(--zf-background)',
+                borderTop: '1px solid rgba(212, 175, 55, 0.2)',
                 zIndex: 999,
                 marginTop: '2rem'
             }}>

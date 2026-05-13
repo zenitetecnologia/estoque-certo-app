@@ -334,7 +334,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                                         <h4 style={{ margin: '0 0 0.2rem 0', color: 'var(--zf-text-h)' }}>{item.descricao}</h4>
                                         <small style={{ color: 'var(--zf-text-main)' }}>{TIPO_UNIDADE[item.tipoUnidadeMedida] || 'UN'}</small>
                                     </div>
-                                    <div style={{ backgroundColor: 'var(--zf-accent)', color: '#000', padding: '0.3rem 0.6rem', borderRadius: '4px', fontWeight: 'bold' }}>
+                                    <div style={{ backgroundColor: 'var(--zf-accent)', color: 'var(--zf-accent-text)', padding: '0.3rem 0.6rem', borderRadius: '4px', fontWeight: 'bold' }}>
                                         {parseFloat(item.quantidade)}
                                     </div>
                                 </div>
