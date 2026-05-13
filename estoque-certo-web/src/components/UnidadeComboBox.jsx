@@ -74,11 +74,7 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
 
     return (
         <div style={{ marginBottom: '1rem' }}>
-            <style>{`
-                /* Move a seta dourada (pseudo-elemento) mais para a direita */
-                .zf-combobox-custom-arrow::after {
-                    right: 12px !important; 
-                }
+            <style>{`.zf-combobox-custom-arrow::after {right: 12px !important; }
             `}</style>
 
             <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 'normal', color: error ? '#ff4444' : 'inherit' }}>
@@ -119,7 +115,7 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
                         }}
                         style={{
                             position: 'absolute',
-                            right: '30px',
+                            right: '32px',
                             top: '50%',
                             transform: 'translateY(-50%)',
                             cursor: 'pointer',
