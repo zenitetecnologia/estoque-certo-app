@@ -74,10 +74,18 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
 
     return (
         <div style={{ marginBottom: '1rem' }}>
+            <style>{`
+                /* Move a seta dourada (pseudo-elemento) mais para a direita */
+                .zf-combobox-custom-arrow::after {
+                    right: 12px !important; 
+                }
+            `}</style>
+
             <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 'normal', color: error ? '#ff4444' : 'inherit' }}>
                 Unidade Organizacional
             </label>
-            <div className={`zf-combobox ${isOpen ? 'active' : ''}`} style={{ marginBottom: 0 }}>
+
+            <div className={`zf-combobox zf-combobox-custom-arrow ${isOpen ? 'active' : ''}`} style={{ marginBottom: 0, position: 'relative' }}>
                 <input
                     type="text"
                     className="zf-combobox-input"
@@ -95,9 +103,43 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
                         width: '100%',
                         marginBottom: 0,
                         borderColor: error ? '#ff4444' : undefined,
-                        outlineColor: error ? '#ff4444' : undefined
+                        outlineColor: error ? '#ff4444' : undefined,
+                        paddingRight: value ? '60px' : '30px'
                     }}
                 />
+
+                {value && (
+                    <div
+                        onMouseDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onChange('');
+                            setSearch('');
+                            setIsOpen(false);
+                        }}
+                        style={{
+                            position: 'absolute',
+                            right: '30px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            cursor: 'pointer',
+                            color: 'var(--zf-text-main)',
+                            opacity: 0.6,
+                            padding: '5px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 10,
+                            fontWeight: 'bold',
+                            fontSize: '0.9rem'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                        onMouseLeave={(e) => e.currentTarget.style.opacity = '0.6'}
+                    >
+                        ✕
+                    </div>
+                )}
+
                 <ul className="zf-combobox-list" ref={listRef}>
                     {filteredUnidades.map((u, index) => (
                         <li
