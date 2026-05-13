@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function PhoneInput({ value, onChange, required = true }) {
+export default function PhoneInput({ value, onChange, error, errorMessage }) {
     const formatPhone = (val) => {
         if (!val) return '';
         const numbers = val.replace(/\D/g, '');
@@ -20,7 +20,7 @@ export default function PhoneInput({ value, onChange, required = true }) {
 
     return (
         <div style={{ marginBottom: '1rem' }}>
-            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: 'normal' }}>
+            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: 'normal', color: error ? '#ff4444' : 'inherit' }}>
                 Login
             </label>
             <input
@@ -28,9 +28,14 @@ export default function PhoneInput({ value, onChange, required = true }) {
                 placeholder="(99) 99999-9999"
                 value={formatPhone(value)}
                 onChange={handleChange}
-                required={required}
-                style={{ width: '100%', marginBottom: 0 }}
+                style={{
+                    width: '100%',
+                    marginBottom: 0,
+                    borderColor: error ? '#ff4444' : undefined,
+                    outlineColor: error ? '#ff4444' : undefined
+                }}
             />
+            {error && <small style={{ color: '#ff4444', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{errorMessage}</small>}
         </div>
     );
 }

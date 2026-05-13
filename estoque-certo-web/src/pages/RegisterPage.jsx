@@ -7,20 +7,46 @@ import { extrairErro } from '../utils/apiUtils';
 export default function RegisterPage({ onNavigate }) {
     const [formData, setFormData] = useState({ nome: '', username: '', senha: '', unidadeOrganizacionalId: '' });
     const [erro, setErro] = useState('');
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [sucesso, setSucesso] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
 
-    const handleRegister = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setErro('');
+        setSucesso('');
+        setFieldErrors({});
+
+        const payload = {
+            ...formData,
+            unidadeOrganizacionalId: formData.unidadeOrganizacionalId === '' ? null : formData.unidadeOrganizacionalId
+        };
 
         try {
-            const response = await fetch('https://estoque-certo.onrender.com/v1/usuarios', {
+            const response = await fetch('https://api.estoquecerto.zenitetecnologia.ia.br/v1/usuarios', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(payload)
             });
+
             if (response.ok) {
-                setShowSuccessModal(true);
+                setSucesso('Conta criada com sucesso! Redirecionando...');
+                setTimeout(() => onNavigate('login'), 2000);
+            } else if (response.status === 400) {
+                const errorData = await response.json();
+                const mappedErrors = {};
+
+                if (Array.isArray(errorData)) {
+                    errorData.forEach(err => {
+                        const fieldName = err.field || err.Field;
+                        if (fieldName) mappedErrors[fieldName] = err.error || err.Error;
+                    });
+                } else if (errorData.errors) {
+                    Object.keys(errorData.errors).forEach(key => {
+                        const fieldName = key.charAt(0).toUpperCase() + key.slice(1);
+                        mappedErrors[fieldName] = errorData.errors[key][0];
+                    });
+                }
+                setFieldErrors(mappedErrors);
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);
@@ -34,62 +60,50 @@ export default function RegisterPage({ onNavigate }) {
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
             <div className="card auth-card">
                 <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Criar Conta</h2>
-                <form onSubmit={handleRegister}>
+                <form onSubmit={handleSubmit} noValidate>
                     {erro && <div className="alert alert-error">{erro}</div>}
+                    {sucesso && <div className="alert alert-success">{sucesso}</div>}
 
-                    <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 'normal' }}>Nome Completo</label>
-                    <input type="text" onChange={e => setFormData({ ...formData, nome: e.target.value })} required />
+                    <div style={{ marginBottom: '1rem' }}>
+                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', color: fieldErrors.Nome ? '#ff4444' : 'inherit' }}>Nome Completo</label>
+                        <input
+                            type="text"
+                            placeholder="Seu nome"
+                            value={formData.nome}
+                            onChange={e => setFormData({ ...formData, nome: e.target.value })}
+                            style={{ width: '100%', marginBottom: 0, borderColor: fieldErrors.Nome ? '#ff4444' : undefined }}
+                        />
+                        {fieldErrors.Nome && <small style={{ color: '#ff4444', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Nome}</small>}
+                    </div>
 
                     <PhoneInput
                         value={formData.username}
                         onChange={e => setFormData({ ...formData, username: e.target.value })}
+                        error={!!fieldErrors.Username}
+                        errorMessage={fieldErrors.Username}
                     />
 
                     <PasswordInput
                         label="Senha"
-                        placeholder="******"
                         value={formData.senha}
                         onChange={e => setFormData({ ...formData, senha: e.target.value })}
+                        error={!!fieldErrors.Senha}
+                        errorMessage={fieldErrors.Senha}
                     />
 
-                    <UnidadeComboBox value={formData.unidadeOrganizacionalId} onChange={val => setFormData({ ...formData, unidadeOrganizacionalId: val })} />
+                    <UnidadeComboBox
+                        value={formData.unidadeOrganizacionalId}
+                        onChange={val => setFormData({ ...formData, unidadeOrganizacionalId: val })}
+                        error={!!fieldErrors.UnidadeOrganizacionalId}
+                        errorMessage={fieldErrors.UnidadeOrganizacionalId}
+                    />
 
-                    <div className="button-group" style={{ flexDirection: 'column', width: '100%', marginTop: '1rem' }}>
-                        <button type="submit" className="button" style={{ width: '100%' }}>Criar Conta</button>
-                        <button type="button" className="button button-outline" style={{ width: '100%' }} onClick={() => onNavigate('login')}>Voltar</button>
+                    <button type="submit" className="button" style={{ width: '100%', marginTop: '1rem' }}>Cadastrar</button>
+                    <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+                        <a style={{ cursor: 'pointer', color: 'var(--zf-accent)' }} onClick={() => onNavigate('login')}>Já tenho uma conta</a>
                     </div>
                 </form>
             </div>
-
-            {showSuccessModal && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-                    backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999
-                }}>
-                    <div className="card" style={{
-                        width: '90%',
-                        maxWidth: '400px',
-                        height: 'fit-content',
-                        margin: 'auto',
-                        textAlign: 'center'
-                    }}>
-                        <h2 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--zf-text-h)' }}>Cadastro Realizado!</h2>
-                        <p style={{ marginBottom: '2rem', color: 'var(--zf-text-main)' }}>
-                            Sua conta foi criada com sucesso. Aguarde a aprovação do Administrador para acessar o sistema.
-                        </p>
-
-                        <button
-                            type="button"
-                            className="button"
-                            style={{ width: '100%' }}
-                            onClick={() => onNavigate('login')}
-                        >
-                            Voltar para o Login
-                        </button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

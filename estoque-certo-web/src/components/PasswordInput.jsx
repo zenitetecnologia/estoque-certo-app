@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 
-export default function PasswordInput({ label = "Senha", value, onChange, placeholder = "Senha", required = true }) {
+export default function PasswordInput({ label = "Senha", value, onChange, placeholder = "Senha", error, errorMessage }) {
     const [show, setShow] = useState(false);
 
     return (
         <div style={{ marginBottom: '1rem' }}>
-            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: 'normal' }}>
+            <label style={{
+                textAlign: 'left',
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontSize: '1.1rem',
+                fontWeight: 'normal',
+                color: error ? '#ff4444' : 'inherit'
+            }}>
                 {label}
             </label>
             <div style={{ position: 'relative' }}>
@@ -14,8 +21,13 @@ export default function PasswordInput({ label = "Senha", value, onChange, placeh
                     placeholder={placeholder}
                     value={value}
                     onChange={onChange}
-                    required={required}
-                    style={{ paddingRight: '2.5rem', marginBottom: 0, width: '100%' }}
+                    style={{
+                        paddingRight: '2.5rem',
+                        marginBottom: 0,
+                        width: '100%',
+                        border: error ? '1px solid #ff4444' : undefined,
+                        outlineColor: error ? '#ff4444' : undefined
+                    }}
                 />
                 <button
                     type="button"
@@ -28,7 +40,7 @@ export default function PasswordInput({ label = "Senha", value, onChange, placeh
                         background: 'transparent',
                         border: 'none',
                         cursor: 'pointer',
-                        color: 'var(--zf-text-main)',
+                        color: error ? '#ff4444' : 'var(--zf-text-main)',
                         display: 'flex',
                         alignItems: 'center',
                         padding: 0
@@ -47,6 +59,7 @@ export default function PasswordInput({ label = "Senha", value, onChange, placeh
                     )}
                 </button>
             </div>
+            {error && <small style={{ color: '#ff4444', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{errorMessage}</small>}
         </div>
     );
 }

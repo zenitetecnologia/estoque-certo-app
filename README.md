@@ -53,10 +53,4 @@ Este comando criará uma pasta chamada "dist", que contém os arquivos finais es
 * npm run preview : Testa localmente o resultado exato compilado na pasta /dist.
 
 ## 4. Integração com API (Estoque.Server)
-O sistema (App.jsx) já está configurado com `fetch` para se comunicar com o back-end C# nas seguintes rotas:
-* Login: POST http://localhost:5120/v1/auth/login
-* Esqueci Senha (Solicitar): POST http://localhost:5120/v1/auth/forgot
-* Esqueci Senha (Verificar): POST http://localhost:5120/v1/auth/verify
-* Esqueci Senha (Redefinir): POST http://localhost:5120/v1/auth/reset
-* Listar Unidades (Combobox): GET http://localhost:5120/v1/unidades-organizacionais
-* Registrar Usuário: POST http://localhost:5120/v1/usuarios
+O sistema (App.jsx) já está configurado com `fetch` para se comunicar com o back-end C#.

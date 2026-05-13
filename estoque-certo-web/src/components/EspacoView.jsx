@@ -15,6 +15,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     const [loading, setLoading] = useState(false);
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({}); 
 
     const [showModalNovo, setShowModalNovo] = useState(false);
     const [formDataNovo, setFormDataNovo] = useState({ nome: '', descricao: '' });
@@ -30,7 +31,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         setLoading(true);
         setErro('');
         try {
-            const response = await fetch(`https://estoque-certo.onrender.com/v1/espacos?unidadeOrganizacionalId=${unidadeOrganizacionalId}&top=50`, {
+            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/espacos?unidadeOrganizacionalId=${unidadeOrganizacionalId}&top=50`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
@@ -50,9 +51,33 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         carregarEspacos();
     }, [carregarEspacos]);
 
+    const parseBackendErrors = async (res) => {
+        try {
+            const text = await res.text();
+            if (!text) return;
+            const errorData = JSON.parse(text);
+            const mappedErrors = {};
+            if (Array.isArray(errorData)) {
+                errorData.forEach(err => {
+                    const fieldName = err.field || err.Field;
+                    if (fieldName) mappedErrors[fieldName] = err.error || err.Error;
+                });
+            } else if (errorData.errors) {
+                Object.keys(errorData.errors).forEach(key => {
+                    let cleanKey = key.replace('$.', '');
+                    const fieldName = cleanKey.charAt(0).toUpperCase() + cleanKey.slice(1);
+                    mappedErrors[fieldName] = errorData.errors[key][0];
+                });
+            }
+            setFieldErrors(mappedErrors);
+        } catch (e) {
+            setErro('Verifique os campos preenchidos e tente novamente.');
+        }
+    };
+
     const handleCriarEspaco = async (e) => {
         e.preventDefault();
-        setErro(''); setSucesso('');
+        setErro(''); setSucesso(''); setFieldErrors({});
 
         const payload = {
             unidadeOrganizacionalId: unidadeOrganizacionalId,
@@ -61,7 +86,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         };
 
         try {
-            const response = await fetch('https://estoque-certo.onrender.com/v1/espacos', {
+            const response = await fetch('https://api.estoquecerto.zenitetecnologia.ia.br/v1/espacos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(payload)
@@ -71,6 +96,8 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 setShowModalNovo(false);
                 setSucesso('Espaço cadastrado com sucesso.');
                 carregarEspacos();
+            } else if (response.status === 400) {
+                await parseBackendErrors(response);
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);
@@ -84,11 +111,11 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         setEspacoSelecionado(espaco);
         setFormEdicao({ nome: espaco.nome, descricao: espaco.descricao || '' });
         setViewMode('detail');
-        setErro(''); setSucesso('');
+        setErro(''); setSucesso(''); setFieldErrors({});
 
         setLoadingItens(true);
         try {
-            const res = await fetch(`https://estoque-certo.onrender.com/v1/itens-estoque?espacoId=${espaco.espacoId}&top=50`, {
+            const res = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/itens-estoque?espacoId=${espaco.espacoId}&top=50`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
@@ -104,7 +131,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     const voltarParaLista = () => {
         setViewMode('list');
         setEspacoSelecionado(null);
-        setErro(''); setSucesso('');
+        setErro(''); setSucesso(''); setFieldErrors({});
         carregarEspacos();
     };
 
@@ -114,7 +141,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     );
 
     const handleConfirmarEdicao = async () => {
-        setErro(''); setSucesso('');
+        setErro(''); setSucesso(''); setFieldErrors({});
         const payload = {
             unidadeOrganizacionalId: unidadeOrganizacionalId,
             nome: formEdicao.nome,
@@ -122,7 +149,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         };
 
         try {
-            const response = await fetch(`https://estoque-certo.onrender.com/v1/espacos/${espacoSelecionado.espacoId}`, {
+            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/espacos/${espacoSelecionado.espacoId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(payload)
@@ -131,6 +158,8 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
             if (response.ok) {
                 setSucesso('Espaço atualizado com sucesso.');
                 setEspacoSelecionado({ ...espacoSelecionado, nome: formEdicao.nome, descricao: formEdicao.descricao });
+            } else if (response.status === 400) {
+                await parseBackendErrors(response);
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);
@@ -143,7 +172,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     const handleExcluirEspaco = async () => {
         setErro(''); setSucesso('');
         try {
-            const response = await fetch(`https://estoque-certo.onrender.com/v1/espacos/${espacoSelecionado.espacoId}`, {
+            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/espacos/${espacoSelecionado.espacoId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -163,12 +192,20 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         }
     };
 
+    const overlayStyle = {
+        position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+        backgroundColor: 'rgba(0,0,0,0.75)',
+        backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)',
+        display: 'flex', justifyContent: 'center', alignItems: 'center',
+        zIndex: 9999, padding: '1rem', boxSizing: 'border-box'
+    };
+
     if (viewMode === 'list') {
         return (
             <div style={{ width: '100%' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                     <h2 style={{ margin: 0 }}>Gestão de Espaços</h2>
-                    <button className="button" onClick={() => { setFormDataNovo({ nome: '', descricao: '' }); setShowModalNovo(true); }}>+ Novo Espaço</button>
+                    <button className="button" onClick={() => { setFormDataNovo({ nome: '', descricao: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>+ Novo Espaço</button>
                 </div>
 
                 {erro && <div className="alert alert-error" style={{ marginBottom: '1rem' }}>{erro}</div>}
@@ -177,46 +214,65 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 {loading ? (
                     <p>Carregando espaços...</p>
                 ) : espacos.length === 0 ? (
-                    <div className="card" style={{ textAlign: 'center', padding: '3rem 1rem' }}>
-                        <p style={{ color: 'var(--zf-text-main)', margin: 0 }}>Nenhum espaço cadastrado nesta unidade.</p>
+                    <div className="card" style={{ backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
+                        <div style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
+                            <p style={{ color: 'var(--zf-text-main)', margin: 0 }}>Nenhum espaço cadastrado nesta unidade.</p>
+                        </div>
                     </div>
                 ) : (
                     <div className="zf-row">
                         {espacos.map(espaco => (
                             <div key={espaco.espacoId} className="zf-col-xs-12 zf-col-md-6 zf-col-lg-4 zf-col-xl-3" style={{ marginBottom: '1rem' }}>
-                                <div className="card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                    <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--zf-text-h)' }}>{espaco.nome}</h3>
-                                    <p style={{ color: 'var(--zf-text-main)', flexGrow: 1, fontSize: '0.9rem' }}>
-                                        {espaco.descricao || 'Sem descrição'}
-                                    </p>
-                                    <button className="button button-outline" style={{ width: '100%', marginTop: '1rem' }} onClick={() => abrirDetalhes(espaco)}>
-                                        Visualizar
-                                    </button>
+                                {/* Card com padding zerado e overflow hidden para o Wrapper interno cuidar do espaçamento blindado */}
+                                <div className="card" style={{ height: '100%', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
+                                    <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                                        <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--zf-text-h)' }}>{espaco.nome}</h3>
+                                        <p style={{ color: 'var(--zf-text-main)', flexGrow: 1, fontSize: '0.9rem' }}>
+                                            {espaco.descricao || 'Sem descrição'}
+                                        </p>
+                                        <button className="button button-outline" style={{ width: '100%', marginTop: '1rem' }} onClick={() => abrirDetalhes(espaco)}>
+                                            Visualizar
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 )}
 
-                {/*modal criar*/}
+                {/* Modal Novo Espaço com Wrapper Interno */}
                 {showModalNovo && (
-                    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.75)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999, padding: '1rem' }}>
-                        <div className="card" style={{ width: '100%', maxWidth: '500px', height: 'fit-content', margin: 'auto' }}>
-                            <h2 style={{ marginTop: 0, marginBottom: '1.5rem', textAlign: 'center' }}>Novo Espaço</h2>
-                            <form onSubmit={handleCriarEspaco}>
-                                <div style={{ marginBottom: '1rem' }}>
-                                    <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Nome do Espaço (Obrigatório)</label>
-                                    <input type="text" value={formDataNovo.nome} onChange={e => setFormDataNovo({ ...formDataNovo, nome: e.target.value })} required style={{ width: '100%' }} />
-                                </div>
-                                <div style={{ marginBottom: '1.5rem' }}>
-                                    <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Descrição (Opcional)</label>
-                                    <input type="text" value={formDataNovo.descricao} onChange={e => setFormDataNovo({ ...formDataNovo, descricao: e.target.value })} style={{ width: '100%' }} />
-                                </div>
-                                <div style={{ display: 'flex', gap: '1rem' }}>
-                                    <button type="button" className="button button-outline" style={{ flex: 1 }} onClick={() => setShowModalNovo(false)}>Cancelar</button>
-                                    <button type="submit" className="button" style={{ flex: 1 }}>Salvar</button>
-                                </div>
-                            </form>
+                    <div style={overlayStyle}>
+                        <div className="card" style={{ width: '100%', maxWidth: '500px', height: 'fit-content', margin: 'auto', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
+                            <div style={{ padding: '2rem' }}>
+                                <h2 style={{ marginTop: 0, marginBottom: '1.5rem', textAlign: 'center', color: 'var(--zf-text-h)' }}>Novo Espaço</h2>
+                                <form onSubmit={handleCriarEspaco} noValidate>
+                                    <div style={{ marginBottom: '1rem' }}>
+                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Nome ? '#ff4444' : 'inherit' }}>Nome do Espaço (Obrigatório)</label>
+                                        <input 
+                                            type="text" 
+                                            value={formDataNovo.nome} 
+                                            onChange={e => setFormDataNovo({ ...formDataNovo, nome: e.target.value })} 
+                                            style={{ width: '100%', borderColor: fieldErrors.Nome ? '#ff4444' : undefined, outlineColor: fieldErrors.Nome ? '#ff4444' : undefined }} 
+                                        />
+                                        {fieldErrors.Nome && <small style={{ color: '#ff4444', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Nome}</small>}
+                                    </div>
+                                    <div style={{ marginBottom: '1.5rem' }}>
+                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Descricao ? '#ff4444' : 'inherit' }}>Descrição (Opcional)</label>
+                                        <input 
+                                            type="text" 
+                                            value={formDataNovo.descricao} 
+                                            onChange={e => setFormDataNovo({ ...formDataNovo, descricao: e.target.value })} 
+                                            style={{ width: '100%', borderColor: fieldErrors.Descricao ? '#ff4444' : undefined, outlineColor: fieldErrors.Descricao ? '#ff4444' : undefined }} 
+                                        />
+                                        {fieldErrors.Descricao && <small style={{ color: '#ff4444', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Descricao}</small>}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '1rem' }}>
+                                        <button type="button" className="button button-outline" style={{ flex: 1 }} onClick={() => setShowModalNovo(false)}>Cancelar</button>
+                                        <button type="submit" className="button" style={{ flex: 1 }}>Salvar</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -234,48 +290,55 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
             {erro && <div className="alert alert-error" style={{ marginBottom: '1rem' }}>{erro}</div>}
             {sucesso && <div className="alert alert-success" style={{ marginBottom: '1rem' }}>{sucesso}</div>}
 
-            <div className="card" style={{ marginBottom: '2rem' }}>
-                <div className="zf-row">
-                    <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1rem' }}>
-                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Nome do Espaço</label>
-                        <input
-                            type="text"
-                            value={formEdicao.nome}
-                            onChange={e => setFormEdicao({ ...formEdicao, nome: e.target.value })}
-                            style={{ width: '100%', marginBottom: 0 }}
-                        />
-                    </div>
-                    <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1rem' }}>
-                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Descrição</label>
-                        <input
-                            type="text"
-                            value={formEdicao.descricao}
-                            onChange={e => setFormEdicao({ ...formEdicao, descricao: e.target.value })}
-                            style={{ width: '100%', marginBottom: 0 }}
-                        />
+            <div className="card" style={{ marginBottom: '2rem', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
+                <div style={{ padding: '1.5rem' }}>
+                    <div className="zf-row">
+                        <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1rem' }}>
+                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Nome ? '#ff4444' : 'inherit' }}>Nome do Espaço</label>
+                            <input
+                                type="text"
+                                value={formEdicao.nome}
+                                onChange={e => setFormEdicao({ ...formEdicao, nome: e.target.value })}
+                                style={{ width: '100%', marginBottom: 0, borderColor: fieldErrors.Nome ? '#ff4444' : undefined, outlineColor: fieldErrors.Nome ? '#ff4444' : undefined }}
+                            />
+                            {fieldErrors.Nome && <small style={{ color: '#ff4444', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Nome}</small>}
+                        </div>
+                        <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1rem' }}>
+                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Descricao ? '#ff4444' : 'inherit' }}>Descrição</label>
+                            <input
+                                type="text"
+                                value={formEdicao.descricao}
+                                onChange={e => setFormEdicao({ ...formEdicao, descricao: e.target.value })}
+                                style={{ width: '100%', marginBottom: 0, borderColor: fieldErrors.Descricao ? '#ff4444' : undefined, outlineColor: fieldErrors.Descricao ? '#ff4444' : undefined }}
+                            />
+                            {fieldErrors.Descricao && <small style={{ color: '#ff4444', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Descricao}</small>}
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/*lista dos itens*/}
             <h3 style={{ color: 'var(--zf-text-h)', marginBottom: '1rem' }}>Itens neste espaço</h3>
             {loadingItens ? (
                 <p>Carregando inventário...</p>
             ) : itensDoEspaco.length === 0 ? (
-                <div className="card" style={{ textAlign: 'center', padding: '2rem', marginBottom: '2rem' }}>
-                    <p style={{ color: 'var(--zf-text-main)', margin: 0 }}>Este espaço está vazio.</p>
+                <div className="card" style={{ marginBottom: '2rem', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
+                    <div style={{ textAlign: 'center', padding: '2rem 1.5rem' }}>
+                        <p style={{ color: 'var(--zf-text-main)', margin: 0 }}>Este espaço está vazio.</p>
+                    </div>
                 </div>
             ) : (
                 <div className="zf-row" style={{ marginBottom: '2rem' }}>
                     {itensDoEspaco.map(item => (
                         <div key={item.itemEstoqueId} className="zf-col-xs-12 zf-col-md-6 zf-col-lg-4" style={{ marginBottom: '1rem' }}>
-                            <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem' }}>
-                                <div>
-                                    <h4 style={{ margin: '0 0 0.2rem 0', color: 'var(--zf-text-h)' }}>{item.descricao}</h4>
-                                    <small style={{ color: 'var(--zf-text-main)' }}>{TIPO_UNIDADE[item.tipoUnidadeMedida] || 'UN'}</small>
-                                </div>
-                                <div style={{ backgroundColor: 'var(--zf-accent)', color: '#000', padding: '0.3rem 0.6rem', borderRadius: '4px', fontWeight: 'bold' }}>
-                                    {parseFloat(item.quantidade)}
+                            <div className="card" style={{ backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem' }}>
+                                    <div>
+                                        <h4 style={{ margin: '0 0 0.2rem 0', color: 'var(--zf-text-h)' }}>{item.descricao}</h4>
+                                        <small style={{ color: 'var(--zf-text-main)' }}>{TIPO_UNIDADE[item.tipoUnidadeMedida] || 'UN'}</small>
+                                    </div>
+                                    <div style={{ backgroundColor: 'var(--zf-accent)', color: '#000', padding: '0.3rem 0.6rem', borderRadius: '4px', fontWeight: 'bold' }}>
+                                        {parseFloat(item.quantidade)}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -283,7 +346,6 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 </div>
             )}
 
-            {/*botoes editar e excluir*/}
             <div style={{ display: 'flex', gap: '1rem', borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
                 <button
                     className="button"
@@ -304,15 +366,17 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
 
             {/*modal excluir*/}
             {showDeleteModal && (
-                <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.75)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999, padding: '1rem' }}>
-                    <div className="card" style={{ width: '100%', maxWidth: '400px', height: 'fit-content', margin: 'auto', textAlign: 'center' }}>
-                        <h2 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--zf-text-h)' }}>Excluir Espaço</h2>
-                        <p style={{ marginBottom: '2rem', color: 'var(--zf-text-main)' }}>
-                            Tem certeza que deseja excluir este espaço? Se houver itens de estoque na lista acima, a exclusão será bloqueada pelo banco de dados.
-                        </p>
-                        <div style={{ display: 'flex', gap: '1rem' }}>
-                            <button type="button" className="button button-outline" style={{ flex: 1 }} onClick={() => setShowDeleteModal(false)}>Cancelar</button>
-                            <button type="button" className="button" style={{ flex: 1, backgroundColor: '#dc3545', borderColor: '#dc3545', color: '#fff' }} onClick={handleExcluirEspaco}>Excluir Definitivo</button>
+                <div style={overlayStyle}>
+                    <div className="card" style={{ width: '100%', maxWidth: '400px', height: 'fit-content', margin: 'auto', textAlign: 'center', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
+                        <div style={{ padding: '2rem' }}>
+                            <h2 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--zf-text-h)' }}>Excluir Espaço</h2>
+                            <p style={{ marginBottom: '2rem', color: 'var(--zf-text-main)' }}>
+                                Tem certeza que deseja excluir este espaço? Se houver itens de estoque na lista acima, a exclusão será bloqueada pelo banco de dados.
+                            </p>
+                            <div style={{ display: 'flex', gap: '1rem' }}>
+                                <button type="button" className="button button-outline" style={{ flex: 1 }} onClick={() => setShowDeleteModal(false)}>Cancelar</button>
+                                <button type="button" className="button" style={{ flex: 1, backgroundColor: '#dc3545', borderColor: '#dc3545', color: '#fff' }} onClick={handleExcluirEspaco}>Excluir Definitivo</button>
+                            </div>
                         </div>
                     </div>
                 </div>

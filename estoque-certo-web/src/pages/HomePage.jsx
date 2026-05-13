@@ -13,6 +13,7 @@ export default function HomePage({ token, onLogout }) {
     const [formData, setFormData] = useState({ nome: '', username: '', senha: '', unidadeOrganizacionalId: '' });
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
 
     const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -32,19 +33,41 @@ export default function HomePage({ token, onLogout }) {
         e.preventDefault();
         setErro('');
         setSucesso('');
+        setFieldErrors({});
+
+        const payload = {
+            ...formData,
+            unidadeOrganizacionalId: formData.unidadeOrganizacionalId === '' ? null : formData.unidadeOrganizacionalId
+        };
 
         try {
-            const response = await fetch(`https://estoque-certo.onrender.com/v1/usuarios/${usuarioId}`, {
+            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/usuarios/${usuarioId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(payload)
             });
 
             if (response.ok) {
                 setSucesso('Dados atualizados com sucesso!');
+            } else if (response.status === 400) {
+                const errorData = await response.json();
+                const mappedErrors = {};
+
+                if (Array.isArray(errorData)) {
+                    errorData.forEach(err => {
+                        const fieldName = err.field || err.Field;
+                        if (fieldName) mappedErrors[fieldName] = err.error || err.Error;
+                    });
+                } else if (errorData.errors) {
+                    Object.keys(errorData.errors).forEach(key => {
+                        const fieldName = key.charAt(0).toUpperCase() + key.slice(1);
+                        mappedErrors[fieldName] = errorData.errors[key][0];
+                    });
+                }
+                setFieldErrors(mappedErrors);
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);
@@ -113,32 +136,59 @@ export default function HomePage({ token, onLogout }) {
                 {view === 'profile' && (
                     <div className="zf-row" style={{ justifyContent: 'center' }}>
                         <div className="zf-col-xs-12 zf-col-md-8 zf-col-lg-6 zf-col-xl-5">
-                            <div className="card" style={{ width: '100%' }}>
-                                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Alterar Meus Dados</h2>
+                            {/* Card com padding zerado e Wrapper Interno para blindar o mobile */}
+                            <div className="card" style={{ width: '100%', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
+                                <div style={{ padding: '2rem' }}>
+                                    <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Alterar Meus Dados</h2>
 
-                                {erro && <div className="alert alert-error">{erro}</div>}
-                                {sucesso && <div className="alert alert-success">{sucesso}</div>}
+                                    {erro && <div className="alert alert-error">{erro}</div>}
+                                    {sucesso && <div className="alert alert-success">{sucesso}</div>}
 
-                                <form onSubmit={handleUpdateData}>
-                                    <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 'normal' }}>Nome</label>
-                                    <input type="text" value={formData.nome} onChange={e => setFormData({ ...formData, nome: e.target.value })} required />
+                                    <form onSubmit={handleUpdateData} noValidate>
+                                        <div style={{ marginBottom: '1rem' }}>
+                                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 'normal', color: fieldErrors.Nome ? '#ff4444' : 'inherit' }}>
+                                                Nome
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={formData.nome}
+                                                onChange={e => setFormData({ ...formData, nome: e.target.value })}
+                                                style={{
+                                                    width: '100%',
+                                                    marginBottom: 0,
+                                                    borderColor: fieldErrors.Nome ? '#ff4444' : undefined,
+                                                    outlineColor: fieldErrors.Nome ? '#ff4444' : undefined
+                                                }}
+                                            />
+                                            {fieldErrors.Nome && <small style={{ color: '#ff4444', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{fieldErrors.Nome}</small>}
+                                        </div>
 
-                                    <PhoneInput
-                                        value={formData.username}
-                                        onChange={e => setFormData({ ...formData, username: e.target.value })}
-                                    />
+                                        <PhoneInput
+                                            value={formData.username}
+                                            onChange={e => setFormData({ ...formData, username: e.target.value })}
+                                            error={!!fieldErrors.Username}
+                                            errorMessage={fieldErrors.Username}
+                                        />
 
-                                    <PasswordInput
-                                        label="Nova Senha"
-                                        placeholder="Senha"
-                                        value={formData.senha}
-                                        onChange={e => setFormData({ ...formData, senha: e.target.value })}
-                                    />
+                                        <PasswordInput
+                                            label="Nova Senha"
+                                            placeholder="Senha"
+                                            value={formData.senha}
+                                            onChange={e => setFormData({ ...formData, senha: e.target.value })}
+                                            error={!!fieldErrors.Senha}
+                                            errorMessage={fieldErrors.Senha}
+                                        />
 
-                                    <UnidadeComboBox value={formData.unidadeOrganizacionalId} onChange={val => setFormData({ ...formData, unidadeOrganizacionalId: val })} />
+                                        <UnidadeComboBox
+                                            value={formData.unidadeOrganizacionalId}
+                                            onChange={val => setFormData({ ...formData, unidadeOrganizacionalId: val })}
+                                            error={!!fieldErrors.UnidadeOrganizacionalId}
+                                            errorMessage={fieldErrors.UnidadeOrganizacionalId}
+                                        />
 
-                                    <button type="submit" className="button" style={{ width: '100%', marginTop: '1rem' }}>Salvar Alterações</button>
-                                </form>
+                                        <button type="submit" className="button" style={{ width: '100%', marginTop: '1rem' }}>Salvar Alterações</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -149,14 +199,17 @@ export default function HomePage({ token, onLogout }) {
                 <div style={{
                     position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
                     backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999
+                    backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)',
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999, padding: '1rem', boxSizing: 'border-box'
                 }}>
-                    <div className="card" style={{ width: '90%', maxWidth: '400px', height: 'fit-content', margin: 'auto', textAlign: 'center' }}>
-                        <h2 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--zf-text-h)' }}>Sair do Sistema</h2>
-                        <p style={{ marginBottom: '2rem', color: 'var(--zf-text-main)' }}>Tem certeza que deseja encerrar a sua sessão?</p>
-                        <div style={{ display: 'flex', gap: '1rem' }}>
-                            <button type="button" className="button button-outline" style={{ flex: 1 }} onClick={() => setShowLogoutModal(false)}>Cancelar</button>
-                            <button type="button" className="button" style={{ flex: 1, backgroundColor: '#dc3545', borderColor: '#dc3545', color: '#fff' }} onClick={onLogout}>Sair</button>
+                    <div className="card" style={{ width: '100%', maxWidth: '400px', height: 'fit-content', margin: 'auto', textAlign: 'center', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
+                        <div style={{ padding: '2rem' }}>
+                            <h2 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--zf-text-h)' }}>Sair do Sistema</h2>
+                            <p style={{ marginBottom: '2rem', color: 'var(--zf-text-main)' }}>Tem certeza que deseja encerrar a sua sessão?</p>
+                            <div style={{ display: 'flex', gap: '1rem' }}>
+                                <button type="button" className="button button-outline" style={{ flex: 1 }} onClick={() => setShowLogoutModal(false)}>Cancelar</button>
+                                <button type="button" className="button" style={{ flex: 1, backgroundColor: '#dc3545', borderColor: '#dc3545', color: '#fff' }} onClick={onLogout}>Sair</button>
+                            </div>
                         </div>
                     </div>
                 </div>
