@@ -438,7 +438,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                                                 Data: {new Date(data).toLocaleString()}
                                             </small>
                                             <small style={{ color: 'var(--zf-text-main)', display: 'block' }}>
-                                                Responsável: <span style={{ color: '#f8fafc' }}>{nome}</span>
+                                                Responsável: <span style={{ color: 'var(--zf-accent)' }}>{nome}</span>
                                             </small>
                                         </div>
                                         <div style={{ backgroundColor: tipo === 1 ? 'var(--zf-accent)' : '#ef4444', color: 'var(--zf-accent-text)', padding: '0.4rem 0.8rem', borderRadius: '4px', fontWeight: 'bold' }}>
