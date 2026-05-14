@@ -48,6 +48,37 @@ export default function ForgotPasswordPage({ onNavigate }) {
         } catch (error) { setErro('Erro de conexão.'); }
     };
 
+    const handleVerifyCode = async (e) => {
+        e.preventDefault();
+        setErro('');
+
+        if (!data.code || data.code.trim() === '') {
+            setErro('Por favor, informe o código recebido.');
+            return;
+        }
+
+        try {
+            const res = await fetch('https://api.estoquecerto.zenitetecnologia.ia.br/v1/auth/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: data.code })
+            });
+
+            if (res.ok) {
+                const result = await res.json();
+                // Salva o codigoAcessoId gigante retornado pelo back-end
+                setData(prev => ({ ...prev, codigoAcessoId: result.codigoAcessoId }));
+                setStep(3); // Avança para a redefinição de senha apenas se o código for válido
+            } else if (res.status === 400) {
+                await parseBackendErrors(res);
+            } else {
+                setErro(await extrairErro(res));
+            }
+        } catch (error) {
+            setErro('Erro de conexão ao verificar o código.');
+        }
+    };
+
     const handleReset = async (e) => {
         e.preventDefault();
         setErro('');
@@ -69,7 +100,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
     };
 
     return (
-            <>
+        <>
             <ThemeToggle />
             <div className="container">
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
@@ -97,10 +128,19 @@ export default function ForgotPasswordPage({ onNavigate }) {
                         )}
 
                         {step === 2 && (
-                            <form onSubmit={(e) => { e.preventDefault(); setStep(3); }} noValidate>
+                            <form onSubmit={handleVerifyCode} noValidate>
                                 <div style={{ marginBottom: '1rem' }}>
                                     <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem' }}>Código Enviado</label>
-                                    <input type="text" value={data.code} onChange={e => setData({ ...data, code: e.target.value })} style={{ width: '100%' }} />
+                                    <input
+                                        type="text"
+                                        value={data.code}
+                                        onChange={e => setData({ ...data, code: e.target.value })}
+                                        style={{
+                                            width: '100%',
+                                            borderColor: erro ? '#ff4444' : undefined,
+                                            outlineColor: erro ? '#ff4444' : undefined
+                                        }}
+                                    />
                                 </div>
                                 <button type="submit" className="button" style={{ width: '100%' }}>Verificar</button>
                             </form>
@@ -128,6 +168,45 @@ export default function ForgotPasswordPage({ onNavigate }) {
                     </div>
                 </div>
             </div>
+{showSuccessModal && (
+                <div style={{
+                    position: 'fixed', 
+                    top: 0, 
+                    left: 0, 
+                    width: '100vw', 
+                    height: '100vh',
+                    backgroundColor: 'rgba(0, 0, 0, 0.85)', // Escurece um pouco mais o fundo
+                    backdropFilter: 'blur(4px)', // Efeito de desfoque no fundo
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    zIndex: 9999, 
+                    padding: '1rem'
+                }}>
+                    <div className="card" style={{ 
+                        width: '100%', 
+                        maxWidth: '400px', 
+                        height: 'auto', // Garante que não fique gigante
+                        minHeight: '200px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        textAlign: 'center', 
+                        backgroundColor: 'var(--zf-background-secondary)',
+                        padding: '2.5rem', // Aumenta o respiro interno
+                        borderRadius: '15px',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.5)' // Sombra para destacar do fundo
+                    }}>
+                        <h2 style={{ color: 'var(--zf-text-h)', marginBottom: '1rem', marginTop: 0 }}>Senha Redefinida!</h2>
+                        <p style={{ color: 'var(--zf-text-main)', marginBottom: '2rem', fontSize: '1rem', lineHeight: '1.4' }}>
+                            Sua senha foi alterada com sucesso.<br/>Você já pode acessar o sistema.
+                        </p>
+                        <button className="button" style={{ width: '100%', margin: 0 }} onClick={() => onNavigate('login')}>
+                            Ir para Login
+                        </button>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
