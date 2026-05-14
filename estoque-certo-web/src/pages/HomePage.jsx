@@ -6,7 +6,8 @@ import PhoneInput from '../components/PhoneInput';
 import { extrairErro } from '../utils/apiUtils';
 import EspacoView from '../components/EspacoView';
 import ItemEstoqueView from '../components/ItemEstoqueView';
-import ThemeToggle from '../components/ThemeToggle'; // Adicionado
+import ThemeToggle from '../components/ThemeToggle';
+import ValidarUsuariosView from '../components/ValidarUsuariosView';
 
 export default function HomePage({ token, onLogout }) {
     const [view, setView] = useState('home');
@@ -15,8 +16,8 @@ export default function HomePage({ token, onLogout }) {
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
-
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         const decoded = parseJwt(token);
@@ -24,6 +25,11 @@ export default function HomePage({ token, onLogout }) {
             const id = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || decoded.nameid || '';
             const uname = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || decoded.unique_name || '';
             const uoId = decoded.UnidadeOrganizacionalId || '';
+            const role = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || decoded.role || '';
+
+            if (role === 'Admin') {
+                setIsAdmin(true);
+            }
 
             setUsuarioId(id);
             setFormData(prev => ({ ...prev, username: uname, unidadeOrganizacionalId: uoId }));
@@ -89,6 +95,7 @@ export default function HomePage({ token, onLogout }) {
                     </label>
                     <h3 style={{ margin: '0 0 0 1.5rem', color: 'var(--zf-accent)' }}>Estoque Certo</h3>
                 </div>
+
                 <ThemeToggle fixo={false} />
             </header>
 
@@ -104,6 +111,10 @@ export default function HomePage({ token, onLogout }) {
                         <label htmlFor="menu-toggle" onClick={() => setView('home')} className={view === 'home' ? 'active' : ''} style={{ cursor: 'pointer', display: 'block', marginBottom: '0.5rem' }}>Início</label>
                         <label htmlFor="menu-toggle" onClick={() => setView('espacos')} className={view === 'espacos' ? 'active' : ''} style={{ cursor: 'pointer', display: 'block', marginBottom: '0.5rem' }}>Espaços</label>
                         <label htmlFor="menu-toggle" onClick={() => setView('itens-estoque')} className={view === 'itens-estoque' ? 'active' : ''} style={{ cursor: 'pointer', display: 'block', marginBottom: '0.5rem' }}>Itens de Estoque</label>
+
+                        {isAdmin && (
+                            <label htmlFor="menu-toggle" onClick={() => setView('validar-usuarios')} className={view === 'validar-usuarios' ? 'active' : ''} style={{ cursor: 'pointer', display: 'block', marginBottom: '0.5rem' }}>Aprovar Usuários</label>
+                        )}
                     </div>
                 </div>
 
@@ -135,6 +146,10 @@ export default function HomePage({ token, onLogout }) {
 
                 {view === 'itens-estoque' && (
                     <ItemEstoqueView token={token} unidadeOrganizacionalId={formData.unidadeOrganizacionalId} usuarioId={usuarioId} />
+                )}
+
+                {view === 'validar-usuarios' && isAdmin && (
+                    <ValidarUsuariosView token={token} />
                 )}
 
                 {view === 'profile' && (
