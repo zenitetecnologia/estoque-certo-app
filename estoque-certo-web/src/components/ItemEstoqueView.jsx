@@ -2,10 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { extrairErro } from '../utils/apiUtils';
 
 const TIPO_UNIDADE = {
-    1: 'Unidades (UN)',
-    2: 'Quilogramas (KG)',
-    3: 'Litros (L)',
-    4: 'Caixas (CX)'
+    1: 'Quilos (KG)',
+    2: 'Gramas (G)',
+    3: 'Miligramas (MG)',
+    4: 'Litros (L)',
+    5: 'Mililitros (ML)',
+    6: 'Unidades (UN)'
 };
 
 export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuarioId }) {
@@ -19,14 +21,14 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     const [sucesso, setSucesso] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
 
-    // modais
+    //modais
     const [showModalNovo, setShowModalNovo] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showMovimentarModal, setShowMovimentarModal] = useState(false);
 
     const [itemAtivo, setItemAtivo] = useState(null);
-    const [formDataNovo, setFormDataNovo] = useState({ espacoId: '', descricao: '', tipoUnidadeMedida: 1, quantidade: '' });
-    const [formEdicao, setFormEdicao] = useState({ espacoId: '', descricao: '', tipoUnidadeMedida: 1, quantidade: '' });
+    const [formDataNovo, setFormDataNovo] = useState({ espacoId: '', descricao: '', tipoUnidadeMedida: 6, quantidade: '' });
+    const [formEdicao, setFormEdicao] = useState({ espacoId: '', descricao: '', tipoUnidadeMedida: 6, quantidade: '' });
     const [movimentacaoData, setMovimentacaoData] = useState({ tipoMovimentacao: 1, quantidadeMovimento: '' });
 
     const carregarDados = useCallback(async () => {
@@ -68,7 +70,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 setHistorico(await res.json());
             }
         } catch (err) {
-            // Silencia erro
+
         } finally {
             setLoadingHistorico(false);
         }
@@ -265,7 +267,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
             <div style={{ width: '100%' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                     <h2 style={{ margin: 0 }}>Itens de Estoque</h2>
-                    <button className="button" onClick={() => { setFormDataNovo({ espacoId: espacos.length > 0 ? espacos[0].espacoId : '', descricao: '', tipoUnidadeMedida: 1, quantidade: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>+ Novo Item</button>
+                    <button className="button" onClick={() => { setFormDataNovo({ espacoId: espacos.length > 0 ? espacos[0].espacoId : '', descricao: '', tipoUnidadeMedida: 6, quantidade: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>+ Novo Item</button>
                 </div>
 
                 {erro && <div className="alert alert-error" style={{ marginBottom: '1rem' }}>{erro}</div>}
