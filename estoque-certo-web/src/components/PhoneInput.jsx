@@ -11,11 +11,22 @@ export default function PhoneInput({ value, onChange, error, errorMessage }) {
     };
 
     const handleChange = (e) => {
-        let rawValue = e.target.value.replace(/\D/g, '');
+        const input = e.target;
+        const cursorPosition = input.selectionStart;
+        const currentLength = input.value.length;
+
+        let rawValue = input.value.replace(/\D/g, '');
         if (rawValue.length > 12) {
             rawValue = rawValue.slice(0, 12);
         }
+
         onChange({ target: { value: rawValue } });
+
+        if (cursorPosition < currentLength) {
+            setTimeout(() => {
+                if (input) input.setSelectionRange(cursorPosition, cursorPosition);
+            }, 0);
+        }
     };
 
     return (
