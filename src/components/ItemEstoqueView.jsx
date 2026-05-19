@@ -25,6 +25,8 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     const [showModalNovo, setShowModalNovo] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showMovimentarModal, setShowMovimentarModal] = useState(false);
+    const [showTransferirModal, setShowTransferirModal] = useState(false);
+    const [novoEspacoId, setNovoEspacoId] = useState('');
 
     const [itemAtivo, setItemAtivo] = useState(null);
     const [formDataNovo, setFormDataNovo] = useState({ espacoId: '', descricao: '', tipoUnidadeMedida: 6, quantidade: '' });
@@ -205,6 +207,50 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 setShowDeleteModal(false);
             }
         } catch (error) { setErro('Erro de conexão.'); setShowDeleteModal(false); }
+    };
+
+    const handleTransferir = async (e) => {
+        e.preventDefault();
+        setErro('');
+        setSucesso('');
+
+        if (!novoEspacoId) {
+            setErro('Selecione o novo espaço de destino.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/itens-estoque/${itemAtivo.itemEstoqueId}/transferir`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ novoEspacoId })
+            });
+
+            if (response.ok) {
+                setSucesso('Item transferido com sucesso!');
+                setShowTransferirModal(false);
+
+                // Atualiza na lista geral
+                setItens(prev => prev.map(item =>
+                    item.itemEstoqueId === itemAtivo.itemEstoqueId
+                        ? { ...item, espacoId: novoEspacoId }
+                        : item
+                ));
+
+                // Atualiza o item ativo e o form na tela de detalhes
+                setItemAtivo(prev => ({ ...prev, espacoId: novoEspacoId }));
+                setFormEdicao(prev => ({ ...prev, espacoId: novoEspacoId }));
+
+                setNovoEspacoId('');
+            } else {
+                setErro(await extrairErro(response));
+            }
+        } catch (error) {
+            setErro('Erro ao tentar transferir o item de espaço.');
+        }
     };
 
     const handleMovimentar = async (e) => {
@@ -398,6 +444,17 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 </div>
             </div>
 
+            <button
+                className="button button-outline"
+                style={{ width: '100%', marginBottom: '1.5rem' }}
+                onClick={() => {
+                    setNovoEspacoId('');
+                    setShowTransferirModal(true);
+                }}
+            >
+                Transferir item para outro espaço
+            </button>
+
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <h3 style={{ color: 'var(--zf-text-h)', margin: 0 }}>Histórico de Movimentações</h3>
                 <button className="button" onClick={() => { setMovimentacaoData({ tipoMovimentacao: 1, quantidadeMovimento: '' }); setShowMovimentarModal(true); setFieldErrors({}); }}>
@@ -527,6 +584,56 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                                 <button type="button" className="button" style={{ flex: 1, backgroundColor: '#ef4444', borderColor: '#ef4444', color: '#fff' }} onClick={handleExcluir}>Excluir</button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {showTransferirModal && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                    backdropFilter: 'blur(5px)',
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999, padding: '1rem'
+                }}>
+                    <div className="card" style={{ width: '100%', maxWidth: '400px', height: 'fit-content', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: '2rem' }}>
+                        <h2 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--zf-text-h)' }}>Transferir de Espaço</h2>
+                        <p style={{ marginBottom: '1.5rem', color: 'var(--zf-text-main)' }}>
+                            Selecione o novo local para o item <strong>{itemAtivo?.descricao}</strong>:
+                        </p>
+
+                        <form onSubmit={handleTransferir} noValidate>
+                            <div style={{ marginBottom: '1.5rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Espaço de Destino</label>
+                                <select
+                                    value={novoEspacoId}
+                                    onChange={e => setNovoEspacoId(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.5rem',
+                                        borderRadius: '5px',
+                                        backgroundColor: 'var(--zf-background)',
+                                        color: 'var(--zf-text-main)',
+                                        border: '1px solid rgba(212, 175, 55, 0.3)'
+                                    }}
+                                >
+                                    <option value="">Selecione um espaço...</option>
+                                    {espacos
+                                        .filter(e => e.espacoId !== itemAtivo?.espacoId)
+                                        .map(e => (
+                                            <option key={e.espacoId} value={e.espacoId}>{e.nome}</option>
+                                        ))
+                                    }
+                                </select>
+                            </div>
+                            <div style={{ display: 'flex', gap: '1rem' }}>
+                                <button type="button" className="button button-outline" style={{ flex: 1 }} onClick={() => setShowTransferirModal(false)}>
+                                    Cancelar
+                                </button>
+                                <button type="submit" className="button" style={{ flex: 1 }}>
+                                    Confirmar
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
