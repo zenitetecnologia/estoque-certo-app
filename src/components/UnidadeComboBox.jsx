@@ -77,7 +77,7 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
             <style>{`.zf-combobox-custom-arrow::after {right: 12px !important; }
             `}</style>
 
-            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 'normal', color: error ? '#ff4444' : 'inherit' }}>
+            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: 'normal', color: error ? '#ff4444' : 'inherit' }}>
                 Unidade Organizacional
             </label>
 
