@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function ThemeToggle({ fixo = true }) {
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
@@ -9,22 +9,31 @@ export default function ThemeToggle({ fixo = true }) {
     }, [theme]);
 
     const toggleTheme = () => {
-        setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
     };
 
     return (
         <button
+            type="button"
+            className="button button-outline btn-mobile"
             onClick={toggleTheme}
-            className="button button-outline"
             style={{
-                margin: 0,
+                margin: fixo ? '1rem' : 0,
+                position: fixo ? 'fixed' : 'static',
+                top: fixo ? '1rem' : 'auto',
+                right: fixo ? '1rem' : 'auto',
                 padding: '0.5rem 1rem',
-                fontSize: '0.85rem',
-                whiteSpace: 'nowrap',
-                ...(fixo ? { position: 'fixed', top: '1rem', right: '1.5rem', zIndex: 10000 } : {})
+                cursor: 'pointer',
+                zIndex: 1000,
+                display: 'flex',
+                alignItems: 'center'
             }}
         >
-            {theme === 'dark' ? '☀️ Modo Claro' : '🌙 Modo Escuro'}
+            {theme === 'dark' ? (
+                <>☀️<span className="texto-mobile" style={{ marginLeft: '8px' }}>Modo Claro</span></>
+            ) : (
+                <>🌙<span className="texto-mobile" style={{ marginLeft: '8px' }}>Modo Escuro</span></>
+            )}
         </button>
     );
 }

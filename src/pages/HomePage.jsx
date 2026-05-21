@@ -93,15 +93,54 @@ export default function HomePage({ token, onLogout }) {
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', margin: 0, padding: 0, width: '100%' }}>
             <input type="checkbox" id="menu-toggle" className="sidebar-checkbox" />
 
-            <header style={{ padding: '1rem 2rem', borderBottom: '1px solid rgba(212, 175, 55, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <label htmlFor="menu-toggle" className="button button-outline" style={{ margin: 0, cursor: 'pointer', padding: '0.5rem 1.5rem' }}>
-                        ☰ Menu
+            <header style={{
+                padding: '1rem',
+                borderBottom: '1px solid rgba(212, 175, 55, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '0.5rem',
+                position: 'relative'
+            }}>
+                <style>{`
+        @media (max-width: 599px) {
+            .texto-mobile { display: none !important; }
+            .btn-mobile { padding: 0.5rem 0.7rem !important; }
+        }
+    `}</style>
+
+                <div style={{ display: 'flex', alignItems: 'center', zIndex: 1 }}>
+                    <label htmlFor="menu-toggle" className="button button-outline btn-mobile" style={{
+                        margin: 0,
+                        cursor: 'pointer',
+                        padding: '0.5rem 1rem',
+                        whiteSpace: 'nowrap',
+                        flexShrink: 0
+                    }}>
+                        ☰<span className="texto-mobile" style={{ marginLeft: '8px' }}>Menu</span>
                     </label>
-                    <h3 style={{ margin: '0 0 0 1.5rem', color: 'var(--zf-accent)' }}>Estoque Certo</h3>
                 </div>
 
-                <ThemeToggle fixo={false} />
+                <h3 style={{
+                    position: 'absolute',
+                    left: '50%',
+                    top: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    margin: 0,
+                    color: 'var(--zf-accent)',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    fontSize: 'clamp(1rem, 4vw, 1.3rem)',
+                    maxWidth: '45%',
+                    textAlign: 'center'
+                }}>
+                    Estoque Certo
+                </h3>
+
+                <div style={{ flexShrink: 0, zIndex: 1 }}>
+                    <ThemeToggle fixo={false} />
+                </div>
             </header>
 
             <div className="sidebar-overlay">
