@@ -57,6 +57,16 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         carregarEspacos();
     }, [carregarEspacos]);
 
+    useEffect(() => {
+        if (!erro && !sucesso) return; 
+
+            const timer = setTimeout(() => {
+                setErro('');
+                setSucesso('');
+            }, 8000);
+        return () => clearTimeout(timer);     
+    }, [erro, sucesso]);
+
     const parseBackendErrors = async (res) => {
         try {
             const text = await res.text();
