@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { extrairErro } from '../utils/apiUtils';
+import LoadingWaves from './LoadingWaves';
 
 const TIPO_UNIDADE = {
     1: 'Quilos (KG)',
@@ -317,7 +318,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 </div>
 
                 {loading ? (
-                    <p>Carregando itens...</p>
+                    <LoadingWaves variant="cards" rows={4} label="Carregando itens" />
                 ) : espacos.length === 0 ? (
                     <div className="alert alert-error">Você precisa cadastrar um Espaço antes de criar Itens.</div>
                 ) : itens.length === 0 ? (
@@ -460,7 +461,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
             </div>
 
             {loadingHistorico ? (
-                <p>Carregando histórico...</p>
+                <LoadingWaves rows={3} label="Carregando histórico" />
             ) : historico.length === 0 ? (
                 <div className="card" style={{ backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden', marginBottom: '2rem' }}>
                     <div style={{ textAlign: 'center', padding: '2rem 1.5rem' }}>

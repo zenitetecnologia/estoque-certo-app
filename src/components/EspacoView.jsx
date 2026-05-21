@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { extrairErro } from '../utils/apiUtils';
+import LoadingWaves from './LoadingWaves';
 
 const TIPO_UNIDADE = {
     1: 'Unidades (UN)',
@@ -240,7 +241,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 </div>
 
                 {loading ? (
-                    <p>Carregando espaços...</p>
+                    <LoadingWaves rows={3} label="Carregando espaços" />
                 ) : espacosFiltrados.length === 0 ? (
                     <div className="card" style={{ backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
                         <div style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
@@ -356,7 +357,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
 
             <h3 style={{ color: 'var(--zf-text-h)', marginBottom: '1rem' }}>Itens neste espaço</h3>
             {loadingItens ? (
-                <p>Carregando inventário...</p>
+                <LoadingWaves variant="cards" rows={3} label="Carregando inventário" />
             ) : itensDoEspaco.length === 0 ? (
                 <div className="card" style={{ marginBottom: '2rem', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
                     <div style={{ textAlign: 'center', padding: '2rem 1.5rem' }}>
@@ -418,7 +419,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 </div>
             )}
 
-            {/* Modal de Mensagens (Erro e Sucesso) */}
+            {/*modal de mensagens (erro e ucesso)*/}
             {(erro || sucesso) && (
                 <div style={{
                     position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',

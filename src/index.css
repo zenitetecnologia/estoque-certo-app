@@ -249,3 +249,39 @@ body {
 [data-theme="light"] {
   --zf-accent-text: #fff;
 }
+
+.loading-waves {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.loading-wave-card {
+  width: 100%;
+  min-height: 7rem;
+  padding: 1.25rem;
+  border-radius: 10px;
+  background-color: var(--zf-background-secondary);
+}
+
+.loading-wave-card .skeleton {
+  display: block;
+}
+
+.loading-waves-cards {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 600px) {
+  .loading-waves-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .loading-waves-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
