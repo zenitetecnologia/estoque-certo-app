@@ -19,10 +19,10 @@ export default function HomePage({ token, onLogout }) {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
     const isIOS = () => {
-  if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
-  const ua = navigator.userAgent || navigator.vendor || window.opera;
-  return /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-};
+        if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        return /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+    };
 
     useEffect(() => {
         const decoded = parseJwt(token);
@@ -110,20 +110,20 @@ export default function HomePage({ token, onLogout }) {
 
             <aside className="sidebar" style={{ padding: 0, display: 'flex', flexDirection: 'column', height: '100vh', overflowY: 'auto', left: 0, margin: 0 }}>
                 <div style={{ padding: '4rem 1.5rem 2rem 1.5rem', flexGrow: 1 }}>
-                    <h3 style={{ color: 'var(--zf-accent)', marginTop: 0 }}>Zênite Painel</h3>
-                    <p>Menu de navegação</p>
+                    <h3 style={{ color: 'var(--zf-accent)', marginTop: 0 }}>Zênite Tecnologia</h3>
+                    <p>Estoque Certo</p>
                     <div className="sidebar-nav">
                         <label htmlFor="menu-toggle" onClick={() => setView('home')} className={view === 'home' ? 'active' : ''} style={{ cursor: 'pointer', display: 'block', marginBottom: '0.5rem' }}>Início</label>
                         <label htmlFor="menu-toggle" onClick={() => setView('espacos')} className={view === 'espacos' ? 'active' : ''} style={{ cursor: 'pointer', display: 'block', marginBottom: '0.5rem' }}>Espaços</label>
                         <label htmlFor="menu-toggle" onClick={() => setView('itens-estoque')} className={view === 'itens-estoque' ? 'active' : ''} style={{ cursor: 'pointer', display: 'block', marginBottom: '0.5rem' }}>Itens de Estoque</label>
-                        <label htmlFor="menu-toggle" onClick={() => { 
-                            if (isIOS()){ setView('ios-install');} 
+                        <label htmlFor="menu-toggle" onClick={() => {
+                            if (isIOS()) { setView('ios-install'); }
                             else {
                                 //andriod install
-                            } 
+                            }
                         }}
-                        className={view === 'ios-install' ? 'active' : ''}
-                        style={{ cursor: 'pointer', display: 'block', marginBottom: '0.5rem' }}
+                            className={view === 'ios-install' ? 'active' : ''}
+                            style={{ cursor: 'pointer', display: 'block', marginBottom: '0.5rem' }}
                         > Adicionar a tela inicial
                         </label>
 
@@ -168,67 +168,67 @@ export default function HomePage({ token, onLogout }) {
                 )}
 
                 {view === 'ios-install' && (
-                      <div style={{ maxWidth: 400, margin: '0 auto', textAlign: 'center' }}>
+                    <div style={{ maxWidth: 400, margin: '0 auto', textAlign: 'center' }}>
                         <h3 style={{ marginTop: 0 }}>Instale o Estoque Certo</h3>
 
-                        <p> <b>Role a tela e siga o tutorial</b> <br/>
-                        Para instalar o aplicativo, <br/> toque nos <b>...</b> </p>
+                        <p> <b>Role a tela e siga o tutorial</b> <br />
+                            Para instalar o aplicativo, <br /> toque nos <b>...</b> </p>
 
                         <img
-                        src="/pg1.jpeg"
-                        alt="Tutorial de instalação 1"
-                        style={{ width: '100%', borderRadius: '12px', marginBottom: '16px', border: '2px solid #d4af37'}}
+                            src="/pg1.jpeg"
+                            alt="Tutorial de instalação 1"
+                            style={{ width: '100%', borderRadius: '12px', marginBottom: '16px', border: '2px solid #d4af37' }}
                         />
 
                         <p>e depois em <b>"Compartilhar"</b>.
                         </p>
 
                         <img
-                        src="/pg2.jpeg"
-                        alt="Tutorial de instalação 2"
-                        style={{ width: '100%', borderRadius: '12px', marginBottom: '16px', border: '2px solid #d4af37' }}
+                            src="/pg2.jpeg"
+                            alt="Tutorial de instalação 2"
+                            style={{ width: '100%', borderRadius: '12px', marginBottom: '16px', border: '2px solid #d4af37' }}
                         />
 
                         <p>Role a tela para baixo e clique em <b>"Adicionar a tela de início"</b> </p>
 
                         <img
-                        src="/pg3.jpeg"
-                        alt="Tutorial de instalação 3"
-                        style={{ width: '100%', borderRadius: '12px', marginBottom: '16px', border: '2px solid #d4af37' }}
+                            src="/pg3.jpeg"
+                            alt="Tutorial de instalação 3"
+                            style={{ width: '100%', borderRadius: '12px', marginBottom: '16px', border: '2px solid #d4af37' }}
                         />
 
                         <p>Depois clique em <b>"Adicionar"</b> </p>
 
                         <img
-                        src="/pg4.jpeg"
-                        alt="Tutorial de instalação 4"
-                        style={{ width: '100%', borderRadius: '12px', marginBottom: '16px', border: '2px solid #d4af37' }}
+                            src="/pg4.jpeg"
+                            alt="Tutorial de instalação 4"
+                            style={{ width: '100%', borderRadius: '12px', marginBottom: '16px', border: '2px solid #d4af37' }}
                         />
 
                         <p> assim o aplicativo será adicionado à sua tela de início.</p>
 
                         <img
-                        src="/pg5.jpeg"
-                        alt="Tutorial de instalação 5"
-                        style={{ width: '100%', borderRadius: '12px', marginBottom: '16px', border: '2px solid #d4af37' }}
+                            src="/pg5.jpeg"
+                            alt="Tutorial de instalação 5"
+                            style={{ width: '100%', borderRadius: '12px', marginBottom: '16px', border: '2px solid #d4af37' }}
                         />
 
 
                         <button
-                        onClick={() => setView('home')}
-                        style={{
-                            marginBottom: '1rem',
-                            cursor: 'pointer',
-                            padding: '12px 24px',
-                            fontSize: '18px',
-                            borderRadius: '8px'
-                        }}
-                        className="button"
+                            onClick={() => setView('home')}
+                            style={{
+                                marginBottom: '1rem',
+                                cursor: 'pointer',
+                                padding: '12px 24px',
+                                fontSize: '18px',
+                                borderRadius: '8px'
+                            }}
+                            className="button"
                         >
-                        Entendi
+                            Entendi
                         </button>
                     </div>
-                    )}
+                )}
 
                 {view === 'profile' && (
                     <div className="zf-row" style={{ justifyContent: 'center' }}>
