@@ -149,9 +149,31 @@ export default function HomePage({ token, onLogout }) {
 
             <main className="container" style={{ padding: '3rem 2rem', flexGrow: 1 }}>
                 {view === 'home' && (
-                    <div style={{ textAlign: 'center', marginTop: '10vh' }}>
-                        <h1 style={{ fontSize: '3rem' }}>Homepage Zenite</h1>
-                        <p>Bem-vindo ao sistema de gestão Estoque Certo. Selecione uma opção no menu lateral.</p>
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '100%',
+                        padding: '3rem 1rem',
+                        boxSizing: 'border-box'
+                    }}>
+                        <img
+                            src="/logo-zenite.png"
+                            alt="Logo Zênite"
+                            style={{
+                                width: '90%',
+                                maxWidth: '500px',
+                                height: 'auto',
+                                marginBottom: '1.5rem',
+                                borderRadius: '8px',
+                                display: 'block',
+                                margin: '0 auto'
+                            }}
+                        />
+                        <h2 style={{ color: 'var(--zf-text-main)', fontWeight: 'normal', textAlign: 'center', margin: 0 }}>
+                            Bem-vindo ao Estoque Certo.
+                        </h2>
                     </div>
                 )}
 
