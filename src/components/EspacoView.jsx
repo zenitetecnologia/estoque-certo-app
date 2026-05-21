@@ -246,24 +246,24 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                                 <h2 style={{ marginTop: 0, marginBottom: '1.5rem', textAlign: 'center', color: 'var(--zf-text-h)' }}>Novo Espaço</h2>
                                 <form onSubmit={handleCriarEspaco} noValidate>
                                     <div style={{ marginBottom: '1rem' }}>
-                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Nome ? '#E57373' : 'inherit' }}>Nome do Espaço (Obrigatório)</label>
+                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Nome ? '#e99292' : 'inherit' }}>Nome do Espaço (Obrigatório)</label>
                                         <input
                                             type="text"
                                             value={formDataNovo.nome}
                                             onChange={e => setFormDataNovo({ ...formDataNovo, nome: e.target.value })}
-                                            style={{ width: '100%', borderColor: fieldErrors.Nome ? '#E57373' : undefined, outlineColor: fieldErrors.Nome ? '#E57373' : undefined }}
+                                            style={{ width: '100%', borderColor: fieldErrors.Nome ? '#e99292' : undefined, outlineColor: fieldErrors.Nome ? '#e99292' : undefined }}
                                         />
-                                        {fieldErrors.Nome && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Nome}</small>}
+                                        {fieldErrors.Nome && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Nome}</small>}
                                     </div>
                                     <div style={{ marginBottom: '1.5rem' }}>
-                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Descricao ? '#E57373' : 'inherit' }}>Descrição (Opcional)</label>
+                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Descricao ? '#e99292' : 'inherit' }}>Descrição (Opcional)</label>
                                         <input
                                             type="text"
                                             value={formDataNovo.descricao}
                                             onChange={e => setFormDataNovo({ ...formDataNovo, descricao: e.target.value })}
-                                            style={{ width: '100%', borderColor: fieldErrors.Descricao ? '#E57373' : undefined, outlineColor: fieldErrors.Descricao ? '#E57373' : undefined }}
+                                            style={{ width: '100%', borderColor: fieldErrors.Descricao ? '#e99292' : undefined, outlineColor: fieldErrors.Descricao ? '#e99292' : undefined }}
                                         />
-                                        {fieldErrors.Descricao && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Descricao}</small>}
+                                        {fieldErrors.Descricao && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Descricao}</small>}
                                     </div>
                                     <div style={{ display: 'flex', gap: '1rem' }}>
                                         <button type="button" className="button button-outline" style={{ flex: 1 }} onClick={() => setShowModalNovo(false)}>Cancelar</button>
@@ -292,24 +292,24 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 <div style={{ padding: '1.5rem' }}>
                     <div className="zf-row">
                         <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1rem' }}>
-                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Nome ? '#E57373' : 'inherit' }}>Nome do Espaço</label>
+                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Nome ? '#e99292' : 'inherit' }}>Nome do Espaço</label>
                             <input
                                 type="text"
                                 value={formEdicao.nome}
                                 onChange={e => setFormEdicao({ ...formEdicao, nome: e.target.value })}
-                                style={{ width: '100%', marginBottom: 0, borderColor: fieldErrors.Nome ? '#E57373' : undefined, outlineColor: fieldErrors.Nome ? '#E57373' : undefined }}
+                                style={{ width: '100%', marginBottom: 0, borderColor: fieldErrors.Nome ? '#e99292' : undefined, outlineColor: fieldErrors.Nome ? '#e99292' : undefined }}
                             />
-                            {fieldErrors.Nome && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Nome}</small>}
+                            {fieldErrors.Nome && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Nome}</small>}
                         </div>
                         <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1rem' }}>
-                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Descricao ? '#E57373' : 'inherit' }}>Descrição</label>
+                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Descricao ? '#e99292' : 'inherit' }}>Descrição</label>
                             <input
                                 type="text"
                                 value={formEdicao.descricao}
                                 onChange={e => setFormEdicao({ ...formEdicao, descricao: e.target.value })}
-                                style={{ width: '100%', marginBottom: 0, borderColor: fieldErrors.Descricao ? '#E57373' : undefined, outlineColor: fieldErrors.Descricao ? '#E57373' : undefined }}
+                                style={{ width: '100%', marginBottom: 0, borderColor: fieldErrors.Descricao ? '#e99292' : undefined, outlineColor: fieldErrors.Descricao ? '#e99292' : undefined }}
                             />
-                            {fieldErrors.Descricao && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Descricao}</small>}
+                            {fieldErrors.Descricao && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Descricao}</small>}
                         </div>
                     </div>
                 </div>

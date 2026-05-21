@@ -26,8 +26,8 @@ export default function PasswordInput({ label = "Senha", value, onChange, placeh
                         paddingRight: '2.5rem',
                         marginBottom: 0,
                         width: '100%',
-                        border: error ? '1px solid #E57373' : undefined,
-                        outlineColor: error ? '#E57373' : undefined
+                        border: error ? '1px solid #e99292' : undefined,
+                        outlineColor: error ? '#e99292' : undefined
                     }}
                 />
                 <button
@@ -59,7 +59,7 @@ export default function PasswordInput({ label = "Senha", value, onChange, placeh
                     )}
                 </button>
             </div>
-            {error && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{errorMessage}</small>}
+            {error && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{errorMessage}</small>}
         </div>
     );
 }

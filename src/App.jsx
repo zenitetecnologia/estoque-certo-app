@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import PendingApprovalPage from './pages/PendingApprovalPage';
 import HomePage from './pages/HomePage';
 
 export default function App() {
@@ -22,10 +23,11 @@ export default function App() {
     if (!token) {
         if (currentPage === 'register') return <RegisterPage onNavigate={setCurrentPage} />;
         if (currentPage === 'forgot') return <ForgotPasswordPage onNavigate={setCurrentPage} />;
+        if (currentPage === 'pending') return <PendingApprovalPage onNavigate={setCurrentPage} />;
         return <LoginPage onLogin={handleLogin} onNavigate={setCurrentPage} />;
     }
 
     return (
-            <HomePage token={token} onLogout={handleLogout} />      
+        <HomePage token={token} onLogout={handleLogout} />
     );
 }

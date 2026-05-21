@@ -53,6 +53,8 @@ export default function LoginPage({ onLogin, onNavigate }) {
                 }
 
                 setFieldErrors(mappedErrors);
+            } else if (response.status === 403) {
+                onNavigate('pending');
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);
@@ -70,7 +72,7 @@ export default function LoginPage({ onLogin, onNavigate }) {
             <div className="card auth-card">
                 <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Login</h2>
                 <form onSubmit={handleSubmit} noValidate>
-                    {erro && <div className="alert alert-error">{erro}</div>}
+                    {erro && <div className="alert alert-error" style={{ marginBottom: '1rem' }}>{erro}</div>}
 
                     <PhoneInput
                         value={formData.username}

@@ -305,7 +305,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     };
 
     const getInputBaseStyle = (isError) => ({
-        width: '100%', marginBottom: 0, borderColor: isError ? '#E57373' : undefined, outlineColor: isError ? '#E57373' : undefined
+        width: '100%', marginBottom: 0, borderColor: isError ? '#e99292' : undefined, outlineColor: isError ? '#e99292' : undefined
     });
 
     if (viewMode === 'list') {
@@ -362,33 +362,33 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                                 <h2 style={{ marginTop: 0, marginBottom: '1.5rem', textAlign: 'center', color: 'var(--zf-text-h)' }}>Novo Item</h2>
                                 <form onSubmit={handleCriar} noValidate>
                                     <div style={{ marginBottom: '1rem' }}>
-                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Descricao ? '#E57373' : 'inherit' }}>Descrição do Produto</label>
+                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Descricao ? '#e99292' : 'inherit' }}>Descrição do Produto</label>
                                         <input type="text" value={formDataNovo.descricao} onChange={e => setFormDataNovo({ ...formDataNovo, descricao: e.target.value })} style={getInputBaseStyle(fieldErrors.Descricao)} />
-                                        {fieldErrors.Descricao && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Descricao}</small>}
+                                        {fieldErrors.Descricao && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Descricao}</small>}
                                     </div>
 
                                     <div className="zf-row">
                                         <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1rem' }}>
-                                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.EspacoId ? '#E57373' : 'inherit' }}>Local (Espaço)</label>
+                                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.EspacoId ? '#e99292' : 'inherit' }}>Local (Espaço)</label>
                                             <select value={formDataNovo.espacoId} onChange={e => setFormDataNovo({ ...formDataNovo, espacoId: e.target.value })} style={getInputBaseStyle(fieldErrors.EspacoId)}>
                                                 <option value="" disabled>Selecione...</option>
                                                 {espacos.map(e => <option key={e.espacoId} value={e.espacoId}>{e.nome}</option>)}
                                             </select>
-                                            {fieldErrors.EspacoId && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.EspacoId}</small>}
+                                            {fieldErrors.EspacoId && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.EspacoId}</small>}
                                         </div>
                                         <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1rem' }}>
-                                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.TipoUnidadeMedida ? '#E57373' : 'inherit' }}>Unidade de Medida</label>
+                                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.TipoUnidadeMedida ? '#e99292' : 'inherit' }}>Unidade de Medida</label>
                                             <select value={formDataNovo.tipoUnidadeMedida} onChange={e => setFormDataNovo({ ...formDataNovo, tipoUnidadeMedida: e.target.value })} style={getInputBaseStyle(fieldErrors.TipoUnidadeMedida)}>
                                                 {Object.entries(TIPO_UNIDADE).map(([key, val]) => <option key={key} value={key}>{val}</option>)}
                                             </select>
-                                            {fieldErrors.TipoUnidadeMedida && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.TipoUnidadeMedida}</small>}
+                                            {fieldErrors.TipoUnidadeMedida && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.TipoUnidadeMedida}</small>}
                                         </div>
                                     </div>
 
                                     <div style={{ marginBottom: '1.5rem' }}>
-                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Quantidade ? '#E57373' : 'inherit' }}>Quantidade Inicial</label>
+                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Quantidade ? '#e99292' : 'inherit' }}>Quantidade Inicial</label>
                                         <input type="number" step="0.001" value={formDataNovo.quantidade} onChange={e => setFormDataNovo({ ...formDataNovo, quantidade: e.target.value })} style={getInputBaseStyle(fieldErrors.Quantidade)} />
-                                        {fieldErrors.Quantidade && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Quantidade}</small>}
+                                        {fieldErrors.Quantidade && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Quantidade}</small>}
                                     </div>
 
                                     <div style={{ display: 'flex', gap: '1rem' }}>
@@ -418,23 +418,23 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 <div style={{ padding: '1.5rem' }}>
                     <div className="zf-row">
                         <div className="zf-col-xs-12 zf-col-md-4" style={{ marginBottom: '1rem' }}>
-                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Descricao ? '#E57373' : 'inherit' }}>Descrição do Produto</label>
+                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Descricao ? '#e99292' : 'inherit' }}>Descrição do Produto</label>
                             <input type="text" value={formEdicao.descricao} onChange={e => setFormEdicao({ ...formEdicao, descricao: e.target.value })} style={getInputBaseStyle(fieldErrors.Descricao)} />
-                            {fieldErrors.Descricao && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Descricao}</small>}
+                            {fieldErrors.Descricao && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Descricao}</small>}
                         </div>
                         <div className="zf-col-xs-12 zf-col-md-3" style={{ marginBottom: '1rem' }}>
-                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.EspacoId ? '#E57373' : 'inherit' }}>Local (Espaço)</label>
+                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.EspacoId ? '#e99292' : 'inherit' }}>Local (Espaço)</label>
                             <select value={formEdicao.espacoId} onChange={e => setFormEdicao({ ...formEdicao, espacoId: e.target.value })} style={getInputBaseStyle(fieldErrors.EspacoId)}>
                                 {espacos.map(e => <option key={e.espacoId} value={e.espacoId}>{e.nome}</option>)}
                             </select>
-                            {fieldErrors.EspacoId && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.EspacoId}</small>}
+                            {fieldErrors.EspacoId && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.EspacoId}</small>}
                         </div>
                         <div className="zf-col-xs-12 zf-col-md-3" style={{ marginBottom: '1rem' }}>
-                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.TipoUnidadeMedida ? '#E57373' : 'inherit' }}>Unidade</label>
+                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.TipoUnidadeMedida ? '#e99292' : 'inherit' }}>Unidade</label>
                             <select value={formEdicao.tipoUnidadeMedida} onChange={e => setFormEdicao({ ...formEdicao, tipoUnidadeMedida: e.target.value })} style={getInputBaseStyle(fieldErrors.TipoUnidadeMedida)}>
                                 {Object.entries(TIPO_UNIDADE).map(([key, val]) => <option key={key} value={key}>{val}</option>)}
                             </select>
-                            {fieldErrors.TipoUnidadeMedida && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.TipoUnidadeMedida}</small>}
+                            {fieldErrors.TipoUnidadeMedida && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.TipoUnidadeMedida}</small>}
                         </div>
                         <div className="zf-col-xs-12 zf-col-md-2" style={{ marginBottom: '1rem' }}>
                             <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Saldo Atual</label>
@@ -549,17 +549,17 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                             <form onSubmit={handleMovimentar} noValidate>
                                 <div className="zf-row">
                                     <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1.5rem' }}>
-                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.TipoMovimentacao ? '#E57373' : 'inherit' }}>Operação</label>
+                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.TipoMovimentacao ? '#e99292' : 'inherit' }}>Operação</label>
                                         <select value={movimentacaoData.tipoMovimentacao} onChange={e => setMovimentacaoData({ ...movimentacaoData, tipoMovimentacao: e.target.value })} style={getInputBaseStyle(fieldErrors.TipoMovimentacao)}>
                                             <option value={1}>Entrada (+)</option>
                                             <option value={2}>Saída (-)</option>
                                         </select>
-                                        {fieldErrors.TipoMovimentacao && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.TipoMovimentacao}</small>}
+                                        {fieldErrors.TipoMovimentacao && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.TipoMovimentacao}</small>}
                                     </div>
                                     <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1.5rem' }}>
-                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.QuantidadeMovimento ? '#E57373' : 'inherit' }}>Quantidade</label>
+                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.QuantidadeMovimento ? '#e99292' : 'inherit' }}>Quantidade</label>
                                         <input type="number" step="0.001" min="0.001" value={movimentacaoData.quantidadeMovimento} onChange={e => setMovimentacaoData({ ...movimentacaoData, quantidadeMovimento: e.target.value })} style={getInputBaseStyle(fieldErrors.QuantidadeMovimento)} />
-                                        {fieldErrors.QuantidadeMovimento && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.QuantidadeMovimento}</small>}
+                                        {fieldErrors.QuantidadeMovimento && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.QuantidadeMovimento}</small>}
                                     </div>
                                 </div>
 

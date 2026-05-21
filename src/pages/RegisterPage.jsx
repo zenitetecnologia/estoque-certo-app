@@ -77,9 +77,9 @@ export default function RegisterPage({ onNavigate }) {
                                     placeholder="Seu nome"
                                     value={formData.nome}
                                     onChange={e => setFormData({ ...formData, nome: e.target.value })}
-                                    style={{ width: '100%', marginBottom: 0, borderColor: (fieldErrors.Nome || fieldErrors.nome) ? '#E57373' : undefined }}
+                                    style={{ width: '100%', marginBottom: 0, borderColor: (fieldErrors.Nome || fieldErrors.nome) ? '#e99292' : undefined }}
                                 />
-                                {(fieldErrors.Nome || fieldErrors.nome) && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Nome || fieldErrors.nome}</small>}
+                                {(fieldErrors.Nome || fieldErrors.nome) && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Nome || fieldErrors.nome}</small>}
                             </div>
 
                             <PhoneInput

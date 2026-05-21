@@ -42,11 +42,11 @@ export default function PhoneInput({ value, onChange, error, errorMessage }) {
                 style={{
                     width: '100%',
                     marginBottom: 0,
-                    borderColor: error ? '#E57373' : undefined,
-                    outlineColor: error ? '#E57373' : undefined
+                    borderColor: error ? '#e99292' : undefined,
+                    outlineColor: error ? '#e99292' : undefined
                 }}
             />
-            {error && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{errorMessage}</small>}
+            {error && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{errorMessage}</small>}
         </div>
     );
 }
