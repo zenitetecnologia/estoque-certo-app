@@ -5,13 +5,14 @@ export default function PasswordInput({ label = "Senha", value, onChange, placeh
 
     return (
         <div style={{ marginBottom: '1rem' }}>
+            {/* Cor fixa, não muda mais com o erro */}
             <label style={{
                 textAlign: 'left',
                 display: 'block',
                 marginBottom: '0.5rem',
                 fontSize: '1.1rem',
                 fontWeight: 'normal',
-                color: error ? '#ff4444' : 'inherit'
+                color: 'inherit'
             }}>
                 {label}
             </label>
@@ -25,8 +26,8 @@ export default function PasswordInput({ label = "Senha", value, onChange, placeh
                         paddingRight: '2.5rem',
                         marginBottom: 0,
                         width: '100%',
-                        border: error ? '1px solid #ff4444' : undefined,
-                        outlineColor: error ? '#ff4444' : undefined
+                        border: error ? '1px solid #E57373' : undefined,
+                        outlineColor: error ? '#E57373' : undefined
                     }}
                 />
                 <button
@@ -40,7 +41,6 @@ export default function PasswordInput({ label = "Senha", value, onChange, placeh
                         background: 'transparent',
                         border: 'none',
                         cursor: 'pointer',
-                        color: error ? '#ff4444' : 'var(--zf-text-main)',
                         display: 'flex',
                         alignItems: 'center',
                         padding: 0
@@ -59,7 +59,7 @@ export default function PasswordInput({ label = "Senha", value, onChange, placeh
                     )}
                 </button>
             </div>
-            {error && <small style={{ color: '#ff4444', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{errorMessage}</small>}
+            {error && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{errorMessage}</small>}
         </div>
     );
 }

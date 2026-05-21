@@ -136,8 +136,8 @@ export default function ForgotPasswordPage({ onNavigate }) {
                                         onChange={e => setData({ ...data, code: e.target.value })}
                                         style={{
                                             width: '100%',
-                                            borderColor: erro ? '#ff4444' : undefined,
-                                            outlineColor: erro ? '#ff4444' : undefined
+                                            borderColor: erro ? '#E57373' : undefined,
+                                            outlineColor: erro ? '#E57373' : undefined
                                         }}
                                     />
                                 </div>

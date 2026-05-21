@@ -77,7 +77,8 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
             <style>{`.zf-combobox-custom-arrow::after {right: 12px !important; }
             `}</style>
 
-            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: 'normal', color: error ? '#ff4444' : 'inherit' }}>
+            {/* Cor fixa, não muda mais com o erro */}
+            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: 'normal', color: 'inherit' }}>
                 Unidade Organizacional
             </label>
 
@@ -98,8 +99,8 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
                     style={{
                         width: '100%',
                         marginBottom: 0,
-                        borderColor: error ? '#ff4444' : undefined,
-                        outlineColor: error ? '#ff4444' : undefined,
+                        borderColor: error ? '#E57373' : undefined,
+                        outlineColor: error ? '#E57373' : undefined,
                         paddingRight: value ? '60px' : '30px'
                     }}
                 />
@@ -158,7 +159,7 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
                     ))}
                 </ul>
             </div>
-            {error && <small style={{ color: '#ff4444', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{errorMessage}</small>}
+            {error && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{errorMessage}</small>}
         </div>
     );
 }

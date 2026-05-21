@@ -242,7 +242,7 @@ export default function HomePage({ token, onLogout }) {
 
                                     <form onSubmit={handleUpdateData} noValidate>
                                         <div style={{ marginBottom: '1rem' }}>
-                                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 'normal', color: fieldErrors.Nome ? '#ff4444' : 'inherit' }}>
+                                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 'normal', color: fieldErrors.Nome ? '#E57373' : 'inherit' }}>
                                                 Nome
                                             </label>
                                             <input
@@ -252,11 +252,11 @@ export default function HomePage({ token, onLogout }) {
                                                 style={{
                                                     width: '100%',
                                                     marginBottom: 0,
-                                                    borderColor: fieldErrors.Nome ? '#ff4444' : undefined,
-                                                    outlineColor: fieldErrors.Nome ? '#ff4444' : undefined
+                                                    borderColor: fieldErrors.Nome ? '#E57373' : undefined,
+                                                    outlineColor: fieldErrors.Nome ? '#E57373' : undefined
                                                 }}
                                             />
-                                            {fieldErrors.Nome && <small style={{ color: '#ff4444', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{fieldErrors.Nome}</small>}
+                                            {fieldErrors.Nome && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{fieldErrors.Nome}</small>}
                                         </div>
 
                                         <PhoneInput
