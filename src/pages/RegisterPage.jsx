@@ -65,18 +65,9 @@ export default function RegisterPage({ onNavigate }) {
                     <div className="card auth-card">
                         <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Criar Conta</h2>
                         <form onSubmit={handleSubmit} noValidate>
-                            {erro && <div className="alert alert-error">{erro}</div>}
-                            {sucesso && <div className="alert alert-success">{sucesso}</div>}
 
                             <div style={{ marginBottom: '1rem' }}>
-                                <label style={{
-                                    textAlign: 'left',
-                                    display: 'block',
-                                    marginBottom: '0.5rem',
-                                    fontSize: '1.1rem',
-                                    fontWeight: 'normal',
-                                    color: 'inherit'
-                                }}>
+                                <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: 'normal', color: 'inherit' }}>
                                     Nome Completo
                                 </label>
                                 <input
@@ -84,17 +75,9 @@ export default function RegisterPage({ onNavigate }) {
                                     placeholder="Seu nome"
                                     value={formData.nome}
                                     onChange={e => setFormData({ ...formData, nome: e.target.value })}
-                                    style={{
-                                        width: '100%',
-                                        marginBottom: 0,
-                                        borderColor: (fieldErrors.Nome || fieldErrors.nome) ? '#E57373' : undefined
-                                    }}
+                                    style={{ width: '100%', marginBottom: 0, borderColor: (fieldErrors.Nome || fieldErrors.nome) ? '#E57373' : undefined }}
                                 />
-                                {(fieldErrors.Nome || fieldErrors.nome) && (
-                                    <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>
-                                        {fieldErrors.Nome || fieldErrors.nome}
-                                    </small>
-                                )}
+                                {(fieldErrors.Nome || fieldErrors.nome) && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Nome || fieldErrors.nome}</small>}
                             </div>
 
                             <PhoneInput
@@ -127,6 +110,33 @@ export default function RegisterPage({ onNavigate }) {
                     </div>
                 </div>
             </div>
+
+            {(erro || sucesso) && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                    backgroundColor: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(4px)',
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999, padding: '1rem', boxSizing: 'border-box'
+                }}>
+                    <div className="card" style={{
+                        width: '100%', maxWidth: '400px',
+                        height: 'fit-content', margin: 'auto',
+                        backgroundColor: 'var(--zf-background-secondary)',
+                        padding: '2.5rem', borderRadius: '15px', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
+                    }}>
+                        <h2 style={{ color: erro ? '#E57373' : '#81C784', marginTop: 0, marginBottom: '1rem' }}>
+                            {erro ? 'Atenção' : 'Sucesso'}
+                        </h2>
+                        <p style={{ color: 'var(--zf-text-main)', marginBottom: '2rem', fontSize: '1rem', lineHeight: '1.4' }}>
+                            {erro || sucesso}
+                        </p>
+                        {erro && (
+                            <button type="button" className="button" style={{ width: '100%', margin: 0 }} onClick={() => setErro('')}>
+                                Fechar
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
         </>
     );
 }

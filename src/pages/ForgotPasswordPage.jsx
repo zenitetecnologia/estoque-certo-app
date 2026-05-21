@@ -105,7 +105,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
                     <div className="card auth-card">
                         <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Recuperar Acesso</h2>
-                        {erro && <div className="alert alert-error" style={{ marginBottom: '1.5rem' }}>{erro}</div>}
+
 
                         {step === 1 && (
                             <form onSubmit={handleForgot} noValidate>
@@ -136,8 +136,8 @@ export default function ForgotPasswordPage({ onNavigate }) {
                                         onChange={e => setData({ ...data, code: e.target.value })}
                                         style={{
                                             width: '100%',
-                                            borderColor: erro ? '#e99292' : undefined,
-                                            outlineColor: erro ? '#e99292' : undefined
+                                            borderColor: erro ? '#E57373' : undefined,
+                                            outlineColor: erro ? '#E57373' : undefined
                                         }}
                                     />
                                 </div>
@@ -167,36 +167,43 @@ export default function ForgotPasswordPage({ onNavigate }) {
                     </div>
                 </div>
             </div>
-            {showSuccessModal && (
+
+            {erro && (
                 <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100vw',
-                    height: '100vh',
-                    backgroundColor: 'rgba(0, 0, 0, 0.85)',
-                    backdropFilter: 'blur(4px)',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    zIndex: 9999,
-                    padding: '1rem'
+                    position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                    backgroundColor: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(4px)',
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999, padding: '1rem', boxSizing: 'border-box'
                 }}>
                     <div className="card" style={{
-                        width: '100%',
-                        maxWidth: '400px',
-                        height: 'auto',
-                        minHeight: '200px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        textAlign: 'center',
+                        width: '100%', maxWidth: '400px',
+                        height: 'fit-content', margin: 'auto',
                         backgroundColor: 'var(--zf-background-secondary)',
-                        padding: '2.5rem',
-                        borderRadius: '15px',
-                        boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
+                        padding: '2.5rem', borderRadius: '15px', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
                     }}>
-                        <h2 style={{ color: 'var(--zf-text-h)', marginBottom: '1rem', marginTop: 0 }}>Senha Redefinida!</h2>
+                        <h2 style={{ color: '#E57373', marginTop: 0, marginBottom: '1rem' }}>Atenção</h2>
+                        <p style={{ color: 'var(--zf-text-main)', marginBottom: '2rem', fontSize: '1rem', lineHeight: '1.4' }}>
+                            {erro}
+                        </p>
+                        <button type="button" className="button" style={{ width: '100%', margin: 0 }} onClick={() => setErro('')}>
+                            Fechar
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {showSuccessModal && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                    backgroundColor: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(4px)',
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999, padding: '1rem', boxSizing: 'border-box'
+                }}>
+                    <div className="card" style={{
+                        width: '100%', maxWidth: '400px',
+                        height: 'fit-content', margin: 'auto',
+                        backgroundColor: 'var(--zf-background-secondary)',
+                        padding: '2.5rem', borderRadius: '15px', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
+                    }}>
+                        <h2 style={{ color: '#81C784', marginBottom: '1rem', marginTop: 0 }}>Senha Redefinida!</h2>
                         <p style={{ color: 'var(--zf-text-main)', marginBottom: '2rem', fontSize: '1rem', lineHeight: '1.4' }}>
                             Sua senha foi alterada com sucesso.<br />Você já pode acessar o sistema.
                         </p>
