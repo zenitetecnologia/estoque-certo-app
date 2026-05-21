@@ -270,9 +270,9 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     if (viewMode === 'list') {
         return (
             <div style={{ width: '100%' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '2rem', gap: '1rem' }}>
+                <div className="inventory-list-header">
                     <h2 style={{ margin: 0 }}>Gestão de Espaços</h2>
-                    <button className="button" style={{ margin: 0, width: '100%' }} onClick={() => { setFormDataNovo({ nome: '', descricao: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>
+                    <button className="button inventory-list-header-action" style={{ margin: 0 }} onClick={() => { setFormDataNovo({ nome: '', descricao: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>
                         + Novo espaço
                     </button>
                 </div>
@@ -301,26 +301,21 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                     <div className="inventory-grid">
                         {espacosFiltrados.map(espaco => (
                             <div key={espaco.espacoId} className="inventory-grid-item">
-                                <div className="card inventory-card" style={{
+                                <div className="card inventory-card inventory-list-card" style={{
                                     backgroundColor: 'var(--zf-background-secondary)',
                                     borderRadius: '10px',
-                                    padding: '1.25rem',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '1rem'
                                 }}>
-                                    <div>
-                                        <h3 style={{ margin: '0 0 0.2rem 0', color: 'var(--zf-text-h)', fontSize: '1.2rem' }}>{espaco.nome}</h3>
-
-                                        {espaco.descricao && (
-                                            <p style={{ color: 'var(--zf-text-main)', margin: 0, fontSize: '0.9rem' }}>
-                                                {espaco.descricao}
-                                            </p>
-                                        )}
+                                    <div className="inventory-card-header">
+                                        <h3 className="inventory-card-title">{espaco.nome}</h3>
+                                        <p className="inventory-card-description">
+                                            {espaco.descricao || 'Sem descrição'}
+                                        </p>
                                     </div>
-                                    <button className="button button-outline" style={{ margin: 0, width: '100%' }} onClick={() => abrirDetalhes(espaco)}>
-                                        Visualizar
-                                    </button>
+                                    <div className="inventory-card-footer">
+                                        <button className="button button-outline inventory-card-action" onClick={() => abrirDetalhes(espaco)}>
+                                            Visualizar
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -409,9 +404,9 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                     </div>
                 </div>
             ) : (
-                <div className="zf-row compact-card-grid" style={{ marginBottom: '2rem' }}>
+                <div className="inventory-grid inventory-grid-compact" style={{ marginBottom: '2rem' }}>
                     {itensDoEspaco.map(item => (
-                        <div key={item.itemEstoqueId} className="zf-col-xs-12" style={{ marginBottom: '1rem' }}>
+                        <div key={item.itemEstoqueId} className="inventory-grid-item">
                             <div className="card inventory-card" style={{ backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: '1.25rem', overflow: 'hidden' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>

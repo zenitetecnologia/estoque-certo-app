@@ -22,6 +22,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
+    const [pesquisa, setPesquisa] = useState('');
 
     //modais
     const [showModalNovo, setShowModalNovo] = useState(false);
@@ -35,12 +36,56 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     const [formEdicao, setFormEdicao] = useState({ espacoId: '', descricao: '', tipoUnidadeMedida: 6, quantidade: '' });
     const [movimentacaoData, setMovimentacaoData] = useState({ tipoMovimentacao: 1, quantidadeMovimento: '' });
 
+    const getDataCadastro = (item) => (
+        item.dataCadastro ||
+        item.dataCriacao ||
+        item.criadoEm ||
+        item.createdAt ||
+        item.dataHoraCadastro ||
+        ''
+    );
+
+    const ordenarItens = (lista) => [...lista].sort((a, b) => {
+        const espacoCompare = String(a.espacoId || '').localeCompare(String(b.espacoId || ''));
+        if (espacoCompare !== 0) return espacoCompare;
+
+        const dataA = new Date(getDataCadastro(a)).getTime() || 0;
+        const dataB = new Date(getDataCadastro(b)).getTime() || 0;
+        return dataB - dataA;
+    });
+
+    const filtrarItensLocalmente = (lista, termo, listaEspacos) => {
+        const termoNormalizado = termo.trim().toLowerCase();
+        if (!termoNormalizado) return lista;
+
+        return lista.filter(item => {
+            const espaco = listaEspacos.find(e => e.espacoId === item.espacoId);
+            return [
+                item.descricao,
+                item.espacoId,
+                espaco?.nome,
+                espaco?.descricao,
+                TIPO_UNIDADE[item.tipoUnidadeMedida]
+            ].some(valor => String(valor || '').toLowerCase().includes(termoNormalizado));
+        });
+    };
+
     const carregarDados = useCallback(async () => {
         if (!unidadeOrganizacionalId) return;
         setLoading(true);
         setErro('');
         try {
-            const resItens = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/itens-estoque?unidadeOrganizacionalId=${unidadeOrganizacionalId}&top=50`, {
+            const paramsItens = new URLSearchParams({
+                unidadeOrganizacionalId,
+                skip: '0',
+                top: '50'
+            });
+
+            if (pesquisa.trim()) {
+                paramsItens.set('filtro', pesquisa.trim());
+            }
+
+            const resItens = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/itens-estoque?${paramsItens.toString()}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const resEspacos = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/espacos?unidadeOrganizacionalId=${unidadeOrganizacionalId}&top=50`, {
@@ -48,8 +93,12 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
             });
 
             if (resItens.ok && resEspacos.ok) {
-                setItens(await resItens.json());
-                setEspacos(await resEspacos.json());
+                const itensRecebidos = await resItens.json();
+                const espacosRecebidos = await resEspacos.json();
+                const itensFiltrados = filtrarItensLocalmente(itensRecebidos, pesquisa, espacosRecebidos);
+
+                setItens(ordenarItens(itensFiltrados));
+                setEspacos(espacosRecebidos);
             } else {
                 setErro('Falha ao carregar os dados do estoque.');
             }
@@ -58,7 +107,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
         } finally {
             setLoading(false);
         }
-    }, [token, unidadeOrganizacionalId]);
+    }, [token, unidadeOrganizacionalId, pesquisa]);
 
     useEffect(() => {
         carregarDados();
@@ -320,9 +369,19 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     if (viewMode === 'list') {
         return (
             <div style={{ width: '100%' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '2rem', gap: '1rem' }}>
+                <div className="inventory-list-header">
                     <h2 style={{ margin: 0 }}>Itens de Estoque</h2>
-                    <button className="button" style={{ margin: 0, width: '100%' }} onClick={() => { setFormDataNovo({ espacoId: espacos.length > 0 ? espacos[0].espacoId : '', descricao: '', tipoUnidadeMedida: 6, quantidade: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>+ Novo Item</button>
+                    <button className="button inventory-list-header-action" style={{ margin: 0 }} onClick={() => { setFormDataNovo({ espacoId: espacos.length > 0 ? espacos[0].espacoId : '', descricao: '', tipoUnidadeMedida: 6, quantidade: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>+ Novo Item</button>
+                </div>
+
+                <div style={{ marginBottom: '1.5rem' }}>
+                    <input
+                        type="text"
+                        placeholder="Pesquisar itens por descrição..."
+                        value={pesquisa}
+                        onChange={(e) => setPesquisa(e.target.value)}
+                        style={{ width: '100%', marginBottom: 0 }}
+                    />
                 </div>
 
                 {loading ? (
@@ -336,31 +395,29 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                         </div>
                     </div>
                 ) : (
-                    <div className="inventory-grid">
+                    <div className="inventory-grid inventory-grid-compact">
                         {itens.map(item => (
                             <div key={item.itemEstoqueId} className="inventory-grid-item">
-                                <div className="card inventory-card" style={{
+                                <div className="card inventory-card inventory-list-card inventory-item-list-card" style={{
                                     backgroundColor: 'var(--zf-background-secondary)',
                                     borderRadius: '10px',
-                                    padding: '1.25rem',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '1rem'
                                 }}>
-                                    <div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
-                                            <h3 style={{ margin: '0 0 0.2rem 0', color: 'var(--zf-text-h)', fontSize: '1.2rem' }}>{item.descricao}</h3>
-                                            <span style={{ backgroundColor: 'var(--zf-accent)', color: 'var(--zf-accent-text)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
-                                                {formatQuantity(item.quantidade)} {TIPO_UNIDADE[item.tipoUnidadeMedida] || 'UN'}
+                                    <div className="inventory-card-header">
+                                        <div className="inventory-card-title-row">
+                                            <h3 className="inventory-card-title">{item.descricao}</h3>
+                                            <span className="inventory-card-badge">
+                                                {formatQuantity(item.quantidade)}
                                             </span>
                                         </div>
-                                        <p style={{ color: 'var(--zf-text-main)', margin: 0, fontSize: '0.9rem' }}>
+                                        <p className="inventory-card-description">
                                             Local: {getNomeEspaco(item.espacoId)}
                                         </p>
                                     </div>
-                                    <button className="button button-outline" style={{ margin: 0, width: '100%' }} onClick={() => abrirDetalhes(item)}>
-                                        Visualizar
-                                    </button>
+                                    <div className="inventory-card-footer">
+                                        <button className="button button-outline inventory-card-action" onClick={() => abrirDetalhes(item)}>
+                                            Visualizar
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
