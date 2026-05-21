@@ -16,6 +16,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
+    const [pesquisa, setPesquisa] = useState(''); // Estado para a barra de pesquisa
 
     const [showModalNovo, setShowModalNovo] = useState(false);
     const [formDataNovo, setFormDataNovo] = useState({ nome: '', descricao: '' });
@@ -26,12 +27,13 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     const [loadingItens, setLoadingItens] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+    // GET com os parâmetros filtro, skip e top
     const carregarEspacos = useCallback(async () => {
         if (!unidadeOrganizacionalId) return;
         setLoading(true);
         setErro('');
         try {
-            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/espacos?unidadeOrganizacionalId=${unidadeOrganizacionalId}&top=50`, {
+            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/espacos?unidadeOrganizacionalId=${unidadeOrganizacionalId}&skip=0&top=50`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
@@ -200,36 +202,77 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         zIndex: 9999, padding: '1rem', boxSizing: 'border-box'
     };
 
+    const espacosFiltrados = espacos.filter(espaco =>
+        espaco.nome?.toLowerCase().includes(pesquisa.toLowerCase()) ||
+        espaco.descricao?.toLowerCase().includes(pesquisa.toLowerCase())
+    );
+
     if (viewMode === 'list') {
         return (
             <div style={{ width: '100%' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                <style>{`
+                    .espaco-card {
+                        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+                        border: 1px solid rgba(212, 175, 55, 0.1);
+                    }
+                    .espaco-card:hover {
+                        transform: translateY(-4px);
+                        border-color: var(--zf-accent);
+                        box-shadow: 0 6px 16px rgba(212, 175, 55, 0.2);
+                    }
+                `}</style>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '2rem', gap: '1rem' }}>
                     <h2 style={{ margin: 0 }}>Gestão de Espaços</h2>
-                    <button className="button" onClick={() => { setFormDataNovo({ nome: '', descricao: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>+ Novo Espaço</button>
+                    <button className="button" style={{ margin: 0, width: '100%' }} onClick={() => { setFormDataNovo({ nome: '', descricao: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>
+                        + Novo espaço
+                    </button>
+                </div>
+
+                <div style={{ marginBottom: '1.5rem' }}>
+                    <input
+                        type="text"
+                        placeholder="Pesquisar espaços por nome ou descrição..."
+                        value={pesquisa}
+                        onChange={(e) => setPesquisa(e.target.value)}
+                        style={{ width: '100%', marginBottom: 0 }}
+                    />
                 </div>
 
                 {loading ? (
                     <p>Carregando espaços...</p>
-                ) : espacos.length === 0 ? (
+                ) : espacosFiltrados.length === 0 ? (
                     <div className="card" style={{ backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
                         <div style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
-                            <p style={{ color: 'var(--zf-text-main)', margin: 0 }}>Nenhum espaço cadastrado nesta unidade.</p>
+                            <p style={{ color: 'var(--zf-text-main)', margin: 0 }}>
+                                {espacos.length === 0 ? 'Nenhum espaço cadastrado nesta unidade.' : 'Nenhum espaço encontrado para a pesquisa.'}
+                            </p>
                         </div>
                     </div>
                 ) : (
                     <div className="zf-row">
-                        {espacos.map(espaco => (
-                            <div key={espaco.espacoId} className="zf-col-xs-12 zf-col-md-6 zf-col-lg-4 zf-col-xl-3" style={{ marginBottom: '1rem' }}>
-                                <div className="card" style={{ height: '100%', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
-                                    <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', height: '100%' }}>
-                                        <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--zf-text-h)' }}>{espaco.nome}</h3>
-                                        <p style={{ color: 'var(--zf-text-main)', flexGrow: 1, fontSize: '0.9rem' }}>
-                                            {espaco.descricao || 'Sem descrição'}
-                                        </p>
-                                        <button className="button button-outline" style={{ width: '100%', marginTop: '1rem' }} onClick={() => abrirDetalhes(espaco)}>
-                                            Visualizar
-                                        </button>
+                        {espacosFiltrados.map(espaco => (
+                            <div key={espaco.espacoId} className="zf-col-xs-12" style={{ marginBottom: '1rem' }}>
+                                <div className="card espaco-card" style={{
+                                    backgroundColor: 'var(--zf-background-secondary)',
+                                    borderRadius: '10px',
+                                    padding: '1.5rem',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '1rem'
+                                }}>
+                                    <div>
+                                        <h3 style={{ margin: '0 0 0.2rem 0', color: 'var(--zf-text-h)', fontSize: '1.2rem' }}>{espaco.nome}</h3>
+
+                                        {espaco.descricao && (
+                                            <p style={{ color: 'var(--zf-text-main)', margin: 0, fontSize: '0.9rem' }}>
+                                                {espaco.descricao}
+                                            </p>
+                                        )}
                                     </div>
+                                    <button className="button button-outline" style={{ margin: 0, width: '100%' }} onClick={() => abrirDetalhes(espaco)}>
+                                        Visualizar
+                                    </button>
                                 </div>
                             </div>
                         ))}
@@ -277,13 +320,12 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
 
     return (
         <div style={{ width: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '2rem', gap: '1rem' }}>
                 <h2 style={{ margin: 0 }}>Detalhes do Espaço</h2>
-                <button className="button button-outline" onClick={voltarParaLista}>← Voltar</button>
+                <button className="button button-outline" style={{ margin: 0, width: '100%' }} onClick={voltarParaLista}>
+                    ← Voltar
+                </button>
             </div>
-
-            {erro && <div className="alert alert-error" style={{ marginBottom: '1rem' }}>{erro}</div>}
-            {sucesso && <div className="alert alert-success" style={{ marginBottom: '1rem' }}>{sucesso}</div>}
 
             <div className="card" style={{ marginBottom: '2rem', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
                 <div style={{ padding: '1.5rem' }}>
@@ -359,7 +401,6 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 </button>
             </div>
 
-            {/*modal excluir*/}
             {showDeleteModal && (
                 <div style={overlayStyle}>
                     <div className="card" style={{ width: '100%', maxWidth: '400px', height: 'fit-content', margin: 'auto', textAlign: 'center', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
@@ -376,7 +417,8 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                     </div>
                 </div>
             )}
-            
+
+            {/* Modal de Mensagens (Erro e Sucesso) */}
             {(erro || sucesso) && (
                 <div style={{
                     position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
