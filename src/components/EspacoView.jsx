@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { extrairErro } from '../utils/apiUtils';
+import { formatQuantity, formatQuantityInput, maskQuantityInput, parseQuantity } from '../utils/quantity';
 import LoadingWaves from './LoadingWaves';
 
 const TIPO_UNIDADE = {
@@ -25,6 +26,8 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     const [espacoSelecionado, setEspacoSelecionado] = useState(null);
     const [formEdicao, setFormEdicao] = useState({ nome: '', descricao: '' });
     const [itensDoEspaco, setItensDoEspaco] = useState([]);
+    const [quantidadesEditadas, setQuantidadesEditadas] = useState({});
+    const [salvandoItemId, setSalvandoItemId] = useState(null);
     const [loadingItens, setLoadingItens] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -122,7 +125,11 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
-                setItensDoEspaco(await res.json());
+                const itens = await res.json();
+                setItensDoEspaco(itens);
+                setQuantidadesEditadas(Object.fromEntries(
+                    itens.map(item => [item.itemEstoqueId, formatQuantityInput(item.quantidade)])
+                ));
             }
         } catch (err) {
             setErro('Erro ao carregar os itens deste espaço.');
@@ -195,6 +202,58 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         }
     };
 
+    const handleQuantidadeItemChange = (itemId, value) => {
+        setQuantidadesEditadas(prev => ({
+            ...prev,
+            [itemId]: maskQuantityInput(value)
+        }));
+    };
+
+    const handleSalvarQuantidadeItem = async (item) => {
+        setErro('');
+        setSucesso('');
+        setSalvandoItemId(item.itemEstoqueId);
+
+        const novaQuantidade = parseQuantity(quantidadesEditadas[item.itemEstoqueId]);
+        const payload = {
+            unidadeOrganizacionalId,
+            espacoId: item.espacoId || espacoSelecionado.espacoId,
+            descricao: item.descricao,
+            tipoUnidadeMedida: parseInt(item.tipoUnidadeMedida),
+            quantidade: novaQuantidade
+        };
+
+        try {
+            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/itens-estoque/${item.itemEstoqueId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                setItensDoEspaco(prev => prev.map(atual =>
+                    atual.itemEstoqueId === item.itemEstoqueId
+                        ? { ...atual, quantidade: novaQuantidade }
+                        : atual
+                ));
+                setQuantidadesEditadas(prev => ({
+                    ...prev,
+                    [item.itemEstoqueId]: formatQuantityInput(novaQuantidade)
+                }));
+                setSucesso('Quantidade atualizada com sucesso.');
+            } else if (response.status === 400) {
+                await parseBackendErrors(response);
+            } else {
+                const mensagem = await extrairErro(response);
+                setErro(mensagem);
+            }
+        } catch (error) {
+            setErro('Erro de conexão com o servidor.');
+        } finally {
+            setSalvandoItemId(null);
+        }
+    };
+
     const overlayStyle = {
         position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
         backgroundColor: 'rgba(0,0,0,0.75)',
@@ -211,18 +270,6 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     if (viewMode === 'list') {
         return (
             <div style={{ width: '100%' }}>
-                <style>{`
-                    .espaco-card {
-                        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-                        border: 1px solid rgba(212, 175, 55, 0.1);
-                    }
-                    .espaco-card:hover {
-                        transform: translateY(-4px);
-                        border-color: var(--zf-accent);
-                        box-shadow: 0 6px 16px rgba(212, 175, 55, 0.2);
-                    }
-                `}</style>
-
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '2rem', gap: '1rem' }}>
                     <h2 style={{ margin: 0 }}>Gestão de Espaços</h2>
                     <button className="button" style={{ margin: 0, width: '100%' }} onClick={() => { setFormDataNovo({ nome: '', descricao: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>
@@ -251,13 +298,13 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                         </div>
                     </div>
                 ) : (
-                    <div className="zf-row">
+                    <div className="inventory-grid">
                         {espacosFiltrados.map(espaco => (
-                            <div key={espaco.espacoId} className="zf-col-xs-12" style={{ marginBottom: '1rem' }}>
-                                <div className="card espaco-card" style={{
+                            <div key={espaco.espacoId} className="inventory-grid-item">
+                                <div className="card inventory-card" style={{
                                     backgroundColor: 'var(--zf-background-secondary)',
                                     borderRadius: '10px',
-                                    padding: '1.5rem',
+                                    padding: '1.25rem',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     gap: '1rem'
@@ -320,12 +367,9 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     }
 
     return (
-        <div style={{ width: '100%' }}>
+        <div className="detail-view" style={{ width: '100%' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '2rem', gap: '1rem' }}>
                 <h2 style={{ margin: 0 }}>Detalhes do Espaço</h2>
-                <button className="button button-outline" style={{ margin: 0, width: '100%' }} onClick={voltarParaLista}>
-                    ← Voltar
-                </button>
             </div>
 
             <div className="card" style={{ marginBottom: '2rem', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
@@ -365,18 +409,38 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                     </div>
                 </div>
             ) : (
-                <div className="zf-row" style={{ marginBottom: '2rem' }}>
+                <div className="zf-row compact-card-grid" style={{ marginBottom: '2rem' }}>
                     {itensDoEspaco.map(item => (
-                        <div key={item.itemEstoqueId} className="zf-col-xs-12 zf-col-md-6 zf-col-lg-4" style={{ marginBottom: '1rem' }}>
-                            <div className="card" style={{ backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem' }}>
+                        <div key={item.itemEstoqueId} className="zf-col-xs-12" style={{ marginBottom: '1rem' }}>
+                            <div className="card inventory-card" style={{ backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: '1.25rem', overflow: 'hidden' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+                                        <div>
+                                            <h4 style={{ margin: '0 0 0.2rem 0', color: 'var(--zf-text-h)' }}>{item.descricao}</h4>
+                                            <small style={{ color: 'var(--zf-text-main)' }}>{TIPO_UNIDADE[item.tipoUnidadeMedida] || 'UN'}</small>
+                                        </div>
+                                        <div style={{ backgroundColor: 'var(--zf-accent)', color: 'var(--zf-accent-text)', padding: '0.3rem 0.6rem', borderRadius: '4px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                                            {formatQuantity(item.quantidade)}
+                                        </div>
+                                    </div>
                                     <div>
-                                        <h4 style={{ margin: '0 0 0.2rem 0', color: 'var(--zf-text-h)' }}>{item.descricao}</h4>
-                                        <small style={{ color: 'var(--zf-text-main)' }}>{TIPO_UNIDADE[item.tipoUnidadeMedida] || 'UN'}</small>
+                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Quantidade</label>
+                                        <input
+                                            type="text"
+                                            inputMode="decimal"
+                                            value={quantidadesEditadas[item.itemEstoqueId] ?? ''}
+                                            onChange={e => handleQuantidadeItemChange(item.itemEstoqueId, e.target.value)}
+                                            style={{ width: '100%', marginBottom: 0 }}
+                                        />
                                     </div>
-                                    <div style={{ backgroundColor: 'var(--zf-accent)', color: 'var(--zf-accent-text)', padding: '0.3rem 0.6rem', borderRadius: '4px', fontWeight: 'bold' }}>
-                                        {parseFloat(item.quantidade)}
-                                    </div>
+                                    <button
+                                        className="button button-outline"
+                                        style={{ margin: 0, width: '100%' }}
+                                        onClick={() => handleSalvarQuantidadeItem(item)}
+                                        disabled={salvandoItemId === item.itemEstoqueId || parseQuantity(quantidadesEditadas[item.itemEstoqueId]) === parseQuantity(item.quantidade)}
+                                    >
+                                        {salvandoItemId === item.itemEstoqueId ? 'Salvando...' : 'Atualizar quantidade'}
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -384,21 +448,24 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 </div>
             )}
 
-            <div style={{ display: 'flex', gap: '1rem', borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
+            <div className="detail-action-bar">
+                <button className="button button-outline" onClick={voltarParaLista}>
+                    Voltar
+                </button>
                 <button
                     className="button"
                     onClick={handleConfirmarEdicao}
                     disabled={!houveMudanca}
-                    style={{ flex: 1, opacity: !houveMudanca ? 0.5 : 1, cursor: !houveMudanca ? 'not-allowed' : 'pointer' }}
+                    style={{ opacity: !houveMudanca ? 0.5 : 1, cursor: !houveMudanca ? 'not-allowed' : 'pointer' }}
                 >
-                    Confirmar Edição
+                    Editar
                 </button>
                 <button
                     className="button"
                     onClick={() => setShowDeleteModal(true)}
-                    style={{ flex: 1, backgroundColor: '#dc3545', borderColor: '#dc3545', color: '#fff' }}
+                    style={{ backgroundColor: '#dc3545', borderColor: '#dc3545', color: '#fff' }}
                 >
-                    Excluir Espaço
+                    Excluir
                 </button>
             </div>
 

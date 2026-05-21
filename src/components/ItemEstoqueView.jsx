@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { extrairErro } from '../utils/apiUtils';
+import { formatQuantity, formatQuantityInput, maskQuantityInput, parseQuantity } from '../utils/quantity';
 import LoadingWaves from './LoadingWaves';
 
 const TIPO_UNIDADE = {
@@ -109,7 +110,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
             espacoId: item.espacoId || '',
             descricao: item.descricao || '',
             tipoUnidadeMedida: item.tipoUnidadeMedida || 1,
-            quantidade: item.quantidade || 0
+            quantidade: formatQuantityInput(item.quantidade || 0)
         });
         setViewMode('detail');
         setErro(''); setSucesso(''); setFieldErrors({});
@@ -132,7 +133,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
             espacoId: formDataNovo.espacoId === '' ? '00000000-0000-0000-0000-000000000000' : formDataNovo.espacoId,
             descricao: formDataNovo.descricao,
             tipoUnidadeMedida: parseInt(formDataNovo.tipoUnidadeMedida),
-            quantidade: formDataNovo.quantidade === '' ? 0 : parseFloat(formDataNovo.quantidade)
+            quantidade: formDataNovo.quantidade === '' ? 0 : parseQuantity(formDataNovo.quantidade)
         };
 
         try {
@@ -158,7 +159,8 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     const houveMudanca = itemAtivo && (
         itemAtivo.descricao !== formEdicao.descricao ||
         itemAtivo.espacoId !== formEdicao.espacoId ||
-        itemAtivo.tipoUnidadeMedida != formEdicao.tipoUnidadeMedida
+        itemAtivo.tipoUnidadeMedida != formEdicao.tipoUnidadeMedida ||
+        parseQuantity(itemAtivo.quantidade) !== parseQuantity(formEdicao.quantidade)
     );
 
     const handleConfirmarEdicao = async () => {
@@ -169,7 +171,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
             espacoId: formEdicao.espacoId === '' ? '00000000-0000-0000-0000-000000000000' : formEdicao.espacoId,
             descricao: formEdicao.descricao,
             tipoUnidadeMedida: parseInt(formEdicao.tipoUnidadeMedida),
-            quantidade: parseFloat(formEdicao.quantidade)
+            quantidade: parseQuantity(formEdicao.quantidade)
         };
 
         try {
@@ -259,7 +261,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
         setErro(''); setSucesso(''); setFieldErrors({});
 
         const payload = {
-            quantidade: movimentacaoData.quantidadeMovimento === '' ? 0 : parseFloat(movimentacaoData.quantidadeMovimento),
+            quantidade: movimentacaoData.quantidadeMovimento === '' ? 0 : parseQuantity(movimentacaoData.quantidadeMovimento),
             tipoMovimentacao: parseInt(movimentacaoData.tipoMovimentacao),
             usuarioId: usuarioId || '00000000-0000-0000-0000-000000000000'
         };
@@ -277,11 +279,11 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
 
                 carregarHistorico(itemAtivo.itemEstoqueId);
                 const novaQtde = payload.tipoMovimentacao === 1
-                    ? parseFloat(itemAtivo.quantidade) + payload.quantidade
-                    : parseFloat(itemAtivo.quantidade) - payload.quantidade;
+                    ? parseQuantity(itemAtivo.quantidade) + payload.quantidade
+                    : parseQuantity(itemAtivo.quantidade) - payload.quantidade;
 
                 setItemAtivo(prev => ({ ...prev, quantidade: novaQtde }));
-                setFormEdicao(prev => ({ ...prev, quantidade: novaQtde }));
+                setFormEdicao(prev => ({ ...prev, quantidade: formatQuantityInput(novaQtde) }));
 
             } else if (response.status === 400) {
                 await parseBackendErrors(response);
@@ -295,6 +297,12 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     const getNomeEspaco = (id) => {
         const espaco = espacos.find(e => e.espacoId === id);
         return espaco ? espaco.nome : 'Espaço Desconhecido';
+    };
+
+    const abrirMovimentacao = (tipoMovimentacao) => {
+        setMovimentacaoData({ tipoMovimentacao, quantidadeMovimento: '' });
+        setShowMovimentarModal(true);
+        setFieldErrors({});
     };
 
     const overlayStyle = {
@@ -312,13 +320,13 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     if (viewMode === 'list') {
         return (
             <div style={{ width: '100%' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '2rem', gap: '1rem' }}>
                     <h2 style={{ margin: 0 }}>Itens de Estoque</h2>
-                    <button className="button" onClick={() => { setFormDataNovo({ espacoId: espacos.length > 0 ? espacos[0].espacoId : '', descricao: '', tipoUnidadeMedida: 6, quantidade: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>+ Novo Item</button>
+                    <button className="button" style={{ margin: 0, width: '100%' }} onClick={() => { setFormDataNovo({ espacoId: espacos.length > 0 ? espacos[0].espacoId : '', descricao: '', tipoUnidadeMedida: 6, quantidade: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>+ Novo Item</button>
                 </div>
 
                 {loading ? (
-                    <LoadingWaves variant="cards" rows={4} label="Carregando itens" />
+                    <LoadingWaves rows={3} label="Carregando itens" />
                 ) : espacos.length === 0 ? (
                     <div className="alert alert-error">Você precisa cadastrar um Espaço antes de criar Itens.</div>
                 ) : itens.length === 0 ? (
@@ -328,25 +336,31 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                         </div>
                     </div>
                 ) : (
-                    <div className="zf-row">
+                    <div className="inventory-grid">
                         {itens.map(item => (
-                            <div key={item.itemEstoqueId} className="zf-col-xs-12 zf-col-md-6 zf-col-lg-4 zf-col-xl-3" style={{ marginBottom: '1rem' }}>
-                                <div className="card" style={{ height: '100%', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', padding: '1.5rem', height: '100%' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                            <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--zf-text-h)', fontSize: '1.2rem' }}>{item.descricao}</h3>
-                                            <span style={{ backgroundColor: 'var(--zf-accent)', color: 'var(--zf-accent-text)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                                                {parseFloat(item.quantidade)} {TIPO_UNIDADE[item.tipoUnidadeMedida] || 'UN'}
+                            <div key={item.itemEstoqueId} className="inventory-grid-item">
+                                <div className="card inventory-card" style={{
+                                    backgroundColor: 'var(--zf-background-secondary)',
+                                    borderRadius: '10px',
+                                    padding: '1.25rem',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '1rem'
+                                }}>
+                                    <div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+                                            <h3 style={{ margin: '0 0 0.2rem 0', color: 'var(--zf-text-h)', fontSize: '1.2rem' }}>{item.descricao}</h3>
+                                            <span style={{ backgroundColor: 'var(--zf-accent)', color: 'var(--zf-accent-text)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                                                {formatQuantity(item.quantidade)} {TIPO_UNIDADE[item.tipoUnidadeMedida] || 'UN'}
                                             </span>
                                         </div>
-                                        <p style={{ color: 'var(--zf-text-main)', fontSize: '0.85rem', marginBottom: '1.5rem', flexGrow: 1 }}>
+                                        <p style={{ color: 'var(--zf-text-main)', margin: 0, fontSize: '0.9rem' }}>
                                             Local: {getNomeEspaco(item.espacoId)}
                                         </p>
-
-                                        <button className="button button-outline" style={{ width: '100%' }} onClick={() => abrirDetalhes(item)}>
-                                            Visualizar
-                                        </button>
                                     </div>
+                                    <button className="button button-outline" style={{ margin: 0, width: '100%' }} onClick={() => abrirDetalhes(item)}>
+                                        Visualizar
+                                    </button>
                                 </div>
                             </div>
                         ))}
@@ -385,7 +399,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
 
                                     <div style={{ marginBottom: '1.5rem' }}>
                                         <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Quantidade ? '#e99292' : 'inherit' }}>Quantidade Inicial</label>
-                                        <input type="number" step="0.001" value={formDataNovo.quantidade} onChange={e => setFormDataNovo({ ...formDataNovo, quantidade: e.target.value })} style={getInputBaseStyle(fieldErrors.Quantidade)} />
+                                        <input type="text" inputMode="decimal" value={formDataNovo.quantidade} onChange={e => setFormDataNovo({ ...formDataNovo, quantidade: maskQuantityInput(e.target.value) })} style={getInputBaseStyle(fieldErrors.Quantidade)} />
                                         {fieldErrors.Quantidade && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Quantidade}</small>}
                                     </div>
 
@@ -403,10 +417,9 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     }
 
     return (
-        <div style={{ width: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <div className="detail-view" style={{ width: '100%' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '2rem', gap: '1rem' }}>
                 <h2 style={{ margin: 0 }}>Detalhes do Item</h2>
-                <button className="button button-outline" onClick={voltarParaLista}>← Voltar</button>
             </div>
 
             {erro && <div className="alert alert-error" style={{ marginBottom: '1rem' }}>{erro}</div>}
@@ -436,7 +449,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                         </div>
                         <div className="zf-col-xs-12 zf-col-md-2" style={{ marginBottom: '1rem' }}>
                             <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Saldo Atual</label>
-                            <input type="text" value={parseFloat(formEdicao.quantidade)} disabled style={{ width: '100%', marginBottom: 0 }} />
+                            <input type="text" inputMode="decimal" value={formEdicao.quantidade} onChange={e => setFormEdicao({ ...formEdicao, quantidade: maskQuantityInput(e.target.value) })} style={{ width: '100%', marginBottom: 0 }} />
                         </div>
                     </div>
                 </div>
@@ -453,10 +466,13 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 Transferir item para outro espaço
             </button>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '1.5rem', gap: '1rem' }}>
                 <h3 style={{ color: 'var(--zf-text-h)', margin: 0 }}>Histórico de Movimentações</h3>
-                <button className="button" onClick={() => { setMovimentacaoData({ tipoMovimentacao: 1, quantidadeMovimento: '' }); setShowMovimentarModal(true); setFieldErrors({}); }}>
-                    + Entrada / Saída
+                <button className="button" style={{ margin: 0, width: '100%' }} onClick={() => abrirMovimentacao(1)}>
+                    + Entrada
+                </button>
+                <button className="button" style={{ margin: 0, width: '100%', backgroundColor: '#ef4444', borderColor: '#ef4444', color: '#fff' }} onClick={() => abrirMovimentacao(2)}>
+                    - Saída
                 </button>
             </div>
 
@@ -499,7 +515,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                                             </small>
                                         </div>
                                         <div style={{ backgroundColor: tipo === 1 ? 'var(--zf-accent)' : '#ef4444', color: 'var(--zf-accent-text)', padding: '0.4rem 0.8rem', borderRadius: '4px', fontWeight: 'bold' }}>
-                                            {tipo === 1 ? '+' : '-'}{parseFloat(qtd)}
+                                            {tipo === 1 ? '+' : '-'}{formatQuantity(qtd)}
                                         </div>
                                     </div>
                                 </div>
@@ -509,31 +525,24 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 </div>
             )}
 
-            <div style={{
-                display: 'flex',
-                gap: '1rem',
-                position: 'sticky',
-                bottom: 0,
-                padding: '1.5rem 0',
-                backgroundColor: 'var(--zf-background)',
-                borderTop: '1px solid rgba(212, 175, 55, 0.2)',
-                zIndex: 999,
-                marginTop: '2rem'
-            }}>
+            <div className="detail-action-bar">
+                <button className="button button-outline" onClick={voltarParaLista}>
+                    Voltar
+                </button>
                 <button
                     className="button"
                     onClick={handleConfirmarEdicao}
                     disabled={!houveMudanca}
-                    style={{ flex: 1, opacity: !houveMudanca ? 0.5 : 1, cursor: !houveMudanca ? 'not-allowed' : 'pointer' }}
+                    style={{ opacity: !houveMudanca ? 0.5 : 1, cursor: !houveMudanca ? 'not-allowed' : 'pointer' }}
                 >
-                    Confirmar Edição
+                    Editar
                 </button>
                 <button
                     className="button"
                     onClick={() => setShowDeleteModal(true)}
-                    style={{ flex: 1, backgroundColor: '#dc3545', borderColor: '#dc3545', color: '#fff' }}
+                    style={{ backgroundColor: '#dc3545', borderColor: '#dc3545', color: '#fff' }}
                 >
-                    Excluir Item
+                    Excluir
                 </button>
             </div>
 
@@ -545,20 +554,27 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                             <p style={{ textAlign: 'center', color: 'var(--zf-accent)', marginBottom: '1.5rem', fontWeight: 'bold' }}>{itemAtivo?.descricao}</p>
 
                             <form onSubmit={handleMovimentar} noValidate>
-                                <div className="zf-row">
-                                    <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1.5rem' }}>
-                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.TipoMovimentacao ? '#e99292' : 'inherit' }}>Operação</label>
-                                        <select value={movimentacaoData.tipoMovimentacao} onChange={e => setMovimentacaoData({ ...movimentacaoData, tipoMovimentacao: e.target.value })} style={getInputBaseStyle(fieldErrors.TipoMovimentacao)}>
-                                            <option value={1}>Entrada (+)</option>
-                                            <option value={2}>Saída (-)</option>
-                                        </select>
-                                        {fieldErrors.TipoMovimentacao && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.TipoMovimentacao}</small>}
+                                <div style={{ marginBottom: '1.5rem' }}>
+                                    <span style={{ display: 'block', textAlign: 'left', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--zf-text-main)' }}>Operação</span>
+                                    <div style={{
+                                        width: '100%',
+                                        padding: '0.75rem 1rem',
+                                        borderRadius: '8px',
+                                        backgroundColor: movimentacaoData.tipoMovimentacao == 2 ? '#ef44441a' : 'rgba(212, 175, 55, 0.1)',
+                                        color: movimentacaoData.tipoMovimentacao == 2 ? '#ef4444' : 'var(--zf-accent)',
+                                        border: `1px solid ${movimentacaoData.tipoMovimentacao == 2 ? '#ef4444' : 'var(--zf-accent)'}`,
+                                        fontWeight: 'bold',
+                                        textAlign: 'center'
+                                    }}>
+                                        {movimentacaoData.tipoMovimentacao == 2 ? 'Saída (-)' : 'Entrada (+)'}
                                     </div>
-                                    <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1.5rem' }}>
-                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.QuantidadeMovimento ? '#e99292' : 'inherit' }}>Quantidade</label>
-                                        <input type="number" step="0.001" min="0.001" value={movimentacaoData.quantidadeMovimento} onChange={e => setMovimentacaoData({ ...movimentacaoData, quantidadeMovimento: e.target.value })} style={getInputBaseStyle(fieldErrors.QuantidadeMovimento)} />
-                                        {fieldErrors.QuantidadeMovimento && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.QuantidadeMovimento}</small>}
-                                    </div>
+                                    {fieldErrors.TipoMovimentacao && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.TipoMovimentacao}</small>}
+                                </div>
+
+                                <div style={{ marginBottom: '1.5rem' }}>
+                                    <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.QuantidadeMovimento ? '#e99292' : 'inherit' }}>Quantidade</label>
+                                    <input type="text" inputMode="decimal" value={movimentacaoData.quantidadeMovimento} onChange={e => setMovimentacaoData({ ...movimentacaoData, quantidadeMovimento: maskQuantityInput(e.target.value) })} style={getInputBaseStyle(fieldErrors.QuantidadeMovimento)} />
+                                    {fieldErrors.QuantidadeMovimento && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.QuantidadeMovimento}</small>}
                                 </div>
 
                                 <div style={{ display: 'flex', gap: '1rem' }}>
