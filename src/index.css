@@ -172,6 +172,10 @@ body {
   box-sizing: border-box;
 }
 
+.auth-card a {
+  font-size: 0.9rem !important;
+}
+
 @media (max-width: 599px) {
   .auth-card {
     padding-top: 4.5rem !important;
