@@ -1,9 +1,10 @@
+html,
 body {
   margin: 0;
   padding: 0;
-  width: 100vw;
+  width: 100%;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: hidden !important;
 }
 
 #root {
@@ -15,6 +16,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden !important;
 }
 
 /*grid 12 colunas*/
@@ -158,15 +160,56 @@ body {
 .auth-card {
   width: 100%;
   max-width: none;
-  min-height: 100vh;
-  margin: 0;
-  padding: 2rem;
+  min-height: auto;
+  margin: 0 auto;
+  padding: 1.5rem;
   border-radius: 0;
   border: none !important;
   box-shadow: none !important;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 599px) {
+  .auth-card {
+    padding-top: 4.5rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  .auth-card h2 {
+    font-size: 1.5rem !important;
+    margin-top: 0 !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .auth-card form>div {
+    margin-bottom: 0.6rem !important;
+  }
+
+  .auth-card label {
+    font-size: 0.9rem !important;
+    margin-bottom: 0.2rem !important;
+  }
+
+  .auth-card input,
+  .auth-card select {
+    padding: 0.4rem 0.6rem !important;
+  }
+
+  .auth-card button[type="submit"] {
+    margin-top: 0.5rem !important;
+    padding: 0.5rem !important;
+  }
+
+  .auth-card form>div:last-child {
+    margin-top: 0.8rem !important;
+  }
+
+  .auth-card a {
+    font-size: 0.9rem !important;
+  }
 }
 
 @media (min-width: 600px) {
@@ -194,10 +237,11 @@ body {
     margin: 6rem auto;
   }
 }
+
 :root {
-    --zf-accent-text: #000; 
+  --zf-accent-text: #000;
 }
 
 [data-theme="light"] {
-    --zf-accent-text: #fff;
+  --zf-accent-text: #fff;
 }
