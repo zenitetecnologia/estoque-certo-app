@@ -309,8 +309,14 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
         e.preventDefault();
         setErro(''); setSucesso(''); setFieldErrors({});
 
+        const quantidadeMovimento = parseQuantity(movimentacaoData.quantidadeMovimento);
+        if (!movimentacaoData.quantidadeMovimento || quantidadeMovimento <= 0) {
+            setFieldErrors({ QuantidadeMovimento: 'Informe uma quantidade maior que zero.' });
+            return;
+        }
+
         const payload = {
-            quantidade: movimentacaoData.quantidadeMovimento === '' ? 0 : parseQuantity(movimentacaoData.quantidadeMovimento),
+            quantidade: quantidadeMovimento,
             tipoMovimentacao: parseInt(movimentacaoData.tipoMovimentacao),
             usuarioId: usuarioId || '00000000-0000-0000-0000-000000000000'
         };
@@ -629,14 +635,14 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                                 </div>
 
                                 <div style={{ marginBottom: '1.5rem' }}>
-                                    <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.QuantidadeMovimento ? '#e99292' : 'inherit' }}>Quantidade</label>
+                                    <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'inherit' }}>Quantidade</label>
                                     <input type="text" inputMode="decimal" value={movimentacaoData.quantidadeMovimento} onChange={e => setMovimentacaoData({ ...movimentacaoData, quantidadeMovimento: maskQuantityInput(e.target.value) })} style={getInputBaseStyle(fieldErrors.QuantidadeMovimento)} />
                                     {fieldErrors.QuantidadeMovimento && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.QuantidadeMovimento}</small>}
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '1rem' }}>
-                                    <button type="button" className="button button-outline" style={{ flex: 1 }} onClick={() => setShowMovimentarModal(false)}>Cancelar</button>
-                                    <button type="submit" className="button" style={{ flex: 1, backgroundColor: movimentacaoData.tipoMovimentacao == 2 ? '#ef4444' : 'var(--zf-accent)', borderColor: movimentacaoData.tipoMovimentacao == 2 ? '#ef4444' : 'var(--zf-accent)', color: movimentacaoData.tipoMovimentacao == 2 ? '#fff' : '#000' }}>Confirmar</button>
+                                <div className="modal-actions">
+                                    <button type="button" className="button button-outline" onClick={() => setShowMovimentarModal(false)}>Cancelar</button>
+                                    <button type="submit" className="button" style={{ backgroundColor: movimentacaoData.tipoMovimentacao == 2 ? '#ef4444' : 'var(--zf-accent)', borderColor: movimentacaoData.tipoMovimentacao == 2 ? '#ef4444' : 'var(--zf-accent)', color: movimentacaoData.tipoMovimentacao == 2 ? '#fff' : '#000' }}>Confirmar</button>
                                 </div>
                             </form>
                         </div>
