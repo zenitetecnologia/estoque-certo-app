@@ -69,7 +69,14 @@ export default function RegisterPage({ onNavigate }) {
                             {sucesso && <div className="alert alert-success">{sucesso}</div>}
 
                             <div style={{ marginBottom: '1rem' }}>
-                                <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem' }}>
+                                <label style={{
+                                    textAlign: 'left',
+                                    display: 'block',
+                                    marginBottom: '0.5rem',
+                                    fontSize: '1.1rem',
+                                    fontWeight: 'normal',
+                                    color: 'inherit'
+                                }}>
                                     Nome Completo
                                 </label>
                                 <input
@@ -77,9 +84,17 @@ export default function RegisterPage({ onNavigate }) {
                                     placeholder="Seu nome"
                                     value={formData.nome}
                                     onChange={e => setFormData({ ...formData, nome: e.target.value })}
-                                    style={{ width: '100%', marginBottom: 0, borderColor: (fieldErrors.Nome || fieldErrors.nome) ? '#e99292' : undefined }}
+                                    style={{
+                                        width: '100%',
+                                        marginBottom: 0,
+                                        borderColor: (fieldErrors.Nome || fieldErrors.nome) ? '#E57373' : undefined
+                                    }}
                                 />
-                                {(fieldErrors.Nome || fieldErrors.nome) && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Nome || fieldErrors.nome}</small>}
+                                {(fieldErrors.Nome || fieldErrors.nome) && (
+                                    <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>
+                                        {fieldErrors.Nome || fieldErrors.nome}
+                                    </small>
+                                )}
                             </div>
 
                             <PhoneInput
