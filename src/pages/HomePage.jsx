@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { parseJwt } from '../utils/jwt';
-import UnidadeComboBox from '../components/UnidadeComboBox';
 import PasswordInput from '../components/PasswordInput';
-import PhoneInput from '../components/PhoneInput';
 import { extrairErro } from '../utils/apiUtils';
 import EspacoView from '../components/EspacoView';
 import ItemEstoqueView from '../components/ItemEstoqueView';
@@ -12,7 +10,7 @@ import ValidarUsuariosView from '../components/ValidarUsuariosView';
 export default function HomePage({ token, onLogout }) {
     const [view, setView] = useState('home');
     const [usuarioId, setUsuarioId] = useState('');
-    const [formData, setFormData] = useState({ nome: '', username: '', senha: '', unidadeOrganizacionalId: '' });
+    const [formData, setFormData] = useState({ nome: '', username: '', senha: '', confirmaSenha: '', unidadeOrganizacionalId: '' });
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
@@ -30,6 +28,7 @@ export default function HomePage({ token, onLogout }) {
             const id = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || decoded.nameid || '';
             const uname = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || decoded.unique_name || '';
             const uoId = decoded.UnidadeOrganizacionalId || '';
+            const nome = decoded.Nome || decoded.nome || '';
             const role = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || decoded.role || '';
 
             if (role === 'Admin') {
@@ -37,7 +36,7 @@ export default function HomePage({ token, onLogout }) {
             }
 
             setUsuarioId(id);
-            setFormData(prev => ({ ...prev, username: uname, unidadeOrganizacionalId: uoId }));
+            setFormData(prev => ({ ...prev, nome, username: uname, unidadeOrganizacionalId: uoId }));
         }
     }, [token]);
 
@@ -47,10 +46,21 @@ export default function HomePage({ token, onLogout }) {
         setSucesso('');
         setFieldErrors({});
 
+        if (formData.senha || formData.confirmaSenha) {
+            if (formData.senha !== formData.confirmaSenha) {
+                setFieldErrors({ ConfirmaSenha: 'As senhas não coincidem.' });
+                return;
+            }
+        }
+
         const payload = {
-            ...formData,
-            unidadeOrganizacionalId: formData.unidadeOrganizacionalId === '' ? null : formData.unidadeOrganizacionalId
+            nome: formData.nome
         };
+
+        if (formData.senha || formData.confirmaSenha) {
+            payload.senha = formData.senha;
+            payload.confirmaSenha = formData.confirmaSenha;
+        }
 
         try {
             const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/usuarios/${usuarioId}`, {
@@ -64,6 +74,7 @@ export default function HomePage({ token, onLogout }) {
 
             if (response.ok) {
                 setSucesso('Dados atualizados com sucesso!');
+                setFormData(prev => ({ ...prev, senha: '', confirmaSenha: '' }));
             } else if (response.status === 400) {
                 const errorData = await response.json();
                 const mappedErrors = {};
@@ -87,6 +98,14 @@ export default function HomePage({ token, onLogout }) {
         } catch (error) {
             setErro('Erro de comunicação com o servidor.');
         }
+    };
+
+    const handleCancelProfile = () => {
+        setErro('');
+        setSucesso('');
+        setFieldErrors({});
+        setFormData(prev => ({ ...prev, senha: '', confirmaSenha: '' }));
+        setView('home');
     };
 
     return (
@@ -328,13 +347,6 @@ export default function HomePage({ token, onLogout }) {
                                             {fieldErrors.Nome && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{fieldErrors.Nome}</small>}
                                         </div>
 
-                                        <PhoneInput
-                                            value={formData.username}
-                                            onChange={e => setFormData({ ...formData, username: e.target.value })}
-                                            error={!!fieldErrors.Username}
-                                            errorMessage={fieldErrors.Username}
-                                        />
-
                                         <PasswordInput
                                             label="Nova Senha"
                                             placeholder="Senha"
@@ -344,14 +356,19 @@ export default function HomePage({ token, onLogout }) {
                                             errorMessage={fieldErrors.Senha}
                                         />
 
-                                        <UnidadeComboBox
-                                            value={formData.unidadeOrganizacionalId}
-                                            onChange={val => setFormData({ ...formData, unidadeOrganizacionalId: val })}
-                                            error={!!fieldErrors.UnidadeOrganizacionalId}
-                                            errorMessage={fieldErrors.UnidadeOrganizacionalId}
+                                        <PasswordInput
+                                            label="Confirmar Senha"
+                                            placeholder="Confirme a senha"
+                                            value={formData.confirmaSenha}
+                                            onChange={e => setFormData({ ...formData, confirmaSenha: e.target.value })}
+                                            error={!!fieldErrors.ConfirmaSenha}
+                                            errorMessage={fieldErrors.ConfirmaSenha}
                                         />
 
-                                        <button type="submit" className="button" style={{ width: '100%', marginTop: '1rem' }}>Salvar Alterações</button>
+                                        <div className="modal-actions" style={{ marginTop: '1rem' }}>
+                                            <button type="button" className="button button-outline" onClick={handleCancelProfile}>Cancelar</button>
+                                            <button type="submit" className="button">Salvar</button>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
