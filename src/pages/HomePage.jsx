@@ -173,9 +173,22 @@ export default function HomePage({ token, onLogout }) {
                 </div>
 
                 <div style={{ padding: '1.5rem', borderTop: '1px solid rgba(212, 175, 55, 0.2)' }}>
-                    <div className="sidebar-nav" style={{ marginBottom: '1rem' }}>
-                        <label htmlFor="menu-toggle" onClick={() => setView('profile')} className={view === 'profile' ? 'active' : ''} style={{ cursor: 'pointer', display: 'block' }}>Alterar Meus Dados</label>
-                    </div>
+                    <label
+                        htmlFor="menu-toggle"
+                        onClick={() => setView('profile')}
+                        className={view === 'profile' ? 'active' : ''}
+                        style={{
+                            cursor: 'pointer',
+                            display: 'block',
+                            width: '100%',
+                            textAlign: 'center',
+                            marginBottom: '1rem',
+                            color: 'var(--zf-accent)',
+                            fontWeight: 600
+                        }}
+                    >
+                        Alterar Meus Dados
+                    </label>
 
                     <label htmlFor="menu-toggle" className="button button-outline" style={{ width: '100%', textAlign: 'center', cursor: 'pointer', marginBottom: '0.5rem' }}>
                         Fechar Menu

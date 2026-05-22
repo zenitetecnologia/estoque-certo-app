@@ -511,7 +511,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                             {fieldErrors.TipoUnidadeMedida && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.TipoUnidadeMedida}</small>}
                         </div>
                         <div className="zf-col-xs-12 zf-col-md-2" style={{ marginBottom: '1rem' }}>
-                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Saldo Atual</label>
+                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--zf-text-main)' }}>Saldo Atual</label>
                             <input type="text" inputMode="decimal" value={formEdicao.quantidade} onChange={e => setFormEdicao({ ...formEdicao, quantidade: maskQuantityInput(e.target.value) })} style={{ width: '100%', marginBottom: 0 }} />
                         </div>
                     </div>
