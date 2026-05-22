@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { extrairErro } from '../utils/apiUtils';
+import MessageModal from './MessageModal';
 
 export default function ValidarUsuariosView({ token }) {
     const [usuarios, setUsuarios] = useState([]);
@@ -100,27 +101,12 @@ export default function ValidarUsuariosView({ token }) {
             )}
 
             {(erro || sucesso) && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-                    backgroundColor: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(4px)',
-                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 99999, padding: '1rem', boxSizing: 'border-box'
-                }}>
-                    <div className="card" style={{
-                        width: '100%', maxWidth: '400px', height: 'fit-content', margin: 'auto',
-                        backgroundColor: 'var(--zf-background-secondary)',
-                        padding: '2.5rem', borderRadius: '15px', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
-                    }}>
-                        <h2 style={{ color: erro ? '#E57373' : '#81C784', marginTop: 0, marginBottom: '1rem' }}>
-                            {erro ? 'Atenção' : 'Sucesso'}
-                        </h2>
-                        <p style={{ color: 'var(--zf-text-main)', marginBottom: '2rem', fontSize: '1rem', lineHeight: '1.4' }}>
-                            {erro || sucesso}
-                        </p>
-                        <button type="button" className="button" style={{ width: '100%', margin: 0 }} onClick={() => { setErro(''); setSucesso(''); }}>
-                            {erro ? 'Fechar' : 'OK'}
-                        </button>
-                    </div>
-                </div>
+                <MessageModal
+                    type={erro ? 'error' : 'success'}
+                    message={erro || sucesso}
+                    onClose={() => { setErro(''); setSucesso(''); }}
+                    autoClose={8000}
+                />
             )}
         </div>
     );
