@@ -529,14 +529,17 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 Transferir item para outro espaço
             </button>
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '1.5rem', gap: '1rem' }}>
-                <h3 style={{ color: 'var(--zf-text-h)', margin: 0 }}>Histórico de Movimentações</h3>
+            <div className="stock-movement-actions">
                 <button className="button" style={{ margin: 0, width: '100%' }} onClick={() => abrirMovimentacao(1)}>
                     + Entrada
                 </button>
                 <button className="button" style={{ margin: 0, width: '100%', backgroundColor: '#ef4444', borderColor: '#ef4444', color: '#fff' }} onClick={() => abrirMovimentacao(2)}>
                     - Saída
                 </button>
+            </div>
+
+            <div className="section-heading">
+                <h3 style={{ color: 'var(--zf-text-h)', margin: 0 }}>Histórico de Movimentações</h3>
             </div>
 
             {loadingHistorico ? (
@@ -548,7 +551,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                     </div>
                 </div>
             ) : (
-                <div className="zf-row" style={{ marginBottom: '2rem' }}>
+                <div className="history-grid" style={{ marginBottom: '2rem' }}>
                     {historico.map((hist, index) => {
                         const qtd = Math.abs(hist.quantidadeResultante - hist.quantidadeAnterior);
                         const tipo = hist.tipoMovimentacao;
@@ -557,27 +560,26 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                         const nome = hist.nome || 'Sistema (Sem usuário)';
 
                         return (
-                            <div key={hist.historicoId || index} className="zf-col-xs-12" style={{ marginBottom: '1rem' }}>
-                                <div className="card" style={{
+                            <div key={hist.historicoId || index} className="history-grid-item">
+                                <div className="card history-card" style={{
                                     backgroundColor: 'var(--zf-background-secondary)',
                                     borderRadius: '10px',
-                                    padding: 0,
                                     overflow: 'hidden',
                                     borderLeft: `4px solid ${tipo === 1 ? 'var(--zf-accent)' : '#ef4444'}`
                                 }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem' }}>
-                                        <div>
-                                            <h4 style={{ margin: '0 0 0.2rem 0', color: 'var(--zf-text-h)' }}>
+                                    <div className="history-card-content">
+                                        <div className="history-card-info">
+                                            <h4 className="history-card-title">
                                                 {tipo === 1 ? 'Entrada (+)' : 'Saída (-)'}
                                             </h4>
-                                            <small style={{ color: 'var(--zf-text-main)', display: 'block', marginBottom: '4px' }}>
+                                            <small className="history-card-meta">
                                                 Data: {new Date(data).toLocaleString()}
                                             </small>
-                                            <small style={{ color: 'var(--zf-text-main)', display: 'block' }}>
+                                            <small className="history-card-meta">
                                                 Responsável: <span style={{ color: 'var(--zf-accent)' }}>{nome}</span>
                                             </small>
                                         </div>
-                                        <div style={{ backgroundColor: tipo === 1 ? 'var(--zf-accent)' : '#ef4444', color: 'var(--zf-accent-text)', padding: '0.4rem 0.8rem', borderRadius: '4px', fontWeight: 'bold' }}>
+                                        <div className="history-card-amount" style={{ backgroundColor: tipo === 1 ? 'var(--zf-accent)' : '#ef4444', color: tipo === 1 ? 'var(--zf-accent-text)' : '#fff' }}>
                                             {tipo === 1 ? '+' : '-'}{formatQuantity(qtd)}
                                         </div>
                                     </div>
