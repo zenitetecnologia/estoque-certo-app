@@ -480,7 +480,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                         <div style={{ padding: '2rem' }}>
                             <h2 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--zf-text-h)' }}>Excluir Espaço</h2>
                             <p style={{ marginBottom: '2rem', color: 'var(--zf-text-main)' }}>
-                                Tem certeza que deseja excluir este espaço? Se houver itens de estoque na lista acima, a exclusão será bloqueada pelo banco de dados.
+                                Tem certeza que deseja excluir este espaço?
                             </p>
                             <div style={{ display: 'flex', gap: '1rem' }}>
                                 <button type="button" className="button button-outline" style={{ flex: 1 }} onClick={() => setShowDeleteModal(false)}>Cancelar</button>
