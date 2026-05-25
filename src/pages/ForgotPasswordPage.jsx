@@ -4,6 +4,7 @@ import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
 import { extrairErro } from '../utils/apiUtils';
 import ThemeToggle from '../components/ThemeToggle';
+import MessageModal from '../components/MessageModal';
 
 export default function ForgotPasswordPage({ onNavigate }) {
     const [step, setStep] = useState(1);
@@ -102,9 +103,9 @@ export default function ForgotPasswordPage({ onNavigate }) {
         <>
             <ThemeToggle />
             <div className="container">
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                <div className="auth-page">
                     <div className="card auth-card">
-                        <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Recuperar Acesso</h2>
+                        <h2 className="auth-title">Recuperar Acesso</h2>
 
 
                         {step === 1 && (
@@ -121,27 +122,23 @@ export default function ForgotPasswordPage({ onNavigate }) {
                                     error={!!fieldErrors.UnidadeOrganizacionalId}
                                     errorMessage={fieldErrors.UnidadeOrganizacionalId}
                                 />
-                                <button type="submit" className="button" style={{ width: '100%', marginTop: '1rem' }}>Enviar Código</button>
-                                <button type="button" className="button button-outline" style={{ width: '100%', marginTop: '0.5rem' }} onClick={() => onNavigate('login')}>Cancelar</button>
+                                <button type="submit" className="button button-full mt-1">Enviar Código</button>
+                                <button type="button" className="button button-outline button-full mt-1" onClick={() => onNavigate('login')}>Cancelar</button>
                             </form>
                         )}
 
                         {step === 2 && (
                             <form onSubmit={handleVerifyCode} noValidate>
-                                <div style={{ marginBottom: '1rem' }}>
-                                    <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem' }}>Código Enviado</label>
+                                <div className="mb-1">
+                                    <label>Código Enviado</label>
                                     <input
                                         type="text"
                                         value={data.code}
                                         onChange={e => setData({ ...data, code: e.target.value })}
-                                        style={{
-                                            width: '100%',
-                                            borderColor: erro ? '#E57373' : undefined,
-                                            outlineColor: erro ? '#E57373' : undefined
-                                        }}
+                                        className={`w-full no-field-margin ${erro ? 'is-invalid' : ''}`}
                                     />
                                 </div>
-                                <button type="submit" className="button" style={{ width: '100%' }}>Verificar</button>
+                                <button type="submit" className="button w-full">Verificar</button>
                             </form>
                         )}
 
@@ -161,7 +158,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
                                     error={!!fieldErrors.ConfirmaSenha}
                                     errorMessage={fieldErrors.ConfirmaSenha}
                                 />
-                                <button type="submit" className="button" style={{ width: '100%', marginTop: '1rem' }}>Redefinir Senha</button>
+                                <button type="submit" className="button button-full mt-1">Redefinir Senha</button>
                             </form>
                         )}
                     </div>
@@ -169,49 +166,27 @@ export default function ForgotPasswordPage({ onNavigate }) {
             </div>
 
             {erro && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-                    backgroundColor: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(4px)',
-                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999, padding: '1rem', boxSizing: 'border-box'
-                }}>
-                    <div className="card" style={{
-                        width: '100%', maxWidth: '400px',
-                        height: 'fit-content', margin: 'auto',
-                        backgroundColor: 'var(--zf-background-secondary)',
-                        padding: '2.5rem', borderRadius: '15px', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
-                    }}>
-                        <h2 style={{ color: '#E57373', marginTop: 0, marginBottom: '1rem' }}>Atenção</h2>
-                        <p style={{ color: 'var(--zf-text-main)', marginBottom: '2rem', fontSize: '1rem', lineHeight: '1.4' }}>
-                            {erro}
-                        </p>
-                        <button type="button" className="button" style={{ width: '100%', margin: 0 }} onClick={() => setErro('')}>
-                            Fechar
-                        </button>
-                    </div>
-                </div>
+                <MessageModal
+                    type="error"
+                    message={erro}
+                    onClose={() => setErro('')}
+                    autoClose={8000}
+                />
             )}
 
             {showSuccessModal && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-                    backgroundColor: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(4px)',
-                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999, padding: '1rem', boxSizing: 'border-box'
-                }}>
-                    <div className="card" style={{
-                        width: '100%', maxWidth: '400px',
-                        height: 'fit-content', margin: 'auto',
-                        backgroundColor: 'var(--zf-background-secondary)',
-                        padding: '2.5rem', borderRadius: '15px', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
-                    }}>
-                        <h2 style={{ color: '#81C784', marginBottom: '1rem', marginTop: 0 }}>Senha Redefinida!</h2>
-                        <p style={{ color: 'var(--zf-text-main)', marginBottom: '2rem', fontSize: '1rem', lineHeight: '1.4' }}>
+                <MessageModal
+                    type="success"
+                    title="Senha Redefinida!"
+                    message={(
+                        <>
                             Sua senha foi alterada com sucesso.<br />Você já pode acessar o sistema.
-                        </p>
-                        <button className="button" style={{ width: '100%', margin: 0 }} onClick={() => onNavigate('login')}>
-                            Ir para Login
-                        </button>
-                    </div>
-                </div>
+                        </>
+                    )}
+                    onClose={() => onNavigate('login')}
+                    buttonLabel="Ir para Login"
+                    autoClose={8000}
+                />
             )}
         </>
     );

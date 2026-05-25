@@ -5,12 +5,13 @@ import LoadingWaves from './LoadingWaves';
 import MessageModal from './MessageModal';
 
 const TIPO_UNIDADE = {
-    1: 'Unidades (UN)',
-    2: 'Quilogramas (KG)',
-    3: 'Litros (L)',
-    4: 'Caixas (CX)'
+    1: 'Quilos (KG)',
+    2: 'Gramas (G)',
+    3: 'Miligramas (MG)',
+    4: 'Litros (L)',
+    5: 'Mililitros (ML)',
+    6: 'Unidades (UN)'
 };
-
 export default function EspacoView({ token, unidadeOrganizacionalId }) {
 
     const [viewMode, setViewMode] = useState('list');
@@ -19,7 +20,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
-    const [pesquisa, setPesquisa] = useState(''); // Estado para a barra de pesquisa
+    const [pesquisa, setPesquisa] = useState('');
 
     const [showModalNovo, setShowModalNovo] = useState(false);
     const [formDataNovo, setFormDataNovo] = useState({ nome: '', descricao: '' });
@@ -58,6 +59,15 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         carregarEspacos();
     }, [carregarEspacos]);
 
+    useEffect(() => {
+        if (!erro && !sucesso) return;
+
+        const timer = setTimeout(() => {
+            setErro('');
+            setSucesso('');
+        }, 8000);
+        return () => clearTimeout(timer);
+    }, [erro, sucesso]);
 
     const parseBackendErrors = async (res) => {
         try {
@@ -256,45 +266,46 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         }
     };
 
-    const overlayStyle = {
-        position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-        backgroundColor: 'rgba(0,0,0,0.75)',
-        backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)',
-        display: 'flex', justifyContent: 'center', alignItems: 'center',
-        zIndex: 9999, padding: '1rem', boxSizing: 'border-box'
-    };
-
     const espacosFiltrados = espacos.filter(espaco =>
         espaco.nome?.toLowerCase().includes(pesquisa.toLowerCase()) ||
         espaco.descricao?.toLowerCase().includes(pesquisa.toLowerCase())
     );
 
+    const messageModal = (erro || sucesso) && (
+        <MessageModal
+            type={erro ? 'error' : 'success'}
+            message={erro || sucesso}
+            onClose={() => { setErro(''); setSucesso(''); }}
+            autoClose={8000}
+        />
+    );
+
     if (viewMode === 'list') {
         return (
-            <div style={{ width: '100%' }}>
+            <div className="w-full">
                 <div className="inventory-list-header">
-                    <h2 style={{ margin: 0 }}>Gestão de Espaços</h2>
-                    <button className="button inventory-list-header-action" style={{ margin: 0 }} onClick={() => { setFormDataNovo({ nome: '', descricao: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>
+                    <h2 className="no-margin">Gestão de Espaços</h2>
+                    <button className="button inventory-list-header-action no-margin" onClick={() => { setFormDataNovo({ nome: '', descricao: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>
                         + Novo espaço
                     </button>
                 </div>
 
-                <div style={{ marginBottom: '1.5rem' }}>
+                <div className="mb-2">
                     <input
                         type="text"
                         placeholder="Pesquisar espaços por nome ou descrição..."
                         value={pesquisa}
                         onChange={(e) => setPesquisa(e.target.value)}
-                        style={{ width: '100%', marginBottom: 0 }}
+                        className="w-full no-field-margin"
                     />
                 </div>
 
                 {loading ? (
                     <LoadingWaves rows={3} label="Carregando espaços" />
                 ) : espacosFiltrados.length === 0 ? (
-                    <div className="card" style={{ backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
-                        <div style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
-                            <p style={{ color: 'var(--zf-text-main)', margin: 0 }}>
+                    <div className="card empty-state-card">
+                        <div className="empty-state-body">
+                            <p className="empty-state-text">
                                 {espacos.length === 0 ? 'Nenhum espaço cadastrado nesta unidade.' : 'Nenhum espaço encontrado para a pesquisa.'}
                             </p>
                         </div>
@@ -303,10 +314,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                     <div className="inventory-grid">
                         {espacosFiltrados.map(espaco => (
                             <div key={espaco.espacoId} className="inventory-grid-item">
-                                <div className="card inventory-card inventory-list-card" style={{
-                                    backgroundColor: 'var(--zf-background-secondary)',
-                                    borderRadius: '10px',
-                                }}>
+                                <div className="card inventory-card inventory-list-card inventory-card-surface">
                                     <div className="inventory-card-header">
                                         <h3 className="inventory-card-title">{espaco.nome}</h3>
                                         <p className="inventory-card-description">
@@ -325,114 +333,116 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 )}
 
                 {showModalNovo && (
-                    <div style={overlayStyle}>
-                        <div className="card" style={{ width: '100%', maxWidth: '500px', height: 'fit-content', margin: 'auto', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
-                            <div style={{ padding: '2rem' }}>
-                                <h2 style={{ marginTop: 0, marginBottom: '1.5rem', textAlign: 'center', color: 'var(--zf-text-h)' }}>Novo Espaço</h2>
+                    <div className="modal-overlay">
+                        <div className="card modal-card-wide">
+                            <div className="modal-card-body">
+                                <h2 className="form-modal-title">Novo Espaço</h2>
                                 <form onSubmit={handleCriarEspaco} noValidate>
-                                    <div style={{ marginBottom: '1rem' }}>
-                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Nome ? '#e99292' : 'inherit' }}>Nome do Espaço (Obrigatório)</label>
+                                    <div className="mb-1">
+                                        <label className={`label-sm ${fieldErrors.Nome ? 'error' : ''}`}>Nome do Espaço (Obrigatório)</label>
                                         <input
                                             type="text"
                                             value={formDataNovo.nome}
                                             onChange={e => setFormDataNovo({ ...formDataNovo, nome: e.target.value })}
-                                            style={{ width: '100%', borderColor: fieldErrors.Nome ? '#e99292' : undefined, outlineColor: fieldErrors.Nome ? '#e99292' : undefined }}
+                                            className={`w-full no-field-margin ${fieldErrors.Nome ? 'is-invalid' : ''}`}
                                         />
-                                        {fieldErrors.Nome && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Nome}</small>}
+                                        {fieldErrors.Nome && <small className="invalid-feedback d-block">{fieldErrors.Nome}</small>}
                                     </div>
-                                    <div style={{ marginBottom: '1.5rem' }}>
-                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Descricao ? '#e99292' : 'inherit' }}>Descrição (Opcional)</label>
+                                    <div className="mb-2">
+                                        <label className={`label-sm ${fieldErrors.Descricao ? 'error' : ''}`}>Descrição (Opcional)</label>
                                         <input
                                             type="text"
                                             value={formDataNovo.descricao}
                                             onChange={e => setFormDataNovo({ ...formDataNovo, descricao: e.target.value })}
-                                            style={{ width: '100%', borderColor: fieldErrors.Descricao ? '#e99292' : undefined, outlineColor: fieldErrors.Descricao ? '#e99292' : undefined }}
+                                            className={`w-full no-field-margin ${fieldErrors.Descricao ? 'is-invalid' : ''}`}
                                         />
-                                        {fieldErrors.Descricao && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Descricao}</small>}
+                                        {fieldErrors.Descricao && <small className="invalid-feedback d-block">{fieldErrors.Descricao}</small>}
                                     </div>
-                                    <div style={{ display: 'flex', gap: '1rem' }}>
-                                        <button type="button" className="button button-outline" style={{ flex: 1 }} onClick={() => setShowModalNovo(false)}>Cancelar</button>
-                                        <button type="submit" className="button" style={{ flex: 1 }}>Salvar</button>
+                                    <div className="modal-actions">
+                                        <button type="button" className="button button-outline button-flex" onClick={() => setShowModalNovo(false)}>Cancelar</button>
+                                        <button type="submit" className="button button-flex">Salvar</button>
                                     </div>
                                 </form>
                             </div>
                         </div>
                     </div>
                 )}
+
+                {messageModal}
             </div>
         );
     }
 
     return (
-        <div className="detail-view" style={{ width: '100%' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '2rem', gap: '1rem' }}>
-                <h2 style={{ margin: 0 }}>Detalhes do Espaço</h2>
+        <div className="detail-view w-full">
+            <div className="detail-heading">
+                <h2 className="no-margin">Detalhes do Espaço</h2>
             </div>
 
-            <div className="card" style={{ marginBottom: '2rem', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
-                <div style={{ padding: '1.5rem' }}>
-                    <div className="zf-row">
-                        <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1rem' }}>
-                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Nome ? '#e99292' : 'inherit' }}>Nome do Espaço</label>
+            <div className="card detail-card">
+                <div className="detail-card-body">
+                    <div className="row">
+                        <div className="column-6 mb-1">
+                            <label className={`label-sm ${fieldErrors.Nome ? 'error' : ''}`}>Nome do Espaço</label>
                             <input
                                 type="text"
                                 value={formEdicao.nome}
                                 onChange={e => setFormEdicao({ ...formEdicao, nome: e.target.value })}
-                                style={{ width: '100%', marginBottom: 0, borderColor: fieldErrors.Nome ? '#e99292' : undefined, outlineColor: fieldErrors.Nome ? '#e99292' : undefined }}
+                                className={`w-full no-field-margin ${fieldErrors.Nome ? 'is-invalid' : ''}`}
                             />
-                            {fieldErrors.Nome && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Nome}</small>}
+                            {fieldErrors.Nome && <small className="invalid-feedback d-block">{fieldErrors.Nome}</small>}
                         </div>
-                        <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1rem' }}>
-                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Descricao ? '#e99292' : 'inherit' }}>Descrição</label>
+                        <div className="column-6 mb-1">
+                            <label className={`label-sm ${fieldErrors.Descricao ? 'error' : ''}`}>Descrição</label>
                             <input
                                 type="text"
                                 value={formEdicao.descricao}
                                 onChange={e => setFormEdicao({ ...formEdicao, descricao: e.target.value })}
-                                style={{ width: '100%', marginBottom: 0, borderColor: fieldErrors.Descricao ? '#e99292' : undefined, outlineColor: fieldErrors.Descricao ? '#e99292' : undefined }}
+                                className={`w-full no-field-margin ${fieldErrors.Descricao ? 'is-invalid' : ''}`}
                             />
-                            {fieldErrors.Descricao && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Descricao}</small>}
+                            {fieldErrors.Descricao && <small className="invalid-feedback d-block">{fieldErrors.Descricao}</small>}
                         </div>
                     </div>
                 </div>
             </div>
 
-            <h3 style={{ color: 'var(--zf-text-h)', marginBottom: '1rem' }}>Itens neste espaço</h3>
+            <h3 className="section-title">Itens neste espaço</h3>
             {loadingItens ? (
                 <LoadingWaves variant="cards" rows={3} label="Carregando inventário" />
             ) : itensDoEspaco.length === 0 ? (
-                <div className="card" style={{ marginBottom: '2rem', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
-                    <div style={{ textAlign: 'center', padding: '2rem 1.5rem' }}>
-                        <p style={{ color: 'var(--zf-text-main)', margin: 0 }}>Este espaço está vazio.</p>
+                <div className="card detail-card">
+                    <div className="empty-state-body-compact">
+                        <p className="empty-state-text">Este espaço está vazio.</p>
                     </div>
                 </div>
             ) : (
-                <div className="inventory-grid inventory-grid-compact" style={{ marginBottom: '2rem' }}>
+                <div className="inventory-grid inventory-grid-compact mb-2">
                     {itensDoEspaco.map(item => (
                         <div key={item.itemEstoqueId} className="inventory-grid-item">
-                            <div className="card inventory-card" style={{ backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: '1.25rem', overflow: 'hidden' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+                            <div className="card inventory-card space-item-card">
+                                <div className="space-item-card-body">
+                                    <div className="space-item-card-header">
                                         <div>
-                                            <h4 style={{ margin: '0 0 0.2rem 0', color: 'var(--zf-text-h)' }}>{item.descricao}</h4>
-                                            <small style={{ color: 'var(--zf-text-main)' }}>{TIPO_UNIDADE[item.tipoUnidadeMedida] || 'UN'}</small>
+                                            <h4 className="space-item-title">{item.descricao}</h4>
+                                            <small className="space-item-unit">{TIPO_UNIDADE[item.tipoUnidadeMedida] || 'UN'}</small>
                                         </div>
-                                        <div style={{ backgroundColor: 'var(--zf-accent)', color: 'var(--zf-accent-text)', padding: '0.3rem 0.6rem', borderRadius: '4px', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                                        <div className="space-item-quantity-badge">
                                             {formatQuantity(item.quantidade)}
                                         </div>
                                     </div>
                                     <div>
-                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem' }}>Quantidade</label>
+                                        <label className="label-sm">Quantidade</label>
                                         <input
                                             type="text"
                                             inputMode="decimal"
                                             value={quantidadesEditadas[item.itemEstoqueId] ?? ''}
                                             onChange={e => handleQuantidadeItemChange(item.itemEstoqueId, e.target.value)}
-                                            style={{ width: '100%', marginBottom: 0 }}
+                                            className="w-full no-field-margin"
                                         />
                                     </div>
                                     <button
-                                        className="button button-outline"
-                                        style={{ margin: 0, width: '100%' }}
+                                        className="button button-outline button-full"
+
                                         onClick={() => handleSalvarQuantidadeItem(item)}
                                         disabled={salvandoItemId === item.itemEstoqueId || parseQuantity(quantidadesEditadas[item.itemEstoqueId]) === parseQuantity(item.quantidade)}
                                     >
@@ -450,47 +460,38 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                     Voltar
                 </button>
                 <button
-                    className="button"
+                    className={`button ${!houveMudanca ? '' : ''}`}
                     onClick={handleConfirmarEdicao}
                     disabled={!houveMudanca}
-                    style={{ opacity: !houveMudanca ? 0.5 : 1, cursor: !houveMudanca ? 'not-allowed' : 'pointer' }}
                 >
                     Editar
                 </button>
                 <button
-                    className="button"
-                    onClick={() => setShowDeleteModal(true)}
-                    style={{ backgroundColor: '#dc3545', borderColor: '#dc3545', color: '#fff' }}
-                >
+                    className="button button-danger"
+                    onClick={() => setShowDeleteModal(true)}>
                     Excluir
                 </button>
             </div>
 
             {showDeleteModal && (
-                <div style={overlayStyle}>
-                    <div className="card" style={{ width: '100%', maxWidth: '400px', height: 'fit-content', margin: 'auto', textAlign: 'center', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
-                        <div style={{ padding: '2rem' }}>
-                            <h2 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--zf-text-h)' }}>Excluir Espaço</h2>
-                            <p style={{ marginBottom: '2rem', color: 'var(--zf-text-main)' }}>
+                <div className="modal-overlay">
+                    <div className="card modal-card">
+                        <div className="modal-card-body">
+                            <h2 className="modal-title">Excluir Espaço</h2>
+                            <p className="modal-description">
                                 Tem certeza que deseja excluir este espaço?
                             </p>
-                            <div style={{ display: 'flex', gap: '1rem' }}>
-                                <button type="button" className="button button-outline" style={{ flex: 1 }} onClick={() => setShowDeleteModal(false)}>Cancelar</button>
-                                <button type="button" className="button" style={{ flex: 1, backgroundColor: '#dc3545', borderColor: '#dc3545', color: '#fff' }} onClick={handleExcluirEspaco}>Excluir Definitivo</button>
+                            <div className="modal-actions">
+                                <button type="button" className="button button-outline button-flex" onClick={() => setShowDeleteModal(false)}>Cancelar</button>
+                                <button type="button" className="button button-danger button-flex" onClick={handleExcluirEspaco}>Excluir Definitivo</button>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            {(erro || sucesso) && (
-                <MessageModal    
-                    type={erro ? 'error' : 'success'}
-                    message={erro || sucesso}
-                    onClose={() => { setErro(''); setSucesso(''); }}
-                    autoClose={8000}
-                />
-            )}
+            {/*modal de mensagens (erro e sucesso)*/}
+            {messageModal}
         </div>
     );
 }

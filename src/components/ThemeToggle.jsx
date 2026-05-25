@@ -15,24 +15,13 @@ export default function ThemeToggle({ fixo = true }) {
     return (
         <button
             type="button"
-            className="button button-outline btn-mobile"
+            className={`button button-outline btn-mobile theme-toggle-button ${fixo ? 'theme-toggle-fixed' : ''}`}
             onClick={toggleTheme}
-            style={{
-                margin: fixo ? '1rem' : 0,
-                position: fixo ? 'fixed' : 'static',
-                top: fixo ? '1rem' : 'auto',
-                right: fixo ? '1rem' : 'auto',
-                padding: '0.5rem 1rem',
-                cursor: 'pointer',
-                zIndex: 1000,
-                display: 'flex',
-                alignItems: 'center'
-            }}
         >
             {theme === 'dark' ? (
-                <>☀️<span className="texto-mobile" style={{ marginLeft: '8px' }}>Modo Claro</span></>
+                <>☀️<span className="texto-mobile button-icon-text">Modo Claro</span></>
             ) : (
-                <>🌙<span className="texto-mobile" style={{ marginLeft: '8px' }}>Modo Escuro</span></>
+                <>🌙<span className="texto-mobile button-icon-text">Modo Escuro</span></>
             )}
         </button>
     );

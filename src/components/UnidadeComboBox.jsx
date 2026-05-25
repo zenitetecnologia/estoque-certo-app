@@ -73,19 +73,14 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
     };
 
     return (
-        <div style={{ marginBottom: '1rem' }}>
-            <style>{`.zf-combobox-custom-arrow::after {right: 12px !important; }
-            `}</style>
-
-            {/* Cor fixa, não muda mais com o erro */}
-            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: 'normal', color: 'inherit' }}>
+        <div className="mb-1">
+            <label>
                 Unidade Organizacional
             </label>
 
-            <div className={`zf-combobox zf-combobox-custom-arrow ${isOpen ? 'active' : ''}`} style={{ marginBottom: 0, position: 'relative' }}>
+            <div className={`zf-combobox zf-combobox-custom-arrow combobox-field ${isOpen ? 'active' : ''}`}>
                 <input
                     type="text"
-                    className="zf-combobox-input"
                     placeholder="Pesquisar..."
                     value={displayValue}
                     onClick={() => setIsOpen(true)}
@@ -96,13 +91,7 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
                     }}
                     onKeyDown={handleKeyDown}
                     onBlur={() => setTimeout(() => setIsOpen(false), 200)}
-                    style={{
-                        width: '100%',
-                        marginBottom: 0,
-                        borderColor: error ? '#e99292' : undefined,
-                        outlineColor: error ? '#e99292' : undefined,
-                        paddingRight: value ? '60px' : '30px'
-                    }}
+                    className={`zf-combobox-input combobox-input ${value ? 'has-clear-button' : ''} ${error ? 'is-invalid' : ''}`}
                 />
 
                 {value && (
@@ -114,24 +103,7 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
                             setSearch('');
                             setIsOpen(false);
                         }}
-                        style={{
-                            position: 'absolute',
-                            right: '32px',
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            cursor: 'pointer',
-                            color: 'var(--zf-text-main)',
-                            opacity: 0.6,
-                            padding: '5px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            zIndex: 10,
-                            fontWeight: 'bold',
-                            fontSize: '0.9rem'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                        onMouseLeave={(e) => e.currentTarget.style.opacity = '0.6'}
+                        className="combobox-clear-button"
                     >
                         ✕
                     </div>
@@ -159,7 +131,7 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
                     ))}
                 </ul>
             </div>
-            {error && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{errorMessage}</small>}
+            {error && <small className="invalid-feedback d-block">{errorMessage}</small>}
         </div>
     );
 }

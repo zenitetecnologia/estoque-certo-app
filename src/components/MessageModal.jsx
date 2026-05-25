@@ -1,18 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function MessageModal({
     type,
+    title,
     message,
     onClose,
-    autoCloseMs = 8000,
- }) {
+    buttonLabel,
+    autoClose = 8000,
+    autoCloseMs,
+}) {
     const [progress, setProgress] = useState(0);
     const isError = type === 'error';
+    const closeDelay = autoCloseMs ?? autoClose;
+    const modalTitle = title || (isError ? 'Atenção' : 'Sucesso');
+    const actionLabel = buttonLabel || (isError ? 'Fechar' : 'OK');
 
     useEffect(() => {
         if (!message) return;
 
-        const total = autoCloseMs;
+        const total = closeDelay;
         const step = 100;
         const intervalMs = total / step;
 
@@ -33,92 +39,36 @@ export default function MessageModal({
             clearInterval(intervalID);
             clearTimeout(timeoutID);
         };
-    }, [message, autoCloseMs, onClose]);
+    }, [message, closeDelay, onClose]);
 
-    if (!message) return;
+    if (!message) return null;
 
     return (
-        <div
-            style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100vw',
-                height: '100vh',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                backdropFilter: 'blur(4px)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: 99999,
-                padding: '1rem',
-                boxSizing: 'border-box',
-            }}
-        >
-            <div
-            className="card"
-             style={{
-                width: '100%',
-                maxWidth: '400px',
-                height: 'fit-content',
-                margin: 'auto',
-                backgroundColor: 'var(--zf-background-secondary)',
-                padding: '2.5rem',
-                borderRadius: '15px',
-                textAlign: 'center',
-                boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
-            }}
-        >
-            <h2
-            style={{
-                color: isError ? '#E57373' : '#81C784',
-                marginTop: 0,
-                marginBottom: '1rem',
-            }}
-            >
-            {isError ? 'Atenção' : 'Sucesso'}
-            </h2>
+        <div className="message-overlay">
+            <div className="card message-card">
+                <h2 className={isError ? 'message-title-error' : 'message-title-success'}>
+                    {modalTitle}
+                </h2>
 
-            <p
-            style={{
-                color: 'var(--zf-text-main)',
-                marginBottom: '1.5rem',
-                fontSize: '1rem',
-                lineHeight: '1.4',
-            }}
-            >
-            {message}
-            </p>
+                <p className="message-text">
+                    {message}
+                </p>
 
-            <div
-            style={{
-                width: '100%',
-                height: '4px',
-                borderRadius: '999px',
-                backgroundColor: 'rgba(255,255,255,0.1)',
-                overflow: 'hidden',
-                marginBottom: '1rem',
-            }}
-            >
-            <div
-                style={{
-                width: `${progress}%`,
-                height: '100%',
-                backgroundColor: isError ? '#E57373' : '#81C784',
-                transition: 'width 0.1s linear',
-                }}
-            />
+                <progress
+                    className={`message-progress ${isError ? 'message-progress-error' : 'message-progress-success'}`}
+                    value={progress}
+                    max="100"
+                    aria-hidden="true"
+                />
+
+                <button
+                    type="button"
+                    className="button button-full"
+                    onClick={onClose}
+                >
+                    {actionLabel}
+                </button>
             </div>
-
-            <button
-                type="button"
-                className="button"
-                style={{ width: '100%', margin: 0 }}
-                onClick={onClose}
-            >
-                {isError ? 'Fechar' : 'OK'}
-            </button>
         </div>
-    </div>
     );
 }

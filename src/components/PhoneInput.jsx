@@ -30,8 +30,8 @@ export default function PhoneInput({ value, onChange, error, errorMessage }) {
     };
 
     return (
-        <div style={{ marginBottom: '1rem' }}>
-            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: 'normal', color: 'inherit' }}>
+        <div className="mb-1">
+            <label>
                 Login
             </label>
             <input
@@ -39,14 +39,9 @@ export default function PhoneInput({ value, onChange, error, errorMessage }) {
                 placeholder="(99) 99999-9999"
                 value={formatPhone(value)}
                 onChange={handleChange}
-                style={{
-                    width: '100%',
-                    marginBottom: 0,
-                    borderColor: error ? '#e99292' : undefined,
-                    outlineColor: error ? '#e99292' : undefined
-                }}
+                className={`w-full no-field-margin ${error ? 'is-invalid' : ''}`}
             />
-            {error && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px', textAlign: 'left' }}>{errorMessage}</small>}
+            {error && <small className="invalid-feedback d-block">{errorMessage}</small>}
         </div>
     );
 }

@@ -286,14 +286,14 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 setSucesso('Item transferido com sucesso!');
                 setShowTransferirModal(false);
 
-                // Atualiza na lista geral
+                //atualiza na lista geral
                 setItens(prev => prev.map(item =>
                     item.itemEstoqueId === itemAtivo.itemEstoqueId
                         ? { ...item, espacoId: novoEspacoId }
                         : item
                 ));
 
-                // Atualiza o item ativo e o form na tela de detalhes
+                //atualiza o item ativo e o form na tela de detalhes
                 setItemAtivo(prev => ({ ...prev, espacoId: novoEspacoId }));
                 setFormEdicao(prev => ({ ...prev, espacoId: novoEspacoId }));
 
@@ -361,33 +361,32 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
         setFieldErrors({});
     };
 
-    const overlayStyle = {
-        position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-        backgroundColor: 'rgba(0,0,0,0.75)',
-        backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)',
-        display: 'flex', justifyContent: 'center', alignItems: 'center',
-        zIndex: 9999, padding: '1.5rem', boxSizing: 'border-box'
-    };
+    const getInputClassName = (isError) => `w-full no-field-margin ${isError ? 'is-invalid' : ''}`;
 
-    const getInputBaseStyle = (isError) => ({
-        width: '100%', marginBottom: 0, borderColor: isError ? '#e99292' : undefined, outlineColor: isError ? '#e99292' : undefined
-    });
+    const messageModal = (erro || sucesso) && (
+        <MessageModal
+            type={erro ? 'error' : 'success'}
+            message={erro || sucesso}
+            onClose={() => { setErro(''); setSucesso(''); }}
+            autoClose={8000}
+        />
+    );
 
     if (viewMode === 'list') {
         return (
-            <div style={{ width: '100%' }}>
+            <div className="w-full">
                 <div className="inventory-list-header">
-                    <h2 style={{ margin: 0 }}>Itens de Estoque</h2>
-                    <button className="button inventory-list-header-action" style={{ margin: 0 }} onClick={() => { setFormDataNovo({ espacoId: espacos.length > 0 ? espacos[0].espacoId : '', descricao: '', tipoUnidadeMedida: 6, quantidade: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>+ Novo Item</button>
+                    <h2 className="no-margin">Itens de Estoque</h2>
+                    <button className="button inventory-list-header-action no-margin" onClick={() => { setFormDataNovo({ espacoId: espacos.length > 0 ? espacos[0].espacoId : '', descricao: '', tipoUnidadeMedida: 6, quantidade: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>+ Novo Item</button>
                 </div>
 
-                <div style={{ marginBottom: '1.5rem' }}>
+                <div className="mb-2">
                     <input
                         type="text"
                         placeholder="Pesquisar itens por descrição..."
                         value={pesquisa}
                         onChange={(e) => setPesquisa(e.target.value)}
-                        style={{ width: '100%', marginBottom: 0 }}
+                        className="w-full no-field-margin"
                     />
                 </div>
 
@@ -396,19 +395,16 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 ) : espacos.length === 0 ? (
                     <div className="alert alert-error">Você precisa cadastrar um Espaço antes de criar Itens.</div>
                 ) : itens.length === 0 ? (
-                    <div className="card" style={{ backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
-                        <div style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
-                            <p style={{ color: 'var(--zf-text-main)', margin: 0 }}>Nenhum item de estoque cadastrado.</p>
+                    <div className="card empty-state-card">
+                        <div className="empty-state-body">
+                            <p className="empty-state-text">Nenhum item de estoque cadastrado.</p>
                         </div>
                     </div>
                 ) : (
                     <div className="inventory-grid inventory-grid-compact">
                         {itens.map(item => (
                             <div key={item.itemEstoqueId} className="inventory-grid-item">
-                                <div className="card inventory-card inventory-list-card inventory-item-list-card" style={{
-                                    backgroundColor: 'var(--zf-background-secondary)',
-                                    borderRadius: '10px',
-                                }}>
+                                <div className="card inventory-card inventory-list-card inventory-item-list-card inventory-card-surface">
                                     <div className="inventory-card-header">
                                         <div className="inventory-card-title-row">
                                             <h3 className="inventory-card-title">{item.descricao}</h3>
@@ -432,96 +428,98 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 )}
 
                 {showModalNovo && (
-                    <div style={overlayStyle}>
-                        <div className="card" style={{ width: '100%', maxWidth: '450px', height: 'fit-content', maxHeight: '90vh', overflowY: 'auto', margin: 'auto', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
-                            <div style={{ padding: '2rem' }}>
-                                <h2 style={{ marginTop: 0, marginBottom: '1.5rem', textAlign: 'center', color: 'var(--zf-text-h)' }}>Novo Item</h2>
+                    <div className="modal-overlay">
+                        <div className="card modal-card-scroll">
+                            <div className="modal-card-body">
+                                <h2 className="form-modal-title">Novo Item</h2>
                                 <form onSubmit={handleCriar} noValidate>
-                                    <div style={{ marginBottom: '1rem' }}>
-                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Descricao ? '#e99292' : 'inherit' }}>Descrição do Produto</label>
-                                        <input type="text" value={formDataNovo.descricao} onChange={e => setFormDataNovo({ ...formDataNovo, descricao: e.target.value })} style={getInputBaseStyle(fieldErrors.Descricao)} />
-                                        {fieldErrors.Descricao && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Descricao}</small>}
+                                    <div className="mb-1">
+                                        <label className={`label-sm ${fieldErrors.Descricao ? 'error' : ''}`}>Descrição do Produto</label>
+                                        <input type="text" value={formDataNovo.descricao} onChange={e => setFormDataNovo({ ...formDataNovo, descricao: e.target.value })} className={getInputClassName(fieldErrors.Descricao)} />
+                                        {fieldErrors.Descricao && <small className="invalid-feedback d-block">{fieldErrors.Descricao}</small>}
                                     </div>
 
-                                    <div className="zf-row">
-                                        <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1rem' }}>
-                                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.EspacoId ? '#e99292' : 'inherit' }}>Local (Espaço)</label>
-                                            <select value={formDataNovo.espacoId} onChange={e => setFormDataNovo({ ...formDataNovo, espacoId: e.target.value })} style={getInputBaseStyle(fieldErrors.EspacoId)}>
+                                    <div className="row">
+                                        <div className="column-6 mb-1">
+                                            <label className={`label-sm ${fieldErrors.EspacoId ? 'error' : ''}`}>Local (Espaço)</label>
+                                            <select value={formDataNovo.espacoId} onChange={e => setFormDataNovo({ ...formDataNovo, espacoId: e.target.value })} className={getInputClassName(fieldErrors.EspacoId)}>
                                                 <option value="" disabled>Selecione...</option>
                                                 {espacos.map(e => <option key={e.espacoId} value={e.espacoId}>{e.nome}</option>)}
                                             </select>
-                                            {fieldErrors.EspacoId && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.EspacoId}</small>}
+                                            {fieldErrors.EspacoId && <small className="invalid-feedback d-block">{fieldErrors.EspacoId}</small>}
                                         </div>
-                                        <div className="zf-col-xs-12 zf-col-md-6" style={{ marginBottom: '1rem' }}>
-                                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.TipoUnidadeMedida ? '#e99292' : 'inherit' }}>Unidade de Medida</label>
-                                            <select value={formDataNovo.tipoUnidadeMedida} onChange={e => setFormDataNovo({ ...formDataNovo, tipoUnidadeMedida: e.target.value })} style={getInputBaseStyle(fieldErrors.TipoUnidadeMedida)}>
+                                        <div className="column-6 mb-1">
+                                            <label className={`label-sm ${fieldErrors.TipoUnidadeMedida ? 'error' : ''}`}>Unidade de Medida</label>
+                                            <select value={formDataNovo.tipoUnidadeMedida} onChange={e => setFormDataNovo({ ...formDataNovo, tipoUnidadeMedida: e.target.value })} className={getInputClassName(fieldErrors.TipoUnidadeMedida)}>
                                                 {Object.entries(TIPO_UNIDADE).map(([key, val]) => <option key={key} value={key}>{val}</option>)}
                                             </select>
-                                            {fieldErrors.TipoUnidadeMedida && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.TipoUnidadeMedida}</small>}
+                                            {fieldErrors.TipoUnidadeMedida && <small className="invalid-feedback d-block">{fieldErrors.TipoUnidadeMedida}</small>}
                                         </div>
                                     </div>
 
-                                    <div style={{ marginBottom: '1.5rem' }}>
-                                        <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Quantidade ? '#e99292' : 'inherit' }}>Quantidade Inicial</label>
-                                        <input type="text" inputMode="decimal" value={formDataNovo.quantidade} onChange={e => setFormDataNovo({ ...formDataNovo, quantidade: maskQuantityInput(e.target.value) })} style={getInputBaseStyle(fieldErrors.Quantidade)} />
-                                        {fieldErrors.Quantidade && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Quantidade}</small>}
+                                    <div className="mb-2">
+                                        <label className={`label-sm ${fieldErrors.Quantidade ? 'error' : ''}`}>Quantidade Inicial</label>
+                                        <input type="text" inputMode="decimal" value={formDataNovo.quantidade} onChange={e => setFormDataNovo({ ...formDataNovo, quantidade: maskQuantityInput(e.target.value) })} className={getInputClassName(fieldErrors.Quantidade)} />
+                                        {fieldErrors.Quantidade && <small className="invalid-feedback d-block">{fieldErrors.Quantidade}</small>}
                                     </div>
 
-                                    <div style={{ display: 'flex', gap: '1rem' }}>
-                                        <button type="button" className="button button-outline" style={{ flex: 1 }} onClick={() => setShowModalNovo(false)}>Cancelar</button>
-                                        <button type="submit" className="button" style={{ flex: 1 }}>Salvar</button>
+                                    <div className="modal-actions">
+                                        <button type="button" className="button button-outline button-flex" onClick={() => setShowModalNovo(false)}>Cancelar</button>
+                                        <button type="submit" className="button button-flex">Salvar</button>
                                     </div>
                                 </form>
                             </div>
                         </div>
                     </div>
                 )}
+
+                {messageModal}
             </div>
         );
     }
 
     return (
-        <div className="detail-view" style={{ width: '100%' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '2rem', gap: '1rem' }}>
-                <h2 style={{ margin: 0 }}>Detalhes do Item</h2>
+        <div className="detail-view w-full">
+            <div className="detail-heading">
+                <h2 className="no-margin">Detalhes do Item</h2>
             </div>
 
-            {erro && <div className="alert alert-error" style={{ marginBottom: '1rem' }}>{erro}</div>}
-            {sucesso && <div className="alert alert-success" style={{ marginBottom: '1rem' }}>{sucesso}</div>}
+            {erro && <div className="alert alert-error mb-1">{erro}</div>}
+            {sucesso && <div className="alert alert-success mb-1">{sucesso}</div>}
 
-            <div className="card" style={{ marginBottom: '2rem', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
-                <div style={{ padding: '1.5rem' }}>
-                    <div className="zf-row">
-                        <div className="zf-col-xs-12 zf-col-md-4" style={{ marginBottom: '1rem' }}>
-                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.Descricao ? '#e99292' : 'inherit' }}>Descrição do Produto</label>
-                            <input type="text" value={formEdicao.descricao} onChange={e => setFormEdicao({ ...formEdicao, descricao: e.target.value })} style={getInputBaseStyle(fieldErrors.Descricao)} />
-                            {fieldErrors.Descricao && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Descricao}</small>}
+            <div className="card detail-card">
+                <div className="detail-card-body">
+                    <div className="row">
+                        <div className="column-4 mb-1">
+                            <label className={`label-sm ${fieldErrors.Descricao ? 'error' : ''}`}>Descrição do Produto</label>
+                            <input type="text" value={formEdicao.descricao} onChange={e => setFormEdicao({ ...formEdicao, descricao: e.target.value })} className={getInputClassName(fieldErrors.Descricao)} />
+                            {fieldErrors.Descricao && <small className="invalid-feedback d-block">{fieldErrors.Descricao}</small>}
                         </div>
-                        <div className="zf-col-xs-12 zf-col-md-3" style={{ marginBottom: '1rem' }}>
-                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.EspacoId ? '#e99292' : 'inherit' }}>Local (Espaço)</label>
-                            <select value={formEdicao.espacoId} onChange={e => setFormEdicao({ ...formEdicao, espacoId: e.target.value })} style={getInputBaseStyle(fieldErrors.EspacoId)}>
+                        <div className="column-3 mb-1">
+                            <label className={`label-sm ${fieldErrors.EspacoId ? 'error' : ''}`}>Local (Espaço)</label>
+                            <select value={formEdicao.espacoId} onChange={e => setFormEdicao({ ...formEdicao, espacoId: e.target.value })} className={getInputClassName(fieldErrors.EspacoId)}>
                                 {espacos.map(e => <option key={e.espacoId} value={e.espacoId}>{e.nome}</option>)}
                             </select>
-                            {fieldErrors.EspacoId && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.EspacoId}</small>}
+                            {fieldErrors.EspacoId && <small className="invalid-feedback d-block">{fieldErrors.EspacoId}</small>}
                         </div>
-                        <div className="zf-col-xs-12 zf-col-md-3" style={{ marginBottom: '1rem' }}>
-                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: fieldErrors.TipoUnidadeMedida ? '#e99292' : 'inherit' }}>Unidade</label>
-                            <select value={formEdicao.tipoUnidadeMedida} onChange={e => setFormEdicao({ ...formEdicao, tipoUnidadeMedida: e.target.value })} style={getInputBaseStyle(fieldErrors.TipoUnidadeMedida)}>
+                        <div className="column-3 mb-1">
+                            <label className={`label-sm ${fieldErrors.TipoUnidadeMedida ? 'error' : ''}`}>Unidade</label>
+                            <select value={formEdicao.tipoUnidadeMedida} onChange={e => setFormEdicao({ ...formEdicao, tipoUnidadeMedida: e.target.value })} className={getInputClassName(fieldErrors.TipoUnidadeMedida)}>
                                 {Object.entries(TIPO_UNIDADE).map(([key, val]) => <option key={key} value={key}>{val}</option>)}
                             </select>
-                            {fieldErrors.TipoUnidadeMedida && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.TipoUnidadeMedida}</small>}
+                            {fieldErrors.TipoUnidadeMedida && <small className="invalid-feedback d-block">{fieldErrors.TipoUnidadeMedida}</small>}
                         </div>
-                        <div className="zf-col-xs-12 zf-col-md-2" style={{ marginBottom: '1rem' }}>
-                            <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--zf-text-main)' }}>Saldo Atual</label>
-                            <input type="text" inputMode="decimal" value={formEdicao.quantidade} onChange={e => setFormEdicao({ ...formEdicao, quantidade: maskQuantityInput(e.target.value) })} style={{ width: '100%', marginBottom: 0 }} />
+                        <div className="column-2 mb-1">
+                            <label className="label-sm text-muted">Saldo Atual</label>
+                            <input type="text" inputMode="decimal" value={formEdicao.quantidade} onChange={e => setFormEdicao({ ...formEdicao, quantidade: maskQuantityInput(e.target.value) })} className="w-full no-field-margin" />
                         </div>
                     </div>
                 </div>
             </div>
 
             <button
-                className="button button-outline"
-                style={{ width: '100%', marginBottom: '1.5rem' }}
+                className="button button-outline button-full mb-2"
+
                 onClick={() => {
                     setNovoEspacoId('');
                     setShowTransferirModal(true);
@@ -531,28 +529,28 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
             </button>
 
             <div className="stock-movement-actions">
-                <button className="button" style={{ margin: 0, width: '100%' }} onClick={() => abrirMovimentacao(1)}>
+                <button className="button button-full" onClick={() => abrirMovimentacao(1)}>
                     + Entrada
                 </button>
-                <button className="button" style={{ margin: 0, width: '100%', backgroundColor: '#ef4444', borderColor: '#ef4444', color: '#fff' }} onClick={() => abrirMovimentacao(2)}>
+                <button className="button button-exit button-full" onClick={() => abrirMovimentacao(2)}>
                     - Saída
                 </button>
             </div>
 
             <div className="section-heading">
-                <h3 style={{ color: 'var(--zf-text-h)', margin: 0 }}>Histórico de Movimentações</h3>
+                <h3 className="section-title-reset">Histórico de Movimentações</h3>
             </div>
 
             {loadingHistorico ? (
                 <LoadingWaves rows={3} label="Carregando histórico" />
             ) : historico.length === 0 ? (
-                <div className="card" style={{ backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden', marginBottom: '2rem' }}>
-                    <div style={{ textAlign: 'center', padding: '2rem 1.5rem' }}>
-                        <p style={{ color: 'var(--zf-text-main)', margin: 0 }}>Nenhuma movimentação registrada.</p>
+                <div className="card history-empty-card">
+                    <div className="empty-state-body-compact">
+                        <p className="empty-state-text">Nenhuma movimentação registrada.</p>
                     </div>
                 </div>
             ) : (
-                <div className="history-grid" style={{ marginBottom: '2rem' }}>
+                <div className="history-grid mb-2">
                     {historico.map((hist, index) => {
                         const qtd = Math.abs(hist.quantidadeResultante - hist.quantidadeAnterior);
                         const tipo = hist.tipoMovimentacao;
@@ -562,12 +560,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
 
                         return (
                             <div key={hist.historicoId || index} className="history-grid-item">
-                                <div className="card history-card" style={{
-                                    backgroundColor: 'var(--zf-background-secondary)',
-                                    borderRadius: '10px',
-                                    overflow: 'hidden',
-                                    borderLeft: `4px solid ${tipo === 1 ? 'var(--zf-accent)' : '#ef4444'}`
-                                }}>
+                                <div className={`card history-card ${tipo === 1 ? 'history-entry' : 'history-exit'}`}>
                                     <div className="history-card-content">
                                         <div className="history-card-info">
                                             <h4 className="history-card-title">
@@ -577,10 +570,10 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                                                 Data: {new Date(data).toLocaleString()}
                                             </small>
                                             <small className="history-card-meta">
-                                                Responsável: <span style={{ color: 'var(--zf-accent)' }}>{nome}</span>
+                                                Responsável: <span className="text-accent">{nome}</span>
                                             </small>
                                         </div>
-                                        <div className="history-card-amount" style={{ backgroundColor: tipo === 1 ? 'var(--zf-accent)' : '#ef4444', color: tipo === 1 ? 'var(--zf-accent-text)' : '#fff' }}>
+                                        <div className={`history-card-amount ${tipo === 1 ? 'history-amount-entry' : 'history-amount-exit'}`}>
                                             {tipo === 1 ? '+' : '-'}{formatQuantity(qtd)}
                                         </div>
                                     </div>
@@ -596,56 +589,44 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                     Voltar
                 </button>
                 <button
-                    className="button"
+                    className={`button ${!houveMudanca ? '' : ''}`}
                     onClick={handleConfirmarEdicao}
                     disabled={!houveMudanca}
-                    style={{ opacity: !houveMudanca ? 0.5 : 1, cursor: !houveMudanca ? 'not-allowed' : 'pointer' }}
                 >
                     Editar
                 </button>
                 <button
-                    className="button"
-                    onClick={() => setShowDeleteModal(true)}
-                    style={{ backgroundColor: '#dc3545', borderColor: '#dc3545', color: '#fff' }}
-                >
+                    className="button button-danger"
+                    onClick={() => setShowDeleteModal(true)}>
                     Excluir
                 </button>
             </div>
 
             {showMovimentarModal && (
-                <div style={overlayStyle}>
-                    <div className="card" style={{ width: '100%', maxWidth: '400px', height: 'fit-content', margin: 'auto', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
-                        <div style={{ padding: '2rem' }}>
-                            <h2 style={{ marginTop: 0, marginBottom: '0.5rem', textAlign: 'center', color: 'var(--zf-text-h)' }}>Movimentar Estoque</h2>
-                            <p style={{ textAlign: 'center', color: 'var(--zf-accent)', marginBottom: '1.5rem', fontWeight: 'bold' }}>{itemAtivo?.descricao}</p>
+                <div className="modal-overlay">
+                    <div className="card movement-modal-card">
+                        <div className="modal-card-body">
+                            <h2 className="movement-modal-title">Movimentar Estoque</h2>
+                            <p className="movement-item-name">{itemAtivo?.descricao}</p>
 
                             <form onSubmit={handleMovimentar} noValidate>
-                                <div style={{ marginBottom: '1.5rem' }}>
-                                    <span style={{ display: 'block', textAlign: 'left', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--zf-text-main)' }}>Operação</span>
-                                    <div style={{
-                                        width: '100%',
-                                        padding: '0.75rem 1rem',
-                                        borderRadius: '8px',
-                                        backgroundColor: movimentacaoData.tipoMovimentacao == 2 ? '#ef44441a' : 'rgba(212, 175, 55, 0.1)',
-                                        color: movimentacaoData.tipoMovimentacao == 2 ? '#ef4444' : 'var(--zf-accent)',
-                                        border: `1px solid ${movimentacaoData.tipoMovimentacao == 2 ? '#ef4444' : 'var(--zf-accent)'}`,
-                                        fontWeight: 'bold',
-                                        textAlign: 'center'
-                                    }}>
+                                <div className="mb-2">
+                                    <span className="label-sm text-muted">Operação</span>
+                                    <div className={`movement-operation-summary ${movimentacaoData.tipoMovimentacao == 2 ? 'movement-operation-exit' : 'movement-operation-entry'}`}>
                                         {movimentacaoData.tipoMovimentacao == 2 ? 'Saída (-)' : 'Entrada (+)'}
                                     </div>
-                                    {fieldErrors.TipoMovimentacao && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.TipoMovimentacao}</small>}
+                                    {fieldErrors.TipoMovimentacao && <small className="invalid-feedback d-block">{fieldErrors.TipoMovimentacao}</small>}
                                 </div>
 
-                                <div style={{ marginBottom: '1.5rem' }}>
-                                    <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'inherit' }}>Quantidade</label>
-                                    <input type="text" inputMode="decimal" value={movimentacaoData.quantidadeMovimento} onChange={e => setMovimentacaoData({ ...movimentacaoData, quantidadeMovimento: maskQuantityInput(e.target.value) })} style={getInputBaseStyle(fieldErrors.QuantidadeMovimento)} />
-                                    {fieldErrors.QuantidadeMovimento && <small style={{ color: '#e99292', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.QuantidadeMovimento}</small>}
+                                <div className="mb-2">
+                                    <label className="label-sm">Quantidade</label>
+                                    <input type="text" inputMode="decimal" value={movimentacaoData.quantidadeMovimento} onChange={e => setMovimentacaoData({ ...movimentacaoData, quantidadeMovimento: maskQuantityInput(e.target.value) })} className={getInputClassName(fieldErrors.QuantidadeMovimento)} />
+                                    {fieldErrors.QuantidadeMovimento && <small className="invalid-feedback d-block">{fieldErrors.QuantidadeMovimento}</small>}
                                 </div>
 
                                 <div className="modal-actions">
                                     <button type="button" className="button button-outline" onClick={() => setShowMovimentarModal(false)}>Cancelar</button>
-                                    <button type="submit" className="button" style={{ backgroundColor: movimentacaoData.tipoMovimentacao == 2 ? '#ef4444' : 'var(--zf-accent)', borderColor: movimentacaoData.tipoMovimentacao == 2 ? '#ef4444' : 'var(--zf-accent)', color: movimentacaoData.tipoMovimentacao == 2 ? '#fff' : '#000' }}>Confirmar</button>
+                                    <button type="submit" className={`button ${movimentacaoData.tipoMovimentacao == 2 ? 'button-exit' : 'button-accent-confirm'}`}>Confirmar</button>
                                 </div>
                             </form>
                         </div>
@@ -654,14 +635,14 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
             )}
 
             {showDeleteModal && (
-                <div style={overlayStyle}>
-                    <div className="card" style={{ width: '100%', maxWidth: '400px', height: 'fit-content', margin: 'auto', textAlign: 'center', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: 0, overflow: 'hidden' }}>
-                        <div style={{ padding: '2rem' }}>
-                            <h2 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--zf-text-h)' }}>Excluir Item</h2>
-                            <p style={{ marginBottom: '2rem', color: 'var(--zf-text-main)' }}>Tem certeza que deseja excluir o item de estoque? Todo o histórico de movimentações também será perdido.</p>
-                            <div style={{ display: 'flex', gap: '1rem' }}>
-                                <button type="button" className="button button-outline" style={{ flex: 1 }} onClick={() => setShowDeleteModal(false)}>Cancelar</button>
-                                <button type="button" className="button" style={{ flex: 1, backgroundColor: '#ef4444', borderColor: '#ef4444', color: '#fff' }} onClick={handleExcluir}>Excluir</button>
+                <div className="modal-overlay">
+                    <div className="card modal-card">
+                        <div className="modal-card-body">
+                            <h2 className="modal-title">Excluir Item</h2>
+                            <p className="modal-description">Tem certeza que deseja excluir o item de estoque? Todo o histórico de movimentações também será perdido.</p>
+                            <div className="modal-actions">
+                                <button type="button" className="button button-outline button-flex" onClick={() => setShowDeleteModal(false)}>Cancelar</button>
+                                <button type="button" className="button button-exit button-flex" onClick={handleExcluir}>Excluir</button>
                             </div>
                         </div>
                     </div>
@@ -669,32 +650,20 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
             )}
 
             {showTransferirModal && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-                    backgroundColor: 'rgba(0, 0, 0, 0.75)',
-                    backdropFilter: 'blur(5px)',
-                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999, padding: '1rem'
-                }}>
-                    <div className="card" style={{ width: '100%', maxWidth: '400px', height: 'fit-content', backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: '2rem' }}>
-                        <h2 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--zf-text-h)' }}>Transferir de Espaço</h2>
-                        <p style={{ marginBottom: '1.5rem', color: 'var(--zf-text-main)' }}>
+                <div className="modal-overlay">
+                    <div className="card transfer-modal-card">
+                        <h2 className="modal-title">Transferir de Espaço</h2>
+                        <p className="transfer-description">
                             Selecione o novo local para o item <strong>{itemAtivo?.descricao}</strong>:
                         </p>
 
                         <form onSubmit={handleTransferir} noValidate>
-                            <div style={{ marginBottom: '1.5rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Espaço de Destino</label>
+                            <div className="mb-2">
+                                <label className="label-sm">Espaço de Destino</label>
                                 <select
                                     value={novoEspacoId}
                                     onChange={e => setNovoEspacoId(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.5rem',
-                                        borderRadius: '5px',
-                                        backgroundColor: 'var(--zf-background)',
-                                        color: 'var(--zf-text-main)',
-                                        border: '1px solid rgba(212, 175, 55, 0.3)'
-                                    }}
+                                    className="transfer-select"
                                 >
                                     <option value="">Selecione um espaço...</option>
                                     {espacos
@@ -705,11 +674,11 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                                     }
                                 </select>
                             </div>
-                            <div style={{ display: 'flex', gap: '1rem' }}>
-                                <button type="button" className="button button-outline" style={{ flex: 1 }} onClick={() => setShowTransferirModal(false)}>
+                            <div className="modal-actions">
+                                <button type="button" className="button button-outline button-flex" onClick={() => setShowTransferirModal(false)}>
                                     Cancelar
                                 </button>
-                                <button type="submit" className="button" style={{ flex: 1 }}>
+                                <button type="submit" className="button button-flex">
                                     Confirmar
                                 </button>
                             </div>
@@ -718,14 +687,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 </div>
             )}
 
-            {(erro || sucesso) && (
-               <MessageModal
-                    type={erro ? 'error' : 'success'}
-                    message={erro || sucesso}
-                    onClose={() => { setErro(''); setSucesso(''); }}
-                    autoClose={8000}
-                />
-            )}
+            {messageModal}
         </div>
     );
 }

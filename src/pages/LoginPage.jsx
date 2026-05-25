@@ -4,6 +4,7 @@ import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
 import { extrairErro } from '../utils/apiUtils';
 import ThemeToggle from '../components/ThemeToggle';
+import MessageModal from '../components/MessageModal';
 
 export default function LoginPage({ onLogin, onNavigate }) {
     const [formData, setFormData] = useState({ username: '', senha: '', unidadeOrganizacionalId: '' });
@@ -66,68 +67,53 @@ export default function LoginPage({ onLogin, onNavigate }) {
 
     return (
         <>
-        <ThemeToggle />
-        <div className="login-container"></div>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-            <div className="card auth-card">
-                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Login</h2>
-                <form onSubmit={handleSubmit} noValidate>
+            <ThemeToggle />
+            <div className="auth-page">
+                <div className="card auth-card">
+                    <h2 className="auth-title">Login</h2>
+                    <form onSubmit={handleSubmit} noValidate>
 
-                    <PhoneInput
-                        value={formData.username}
-                        onChange={e => setFormData({ ...formData, username: e.target.value })}
-                        error={!!fieldErrors.Username}
-                        errorMessage={fieldErrors.Username}
-                    />
+                        <PhoneInput
+                            value={formData.username}
+                            onChange={e => setFormData({ ...formData, username: e.target.value })}
+                            error={!!fieldErrors.Username}
+                            errorMessage={fieldErrors.Username}
+                        />
 
-                    <PasswordInput
-                        label="Senha"
-                        placeholder="******"
-                        value={formData.senha}
-                        onChange={e => setFormData({ ...formData, senha: e.target.value })}
-                        error={!!fieldErrors.Senha}
-                        errorMessage={fieldErrors.Senha}
-                    />
+                        <PasswordInput
+                            label="Senha"
+                            placeholder="******"
+                            value={formData.senha}
+                            onChange={e => setFormData({ ...formData, senha: e.target.value })}
+                            error={!!fieldErrors.Senha}
+                            errorMessage={fieldErrors.Senha}
+                        />
 
-                    <UnidadeComboBox
-                        value={formData.unidadeOrganizacionalId}
-                        onChange={val => setFormData({ ...formData, unidadeOrganizacionalId: val })}
-                        error={!!fieldErrors.UnidadeOrganizacionalId}
-                        errorMessage={fieldErrors.UnidadeOrganizacionalId}
-                    />
+                        <UnidadeComboBox
+                            value={formData.unidadeOrganizacionalId}
+                            onChange={val => setFormData({ ...formData, unidadeOrganizacionalId: val })}
+                            error={!!fieldErrors.UnidadeOrganizacionalId}
+                            errorMessage={fieldErrors.UnidadeOrganizacionalId}
+                        />
 
-                    <button type="submit" className="button" style={{ width: '100%', marginTop: '1rem' }}>Entrar</button>
+                        <button type="submit" className="button button-full mt-1">Entrar</button>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1.5rem', fontSize: '0.95rem' }}>
-                        <a style={{ cursor: 'pointer', color: 'var(--zf-accent)' }} onClick={() => onNavigate('register')}>Registrar</a>
-                        <a style={{ cursor: 'pointer', color: 'var(--zf-accent)' }} onClick={() => onNavigate('forgot')}>Esqueci a senha</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        {erro && (
-            <div style={{
-                position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-                backgroundColor: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(4px)',
-                display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999, padding: '1rem', boxSizing: 'border-box'
-            }}>
-                <div className="card" style={{
-                    width: '100%', maxWidth: '400px', 
-                    height: 'fit-content', margin: 'auto',
-                    backgroundColor: 'var(--zf-background-secondary)',
-                    padding: '2.5rem', borderRadius: '15px', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
-                }}>
-                    <h2 style={{ color: '#E57373', marginTop: 0, marginBottom: '1rem' }}>Atenção</h2>
-                    <p style={{ color: 'var(--zf-text-main)', marginBottom: '2rem', fontSize: '1rem', lineHeight: '1.4' }}>
-                        {erro}
-                    </p>
-                    <button type="button" className="button" style={{ width: '100%', margin: 0 }} onClick={() => setErro('')}>
-                        Fechar
-                    </button>
+                        <div className="auth-link-row">
+                            <a className="link-action" onClick={() => onNavigate('register')}>Registrar</a>
+                            <a className="link-action" onClick={() => onNavigate('forgot')}>Esqueci a senha</a>
+                        </div>
+                    </form>
                 </div>
             </div>
-        )}
+
+            {erro && (
+                <MessageModal
+                    type="error"
+                    message={erro}
+                    onClose={() => setErro('')}
+                    autoClose={8000}
+                />
+            )}
         </>
     );
 }

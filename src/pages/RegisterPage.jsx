@@ -4,6 +4,7 @@ import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
 import { extrairErro } from '../utils/apiUtils';
 import ThemeToggle from '../components/ThemeToggle';
+import MessageModal from '../components/MessageModal';
 
 export default function RegisterPage({ onNavigate }) {
     const [formData, setFormData] = useState({ nome: '', username: '', senha: '', unidadeOrganizacionalId: '' });
@@ -61,13 +62,13 @@ export default function RegisterPage({ onNavigate }) {
         <>
             <ThemeToggle />
             <div className="container">
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                <div className="auth-page">
                     <div className="card auth-card">
-                        <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Criar Conta</h2>
+                        <h2 className="auth-title">Criar Conta</h2>
                         <form onSubmit={handleSubmit} noValidate>
 
-                            <div style={{ marginBottom: '1rem' }}>
-                                <label style={{ textAlign: 'left', display: 'block', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: 'normal', color: 'inherit' }}>
+                            <div className="mb-1">
+                                <label>
                                     Nome Completo
                                 </label>
                                 <input
@@ -75,9 +76,9 @@ export default function RegisterPage({ onNavigate }) {
                                     placeholder="Seu nome"
                                     value={formData.nome}
                                     onChange={e => setFormData({ ...formData, nome: e.target.value })}
-                                    style={{ width: '100%', marginBottom: 0, borderColor: (fieldErrors.Nome || fieldErrors.nome) ? '#E57373' : undefined }}
+                                    className={`w-full no-field-margin ${(fieldErrors.Nome || fieldErrors.nome) ? 'is-invalid' : ''}`}
                                 />
-                                {(fieldErrors.Nome || fieldErrors.nome) && <small style={{ color: '#E57373', fontSize: '11px', display: 'block', marginTop: '4px' }}>{fieldErrors.Nome || fieldErrors.nome}</small>}
+                                {(fieldErrors.Nome || fieldErrors.nome) && <small className="invalid-feedback d-block">{fieldErrors.Nome || fieldErrors.nome}</small>}
                             </div>
 
                             <PhoneInput
@@ -102,9 +103,9 @@ export default function RegisterPage({ onNavigate }) {
                                 errorMessage={fieldErrors.UnidadeOrganizacionalId || fieldErrors.unidadeOrganizacionalId}
                             />
 
-                            <button type="submit" className="button" style={{ width: '100%', marginTop: '1rem' }}>Cadastrar</button>
-                            <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-                                <a style={{ cursor: 'pointer', color: 'var(--zf-accent)' }} onClick={() => onNavigate('login')}>Já tenho uma conta</a>
+                            <button type="submit" className="button button-full mt-1">Cadastrar</button>
+                            <div className="auth-link-row-centered">
+                                <a className="link-action" onClick={() => onNavigate('login')}>Já tenho uma conta</a>
                             </div>
                         </form>
                     </div>
@@ -112,30 +113,12 @@ export default function RegisterPage({ onNavigate }) {
             </div>
 
             {(erro || sucesso) && (
-                <div style={{
-                    position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-                    backgroundColor: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(4px)',
-                    display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999, padding: '1rem', boxSizing: 'border-box'
-                }}>
-                    <div className="card" style={{
-                        width: '100%', maxWidth: '400px',
-                        height: 'fit-content', margin: 'auto',
-                        backgroundColor: 'var(--zf-background-secondary)',
-                        padding: '2.5rem', borderRadius: '15px', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
-                    }}>
-                        <h2 style={{ color: erro ? '#E57373' : '#81C784', marginTop: 0, marginBottom: '1rem' }}>
-                            {erro ? 'Atenção' : 'Sucesso'}
-                        </h2>
-                        <p style={{ color: 'var(--zf-text-main)', marginBottom: '2rem', fontSize: '1rem', lineHeight: '1.4' }}>
-                            {erro || sucesso}
-                        </p>
-                        {erro && (
-                            <button type="button" className="button" style={{ width: '100%', margin: 0 }} onClick={() => setErro('')}>
-                                Fechar
-                            </button>
-                        )}
-                    </div>
-                </div>
+                <MessageModal
+                    type={erro ? 'error' : 'success'}
+                    message={erro || sucesso}
+                    onClose={() => { setErro(''); setSucesso(''); }}
+                    autoClose={8000}
+                />
             )}
         </>
     );

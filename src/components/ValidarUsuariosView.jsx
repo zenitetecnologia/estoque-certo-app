@@ -56,42 +56,42 @@ export default function ValidarUsuariosView({ token }) {
     });
 
     return (
-        <div style={{ width: '100%' }}>
-            <h2 style={{ marginBottom: '2rem' }}>Usuários Pendentes</h2>
+        <div className="w-full">
+            <h2 className="mb-2">Usuários Pendentes</h2>
 
-            <div style={{ marginBottom: '1.5rem' }}>
+            <div className="mb-2">
                 <input
                     type="text"
                     placeholder="Pesquisar por nome, telefone ou unidade..."
                     value={pesquisa}
                     onChange={(e) => setPesquisa(e.target.value)}
-                    style={{ width: '100%' }}
+                    className="w-full"
                 />
             </div>
 
             {usuariosFiltrados.length === 0 ? (
-                <div className="card" style={{ backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', textAlign: 'center', padding: '3rem 1.5rem' }}>
-                    <p style={{ color: 'var(--zf-text-main)', margin: 0 }}>
+                <div className="card validation-empty-card">
+                    <p className="empty-state-text">
                         {usuarios.length === 0 ? 'Nenhum usuário pendente de validação.' : 'Nenhum resultado encontrado para a pesquisa.'}
                     </p>
                 </div>
             ) : (
-                <div className="zf-row">
+                <div className="row">
                     {usuariosFiltrados.map(user => (
-                        <div key={user.usuarioId} className="zf-col-xs-12 zf-col-md-6 zf-col-lg-4" style={{ marginBottom: '1rem' }}>
+                        <div key={user.usuarioId} className="column-4 mb-1">
 
-                            <div className="card" style={{ backgroundColor: 'var(--zf-background-secondary)', borderRadius: '10px', padding: '1.5rem', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--zf-text-h)' }}>{user.nome}</h3>
+                            <div className="card validation-user-card">
+                                <h3 className="validation-user-title">{user.nome}</h3>
 
-                                <p style={{ color: 'var(--zf-text-main)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+                                <p className="validation-user-meta">
                                     <strong>Username:</strong> {user.username}
                                 </p>
 
-                                <p style={{ color: 'var(--zf-text-main)', fontSize: '0.85rem', marginBottom: '1.5rem', flexGrow: 1 }}>
+                                <p className="validation-user-description">
                                     <strong>Unidade:</strong> {user.nomeUnidadeOrganizacional || 'Sem Unidade'}
                                 </p>
 
-                                <button className="button" style={{ width: '100%', backgroundColor: 'var(--zf-accent)', color: 'var(--zf-accent-text)', borderColor: 'var(--zf-accent)' }} onClick={() => handleAprovar(user.usuarioId)}>
+                                <button className="button button-full" onClick={() => handleAprovar(user.usuarioId)}>
                                     Aprovar Acesso
                                 </button>
                             </div>

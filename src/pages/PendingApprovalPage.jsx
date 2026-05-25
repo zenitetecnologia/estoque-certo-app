@@ -6,21 +6,21 @@ export default function PendingApprovalPage({ onNavigate }) {
         <>
             <ThemeToggle />
             <div className="container">
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-                    <div className="card auth-card" style={{ textAlign: 'center' }}>
+                <div className="auth-page">
+                    <div className="card auth-card text-center">
 
-                        <h2 style={{ marginBottom: '1rem', marginTop: 0, fontSize: '1.4rem', lineHeight: '1.3' }}>
+                        <h2 className="pending-title">
                             Aguarde mais um pouco por favor.
                         </h2>
 
-                        <p style={{ fontSize: '1.05rem', color: 'var(--zf-text-main)', marginBottom: '2rem', lineHeight: '1.5' }}>
+                        <p className="pending-description">
                             Seu cadastro ainda está sendo validado pelo administrador do sistema.
                         </p>
 
                         <button
                             type="button"
-                            className="button button-outline"
-                            style={{ width: '100%', margin: 0 }}
+                            className="button button-outline button-full"
+
                             onClick={() => onNavigate('login')}
                         >
                             Voltar
