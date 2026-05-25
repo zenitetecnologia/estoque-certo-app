@@ -1,334 +1,59 @@
 import { useMemo, useState } from 'react';
-import { Navigate, NavLink, Route, Routes, useNavigate } from 'react-router-dom';
-import { parseJwt } from '../utils/jwt';
-import PasswordInput from '../components/PasswordInput';
-import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
-import { getBaseUrl } from '../utils/apiConfig';
-import EspacoView from '../components/EspacoView';
-import ItemEstoqueView from '../components/ItemEstoqueView';
-import ThemeToggle from '../components/ThemeToggle';
-import ValidarUsuariosView from '../components/ValidarUsuariosView';
 import MessageModal from '../components/MessageModal';
+import AppHeader from '../components/layout/AppHeader';
+import LogoutModal from '../components/layout/LogoutModal';
+import Sidebar from '../components/layout/Sidebar';
+import { useProfileForm } from '../hooks/useProfileForm';
+import AuthenticatedRoutes from '../routes/AuthenticatedRoutes';
+import { getUserFromToken } from '../utils/authUser';
 
 export default function HomePage({ token, onLogout }) {
-    const navigate = useNavigate();
-    const usuarioToken = useMemo(() => {
-        const decoded = parseJwt(token);
-        if (!decoded) {
-            return {
-                usuarioId: '',
-                username: '',
-                unidadeOrganizacionalId: '',
-                nome: '',
-                isAdmin: false
-            };
-        }
-
-        const role = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || decoded.role || '';
-
-        return {
-            usuarioId: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || decoded.nameid || '',
-            username: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || decoded.unique_name || '',
-            unidadeOrganizacionalId: decoded.UnidadeOrganizacionalId || '',
-            nome: decoded.Nome || decoded.nome || '',
-            isAdmin: role === 'Admin'
-        };
-    }, [token]);
-
-    const { usuarioId, isAdmin } = usuarioToken;
-    const [formData, setFormData] = useState({
-        nome: usuarioToken.nome,
-        username: usuarioToken.username,
-        senha: '',
-        confirmaSenha: '',
-        unidadeOrganizacionalId: usuarioToken.unidadeOrganizacionalId
-    });
-    const [erro, setErro] = useState('');
-    const [sucesso, setSucesso] = useState('');
-    const [fieldErrors, setFieldErrors] = useState({});
+    const usuario = useMemo(() => getUserFromToken(token), [token]);
+    const {
+        erro,
+        sucesso,
+        fieldErrors,
+        formData,
+        setFormData,
+        handleUpdateData,
+        handleCancelProfile,
+        clearMessages
+    } = useProfileForm({ token, usuario });
     const [showLogoutModal, setShowLogoutModal] = useState(false);
-    const isIOS = () => {
-        if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
-        const ua = navigator.userAgent || navigator.vendor || window.opera;
-        return /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-    };
-
-    const handleUpdateData = async (e) => {
-        e.preventDefault();
-        setErro('');
-        setSucesso('');
-        setFieldErrors({});
-
-        const payload = {
-            nome: formData.nome
-        };
-
-        if (formData.senha || formData.confirmaSenha) {
-            payload.senha = formData.senha;
-            payload.confirmaSenha = formData.confirmaSenha;
-        }
-
-        try {
-            const response = await fetch(`${getBaseUrl()}/v1/usuarios/${usuarioId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (response.ok) {
-                const mensagem = await extrairMensagem(response);
-                if (mensagem) setSucesso(mensagem);
-                setFormData(prev => ({ ...prev, senha: '', confirmaSenha: '' }));
-            } else if (response.status === 400) {
-                await aplicarErrosCampos(response, setFieldErrors, setErro);
-            } else {
-                const mensagem = await extrairErro(response);
-                setErro(mensagem);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const handleCancelProfile = () => {
-        setErro('');
-        setSucesso('');
-        setFieldErrors({});
-        setFormData(prev => ({ ...prev, senha: '', confirmaSenha: '' }));
-        navigate('/');
-    };
-
-    const closeMenu = () => {
-        const menuToggle = document.getElementById('menu-toggle');
-        if (menuToggle) menuToggle.checked = false;
-    };
 
     return (
         <div className="app-shell">
             <input type="checkbox" id="menu-toggle" className="sidebar-checkbox" />
 
-            <header className="app-header">
-                <div className="app-header-left">
-                    <label htmlFor="menu-toggle" className="button button-outline btn-mobile header-menu-button">
-                        ☰<span className="texto-mobile button-icon-text">Menu</span>
-                    </label>
-                </div>
-
-                <h3 className="app-brand">
-                    Estoque Certo
-                </h3>
-
-                <div className="app-header-right">
-                    <ThemeToggle fixo={false} />
-                </div>
-            </header>
-
-            <div className="sidebar-overlay">
-                <label htmlFor="menu-toggle" className="sidebar-backdrop-toggle"></label>
-            </div>
-
-            <aside className="sidebar">
-                <div className="sidebar-body">
-                    <h3 className="sidebar-title">Zênite Tecnologia</h3>
-                    <p>Estoque Certo</p>
-                    <div className="sidebar-nav">
-                        <NavLink to="/" end onClick={closeMenu}>Início</NavLink>
-                        <NavLink to="/espacos" onClick={closeMenu}>Espaços</NavLink>
-                        <NavLink to="/itens-estoque" onClick={closeMenu}>Itens de Estoque</NavLink>
-                        <NavLink
-                            to="/instalar-ios"
-                            onClick={(event) => {
-                                closeMenu();
-                                if (!isIOS()) event.preventDefault();
-                            }}
-                        >
-                            Adicionar a tela inicial
-                        </NavLink>
-
-                        {isAdmin && (
-                            <NavLink to="/aprovar-usuarios" onClick={closeMenu}>Aprovar Usuários</NavLink>
-                        )}
-                    </div>
-                </div>
-
-                <div className="sidebar-footer">
-                    <NavLink
-                        to="/perfil"
-                        onClick={closeMenu}
-                        className={({ isActive }) => `link-action text-center d-block mb-1 ${isActive ? 'active' : ''}`}
-                    >
-                        Alterar Meus Dados
-                    </NavLink>
-
-                    <label htmlFor="menu-toggle" className="button button-outline sidebar-close-button">
-                        Fechar Menu
-                    </label>
-                    <button onClick={() => setShowLogoutModal(true)} className="button button-danger sidebar-logout-button">
-                        Sair do Sistema
-                    </button>
-                </div>
-            </aside>
+            <AppHeader />
+            <Sidebar isAdmin={usuario.isAdmin} onLogoutClick={() => setShowLogoutModal(true)} />
 
             <main className="container app-main">
-                <Routes>
-                    <Route
-                        index
-                        element={
-                            <div className="home-hero">
-                                <img src="/logo-zenite.png" alt="Logo Zênite" className="home-logo" />
-                                <h2 className="home-subtitle">Bem-vindo ao Estoque Certo.</h2>
-                            </div>
-                        }
-                    />
-                    <Route
-                        path="espacos"
-                        element={<EspacoView token={token} unidadeOrganizacionalId={formData.unidadeOrganizacionalId} />}
-                    />
-                    <Route
-                        path="itens-estoque"
-                        element={<ItemEstoqueView token={token} unidadeOrganizacionalId={formData.unidadeOrganizacionalId} usuarioId={usuarioId} />}
-                    />
-                    <Route
-                        path="aprovar-usuarios"
-                        element={isAdmin ? <ValidarUsuariosView token={token} /> : <Navigate to="/" replace />}
-                    />
-                    <Route
-                        path="instalar-ios"
-                        element={
-                            <div className="install-panel">
-                                <h3 className="install-title">Instale o Estoque Certo</h3>
-
-                                <p> <b>Role a tela e siga o tutorial</b> <br />
-                                    Para instalar o aplicativo, <br /> toque nos <b>...</b> </p>
-
-                                <img
-                                    src="/pg1.jpeg"
-                                    alt="Tutorial de instalação 1"
-                                    className="install-step-image"
-                                />
-
-                                <p>e depois em <b>"Compartilhar"</b>.
-                                </p>
-
-                                <img
-                                    src="/pg2.jpeg"
-                                    alt="Tutorial de instalação 2"
-                                    className="install-step-image"
-                                />
-
-                                <p>Role a tela para baixo e clique em <b>"Adicionar a tela de início"</b> </p>
-
-                                <img
-                                    src="/pg3.jpeg"
-                                    alt="Tutorial de instalação 3"
-                                    className="install-step-image"
-                                />
-
-                                <p>Depois clique em <b>"Adicionar"</b> </p>
-
-                                <img
-                                    src="/pg4.jpeg"
-                                    alt="Tutorial de instalação 4"
-                                    className="install-step-image"
-                                />
-
-                                <p> assim o aplicativo será adicionado à sua tela de início.</p>
-
-                                <img
-                                    src="/pg5.jpeg"
-                                    alt="Tutorial de instalação 5"
-                                    className="install-step-image"
-                                />
-
-
-                                <button
-                                    onClick={() => navigate('/')}
-
-                                    className="button install-button">
-                                    Entendi
-                                </button>
-                            </div>
-                        }
-                    />
-                    <Route
-                        path="perfil"
-                        element={
-                            <div className="row profile-row">
-                                <div className="column-6">
-                                    <div className="card profile-card">
-                                        <div className="modal-card-body">
-                                            <h2 className="auth-title">Alterar Meus Dados</h2>
-
-                                            <form onSubmit={handleUpdateData} noValidate>
-                                                <div className="mb-1">
-                                                    <label className={`label-sm ${fieldErrors.Nome ? 'error' : ''}`}>
-                                                        Nome
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        value={formData.nome}
-                                                        onChange={e => setFormData({ ...formData, nome: e.target.value })}
-                                                        className={`w-full no-field-margin ${fieldErrors.Nome ? 'is-invalid' : ''}`}
-                                                    />
-                                                    {fieldErrors.Nome && <small className="invalid-feedback d-block">{fieldErrors.Nome}</small>}
-                                                </div>
-
-                                                <PasswordInput
-                                                    label="Nova Senha"
-                                                    placeholder="Senha"
-                                                    value={formData.senha}
-                                                    onChange={e => setFormData({ ...formData, senha: e.target.value })}
-                                                    error={!!fieldErrors.Senha}
-                                                    errorMessage={fieldErrors.Senha}
-                                                />
-
-                                                <PasswordInput
-                                                    label="Confirmar Senha"
-                                                    placeholder="Confirme a senha"
-                                                    value={formData.confirmaSenha}
-                                                    onChange={e => setFormData({ ...formData, confirmaSenha: e.target.value })}
-                                                    error={!!fieldErrors.ConfirmaSenha}
-                                                    errorMessage={fieldErrors.ConfirmaSenha}
-                                                />
-
-                                                <div className="modal-actions profile-actions">
-                                                    <button type="button" className="button button-outline" onClick={handleCancelProfile}>Cancelar</button>
-                                                    <button type="submit" className="button">Salvar</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
+                <AuthenticatedRoutes
+                    fieldErrors={fieldErrors}
+                    formData={formData}
+                    isAdmin={usuario.isAdmin}
+                    onCancelProfile={handleCancelProfile}
+                    onChangeProfile={setFormData}
+                    onSubmitProfile={handleUpdateData}
+                    token={token}
+                    unidadeOrganizacionalId={formData.unidadeOrganizacionalId}
+                    usuarioId={usuario.usuarioId}
+                />
             </main>
 
             {showLogoutModal && (
-                <div className="modal-overlay">
-                    <div className="card modal-card">
-                        <div className="modal-card-body">
-                            <h2 className="modal-title">Sair do Sistema</h2>
-                            <p className="modal-description">Tem certeza que deseja encerrar a sua sessão?</p>
-                            <div className="modal-actions">
-                                <button type="button" className="button button-outline button-flex" onClick={() => setShowLogoutModal(false)}>Cancelar</button>
-                                <button type="button" className="button button-danger button-flex" onClick={onLogout}>Sair</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <LogoutModal
+                    onCancel={() => setShowLogoutModal(false)}
+                    onConfirm={onLogout}
+                />
             )}
 
             {(erro || sucesso) && (
                 <MessageModal
                     type={erro ? 'error' : 'success'}
                     message={erro || sucesso}
-                    onClose={() => { setErro(''); setSucesso(''); }}
+                    onClose={clearMessages}
                     autoClose={8000}
                 />
             )}

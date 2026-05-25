@@ -1,10 +1,6 @@
 import { useState } from 'react';
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import PendingApprovalPage from './pages/PendingApprovalPage';
-import HomePage from './pages/HomePage';
+import { useNavigate } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes';
 
 export default function App() {
     const navigate = useNavigate();
@@ -29,27 +25,12 @@ export default function App() {
     };
 
     return (
-        <Routes>
-            <Route
-                path="/login"
-                element={token ? <Navigate to="/" replace /> : <LoginPage onLogin={handleLogin} onPendingApproval={handlePendingApproval} />}
-            />
-            <Route
-                path="/register"
-                element={token ? <Navigate to="/" replace /> : <RegisterPage />}
-            />
-            <Route
-                path="/forgot-password"
-                element={token ? <Navigate to="/" replace /> : <ForgotPasswordPage />}
-            />
-            <Route
-                path="/pending-approval"
-                element={token ? <Navigate to="/" replace /> : <PendingApprovalPage message={pendingMessage} />}
-            />
-            <Route
-                path="/*"
-                element={token ? <HomePage token={token} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
-            />
-        </Routes>
+        <AppRoutes
+            token={token}
+            pendingMessage={pendingMessage}
+            onLogin={handleLogin}
+            onLogout={handleLogout}
+            onPendingApproval={handlePendingApproval}
+        />
     );
 }

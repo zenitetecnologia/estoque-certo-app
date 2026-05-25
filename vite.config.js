@@ -3,6 +3,14 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  server: {
+    fs: {
+      allow: [
+        'C:/Users/dougl/source/Repositórios/estoque-certo-app',
+        'C:/Users/dougl/source/Repositórios/zenite-ui'
+      ]
+    }
+  },
   plugins: [
     react(),
     VitePWA({

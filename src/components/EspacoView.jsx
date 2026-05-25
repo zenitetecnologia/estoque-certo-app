@@ -1,10 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import {
+    atualizarEspaco,
+    criarEspaco,
+    excluirEspaco,
+    listarEspacos,
+    listarItensDoEspaco
+} from '../services/espacoService';
+import { atualizarItemEstoque } from '../services/itemEstoqueService';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
-import { getBaseUrl } from '../utils/apiConfig';
-import { formatQuantity, formatQuantityInput, maskQuantityInput, parseQuantity } from '../utils/quantity';
-import { TIPO_UNIDADE } from '../constants/tipoUnidade';
-import LoadingWaves from './LoadingWaves';
+import { criarPayloadEspaco, filtrarEspacos } from '../utils/espacoViewModel';
+import { formatQuantityInput, maskQuantityInput, parseQuantity } from '../utils/quantity';
 import MessageModal from './MessageModal';
+import EspacoDetail from './espacos/EspacoDetail';
+import EspacoList from './espacos/EspacoList';
 
 export default function EspacoView({ token, unidadeOrganizacionalId }) {
 
@@ -33,9 +41,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         setLoading(true);
         setErro('');
         try {
-            const response = await fetch(`${getBaseUrl()}/v1/espacos?unidadeOrganizacionalId=${unidadeOrganizacionalId}&skip=0&top=50`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const response = await listarEspacos({ token, unidadeOrganizacionalId });
             if (response.ok) {
                 const data = await response.json();
                 setEspacos(data);
@@ -68,18 +74,10 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         e.preventDefault();
         setErro(''); setSucesso(''); setFieldErrors({});
 
-        const payload = {
-            unidadeOrganizacionalId: unidadeOrganizacionalId,
-            nome: formDataNovo.nome,
-            descricao: formDataNovo.descricao
-        };
+        const payload = criarPayloadEspaco({ unidadeOrganizacionalId, formData: formDataNovo });
 
         try {
-            const response = await fetch(`${getBaseUrl()}/v1/espacos`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify(payload)
-            });
+            const response = await criarEspaco({ token, payload });
 
             if (response.ok) {
                 const mensagem = await extrairMensagem(response);
@@ -105,9 +103,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
 
         setLoadingItens(true);
         try {
-            const res = await fetch(`${getBaseUrl()}/v1/itens-estoque?espacoId=${espaco.espacoId}&top=50`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const res = await listarItensDoEspaco({ token, espacoId: espaco.espacoId });
             if (res.ok) {
                 const itens = await res.json();
                 setItensDoEspaco(itens);
@@ -139,18 +135,10 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
 
     const handleConfirmarEdicao = async () => {
         setErro(''); setSucesso(''); setFieldErrors({});
-        const payload = {
-            unidadeOrganizacionalId: unidadeOrganizacionalId,
-            nome: formEdicao.nome,
-            descricao: formEdicao.descricao
-        };
+        const payload = criarPayloadEspaco({ unidadeOrganizacionalId, formData: formEdicao });
 
         try {
-            const response = await fetch(`${getBaseUrl()}/v1/espacos/${espacoSelecionado.espacoId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify(payload)
-            });
+            const response = await atualizarEspaco({ token, espacoId: espacoSelecionado.espacoId, payload });
 
             if (response.ok) {
                 const mensagem = await extrairMensagem(response);
@@ -170,10 +158,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     const handleExcluirEspaco = async () => {
         setErro(''); setSucesso('');
         try {
-            const response = await fetch(`${getBaseUrl()}/v1/espacos/${espacoSelecionado.espacoId}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const response = await excluirEspaco({ token, espacoId: espacoSelecionado.espacoId });
 
             if (response.ok || response.status === 204) {
                 const mensagem = await extrairMensagem(response);
@@ -213,11 +198,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         };
 
         try {
-            const response = await fetch(`${getBaseUrl()}/v1/itens-estoque/${item.itemEstoqueId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify(payload)
-            });
+            const response = await atualizarItemEstoque({ token, itemEstoqueId: item.itemEstoqueId, payload });
 
             if (response.ok) {
                 const mensagem = await extrairMensagem(response);
@@ -244,10 +225,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         }
     };
 
-    const espacosFiltrados = espacos.filter(espaco =>
-        espaco.nome?.toLowerCase().includes(pesquisa.toLowerCase()) ||
-        espaco.descricao?.toLowerCase().includes(pesquisa.toLowerCase())
-    );
+    const espacosFiltrados = filtrarEspacos(espacos, pesquisa);
 
     const messageModal = (erro || sucesso) && (
         <MessageModal
@@ -260,216 +238,49 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
 
     if (viewMode === 'list') {
         return (
-            <div className="w-full">
-                <div className="inventory-list-header">
-                    <h2 className="no-margin">Gestão de Espaços</h2>
-                    <button className="button inventory-list-header-action no-margin" onClick={() => { setFormDataNovo({ nome: '', descricao: '' }); setShowModalNovo(true); setFieldErrors({}); setErro(''); }}>
-                        + Novo espaço
-                    </button>
-                </div>
-
-                <div className="mb-2">
-                    <input
-                        type="text"
-                        placeholder="Pesquisar espaços por nome ou descrição..."
-                        value={pesquisa}
-                        onChange={(e) => setPesquisa(e.target.value)}
-                        className="w-full no-field-margin"
-                    />
-                </div>
-
-                {loading ? (
-                    <LoadingWaves rows={3} label="Carregando espaços" />
-                ) : espacosFiltrados.length === 0 ? (
-                    <div className="card empty-state-card">
-                        <div className="empty-state-body">
-                            <p className="empty-state-text">
-                                {espacos.length === 0 ? 'Nenhum espaço cadastrado nesta unidade.' : 'Nenhum espaço encontrado para a pesquisa.'}
-                            </p>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="inventory-grid">
-                        {espacosFiltrados.map(espaco => (
-                            <div key={espaco.espacoId} className="inventory-grid-item">
-                                <div className="card inventory-card inventory-list-card inventory-card-surface">
-                                    <div className="inventory-card-header">
-                                        <h3 className="inventory-card-title">{espaco.nome}</h3>
-                                        <p className="inventory-card-description">
-                                            {espaco.descricao || 'Sem descrição'}
-                                        </p>
-                                    </div>
-                                    <div className="inventory-card-footer">
-                                        <button className="button button-outline inventory-card-action" onClick={() => abrirDetalhes(espaco)}>
-                                            Visualizar
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {showModalNovo && (
-                    <div className="modal-overlay">
-                        <div className="card modal-card-wide">
-                            <div className="modal-card-body">
-                                <h2 className="form-modal-title">Novo Espaço</h2>
-                                <form onSubmit={handleCriarEspaco} noValidate>
-                                    <div className="mb-1">
-                                        <label className={`label-sm ${fieldErrors.Nome ? 'error' : ''}`}>Nome do Espaço (Obrigatório)</label>
-                                        <input
-                                            type="text"
-                                            value={formDataNovo.nome}
-                                            onChange={e => setFormDataNovo({ ...formDataNovo, nome: e.target.value })}
-                                            className={`w-full no-field-margin ${fieldErrors.Nome ? 'is-invalid' : ''}`}
-                                        />
-                                        {fieldErrors.Nome && <small className="invalid-feedback d-block">{fieldErrors.Nome}</small>}
-                                    </div>
-                                    <div className="mb-2">
-                                        <label className={`label-sm ${fieldErrors.Descricao ? 'error' : ''}`}>Descrição (Opcional)</label>
-                                        <input
-                                            type="text"
-                                            value={formDataNovo.descricao}
-                                            onChange={e => setFormDataNovo({ ...formDataNovo, descricao: e.target.value })}
-                                            className={`w-full no-field-margin ${fieldErrors.Descricao ? 'is-invalid' : ''}`}
-                                        />
-                                        {fieldErrors.Descricao && <small className="invalid-feedback d-block">{fieldErrors.Descricao}</small>}
-                                    </div>
-                                    <div className="modal-actions">
-                                        <button type="button" className="button button-outline button-flex" onClick={() => setShowModalNovo(false)}>Cancelar</button>
-                                        <button type="submit" className="button button-flex">Salvar</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {messageModal}
-            </div>
+            <EspacoList
+                espacos={espacos}
+                espacosFiltrados={espacosFiltrados}
+                fieldErrors={fieldErrors}
+                formDataNovo={formDataNovo}
+                loading={loading}
+                messageModal={messageModal}
+                onAbrirDetalhes={abrirDetalhes}
+                onAbrirNovo={() => {
+                    setFormDataNovo({ nome: '', descricao: '' });
+                    setShowModalNovo(true);
+                    setFieldErrors({});
+                    setErro('');
+                }}
+                onChangeFormNovo={setFormDataNovo}
+                onChangePesquisa={setPesquisa}
+                onCloseNovo={() => setShowModalNovo(false)}
+                onSubmitNovo={handleCriarEspaco}
+                pesquisa={pesquisa}
+                showModalNovo={showModalNovo}
+            />
         );
     }
 
     return (
-        <div className="detail-view w-full">
-            <div className="detail-heading">
-                <h2 className="no-margin">Detalhes do Espaço</h2>
-            </div>
-
-            <div className="card detail-card">
-                <div className="detail-card-body">
-                    <div className="row">
-                        <div className="column-6 mb-1">
-                            <label className={`label-sm ${fieldErrors.Nome ? 'error' : ''}`}>Nome do Espaço</label>
-                            <input
-                                type="text"
-                                value={formEdicao.nome}
-                                onChange={e => setFormEdicao({ ...formEdicao, nome: e.target.value })}
-                                className={`w-full no-field-margin ${fieldErrors.Nome ? 'is-invalid' : ''}`}
-                            />
-                            {fieldErrors.Nome && <small className="invalid-feedback d-block">{fieldErrors.Nome}</small>}
-                        </div>
-                        <div className="column-6 mb-1">
-                            <label className={`label-sm ${fieldErrors.Descricao ? 'error' : ''}`}>Descrição</label>
-                            <input
-                                type="text"
-                                value={formEdicao.descricao}
-                                onChange={e => setFormEdicao({ ...formEdicao, descricao: e.target.value })}
-                                className={`w-full no-field-margin ${fieldErrors.Descricao ? 'is-invalid' : ''}`}
-                            />
-                            {fieldErrors.Descricao && <small className="invalid-feedback d-block">{fieldErrors.Descricao}</small>}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <h3 className="section-title">Itens neste espaço</h3>
-            {loadingItens ? (
-                <LoadingWaves variant="cards" rows={3} label="Carregando inventário" />
-            ) : itensDoEspaco.length === 0 ? (
-                <div className="card detail-card">
-                    <div className="empty-state-body-compact">
-                        <p className="empty-state-text">Este espaço está vazio.</p>
-                    </div>
-                </div>
-            ) : (
-                <div className="inventory-grid inventory-grid-compact mb-2">
-                    {itensDoEspaco.map(item => (
-                        <div key={item.itemEstoqueId} className="inventory-grid-item">
-                            <div className="card inventory-card space-item-card">
-                                <div className="space-item-card-body">
-                                    <div className="space-item-card-header">
-                                        <div>
-                                            <h4 className="space-item-title">{item.descricao}</h4>
-                                            <small className="space-item-unit">{TIPO_UNIDADE[item.tipoUnidadeMedida] || 'UN'}</small>
-                                        </div>
-                                        <div className="space-item-quantity-badge">
-                                            {formatQuantity(item.quantidade)}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="label-sm">Quantidade</label>
-                                        <input
-                                            type="text"
-                                            inputMode="decimal"
-                                            value={quantidadesEditadas[item.itemEstoqueId] ?? ''}
-                                            onChange={e => handleQuantidadeItemChange(item.itemEstoqueId, e.target.value)}
-                                            className="w-full no-field-margin"
-                                        />
-                                    </div>
-                                    <button
-                                        className="button button-outline button-full"
-
-                                        onClick={() => handleSalvarQuantidadeItem(item)}
-                                        disabled={salvandoItemId === item.itemEstoqueId || parseQuantity(quantidadesEditadas[item.itemEstoqueId]) === parseQuantity(item.quantidade)}
-                                    >
-                                        {salvandoItemId === item.itemEstoqueId ? 'Salvando...' : 'Atualizar quantidade'}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            <div className="detail-action-bar">
-                <button className="button button-outline" onClick={voltarParaLista}>
-                    Voltar
-                </button>
-                <button
-                    className={`button ${!houveMudanca ? '' : ''}`}
-                    onClick={handleConfirmarEdicao}
-                    disabled={!houveMudanca}
-                >
-                    Editar
-                </button>
-                <button
-                    className="button button-danger"
-                    onClick={() => setShowDeleteModal(true)}>
-                    Excluir
-                </button>
-            </div>
-
-            {showDeleteModal && (
-                <div className="modal-overlay">
-                    <div className="card modal-card">
-                        <div className="modal-card-body">
-                            <h2 className="modal-title">Excluir Espaço</h2>
-                            <p className="modal-description">
-                                Tem certeza que deseja excluir este espaço?
-                            </p>
-                            <div className="modal-actions">
-                                <button type="button" className="button button-outline button-flex" onClick={() => setShowDeleteModal(false)}>Cancelar</button>
-                                <button type="button" className="button button-danger button-flex" onClick={handleExcluirEspaco}>Excluir Definitivo</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/*modal de mensagens (erro e sucesso)*/}
-            {messageModal}
-        </div>
+        <EspacoDetail
+            fieldErrors={fieldErrors}
+            formEdicao={formEdicao}
+            houveMudanca={houveMudanca}
+            itensDoEspaco={itensDoEspaco}
+            loadingItens={loadingItens}
+            messageModal={messageModal}
+            onChangeFormEdicao={setFormEdicao}
+            onCloseDelete={() => setShowDeleteModal(false)}
+            onConfirmarEdicao={handleConfirmarEdicao}
+            onExcluir={handleExcluirEspaco}
+            onOpenDelete={() => setShowDeleteModal(true)}
+            onQuantidadeItemChange={handleQuantidadeItemChange}
+            onSalvarQuantidadeItem={handleSalvarQuantidadeItem}
+            onVoltar={voltarParaLista}
+            quantidadesEditadas={quantidadesEditadas}
+            salvandoItemId={salvandoItemId}
+            showDeleteModal={showDeleteModal}
+        />
     );
 }
