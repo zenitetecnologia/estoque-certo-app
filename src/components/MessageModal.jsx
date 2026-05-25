@@ -12,7 +12,7 @@ export default function MessageModal({
     const [progress, setProgress] = useState(0);
     const isError = type === 'error';
     const closeDelay = autoCloseMs ?? autoClose;
-    const modalTitle = title || (isError ? 'Atenção' : 'Sucesso');
+    const modalTitle = title || '';
     const actionLabel = buttonLabel || (isError ? 'Fechar' : 'OK');
 
     useEffect(() => {
@@ -46,9 +46,11 @@ export default function MessageModal({
     return (
         <div className="message-overlay">
             <div className="card message-card">
-                <h2 className={isError ? 'message-title-error' : 'message-title-success'}>
-                    {modalTitle}
-                </h2>
+                {modalTitle && (
+                    <h2 className={isError ? 'message-title-error' : 'message-title-success'}>
+                        {modalTitle}
+                    </h2>
+                )}
 
                 <p className="message-text">
                     {message}

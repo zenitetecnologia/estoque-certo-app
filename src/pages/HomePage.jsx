@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { parseJwt } from '../utils/jwt';
 import PasswordInput from '../components/PasswordInput';
-import { extrairErro } from '../utils/apiUtils';
+import { extrairErro, extrairErrosCampos, extrairMensagem } from '../utils/apiUtils';
 import EspacoView from '../components/EspacoView';
 import ItemEstoqueView from '../components/ItemEstoqueView';
 import ThemeToggle from '../components/ThemeToggle';
@@ -47,13 +47,6 @@ export default function HomePage({ token, onLogout }) {
         setSucesso('');
         setFieldErrors({});
 
-        if (formData.senha || formData.confirmaSenha) {
-            if (formData.senha !== formData.confirmaSenha) {
-                setFieldErrors({ ConfirmaSenha: 'As senhas não coincidem.' });
-                return;
-            }
-        }
-
         const payload = {
             nome: formData.nome
         };
@@ -74,30 +67,19 @@ export default function HomePage({ token, onLogout }) {
             });
 
             if (response.ok) {
-                setSucesso('Dados atualizados com sucesso!');
+                const mensagem = await extrairMensagem(response);
+                if (mensagem) setSucesso(mensagem);
                 setFormData(prev => ({ ...prev, senha: '', confirmaSenha: '' }));
             } else if (response.status === 400) {
-                const errorData = await response.json();
-                const mappedErrors = {};
-
-                if (Array.isArray(errorData)) {
-                    errorData.forEach(err => {
-                        const fieldName = err.field || err.Field;
-                        if (fieldName) mappedErrors[fieldName] = err.error || err.Error;
-                    });
-                } else if (errorData.errors) {
-                    Object.keys(errorData.errors).forEach(key => {
-                        const fieldName = key.charAt(0).toUpperCase() + key.slice(1);
-                        mappedErrors[fieldName] = errorData.errors[key][0];
-                    });
-                }
+                const { fieldErrors: mappedErrors, message } = await extrairErrosCampos(response);
                 setFieldErrors(mappedErrors);
+                if (Object.keys(mappedErrors).length === 0 && message) setErro(message);
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);
             }
         } catch (error) {
-            setErro('Erro de comunicação com o servidor.');
+            console.error(error);
         }
     };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { extrairErro } from '../utils/apiUtils';
+import { extrairErro, extrairErrosCampos, extrairMensagem } from '../utils/apiUtils';
 import { formatQuantity, formatQuantityInput, maskQuantityInput, parseQuantity } from '../utils/quantity';
 import LoadingWaves from './LoadingWaves';
 import MessageModal from './MessageModal';
@@ -46,10 +46,11 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 const data = await response.json();
                 setEspacos(data);
             } else {
-                setErro('Falha ao carregar os espaços.');
+                const mensagem = await extrairErro(response);
+                if (mensagem) setErro(mensagem);
             }
         } catch (err) {
-            setErro('Erro de comunicação com o servidor.');
+            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -70,26 +71,11 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     }, [erro, sucesso]);
 
     const parseBackendErrors = async (res) => {
-        try {
-            const text = await res.text();
-            if (!text) return;
-            const errorData = JSON.parse(text);
-            const mappedErrors = {};
-            if (Array.isArray(errorData)) {
-                errorData.forEach(err => {
-                    const fieldName = err.field || err.Field;
-                    if (fieldName) mappedErrors[fieldName] = err.error || err.Error;
-                });
-            } else if (errorData.errors) {
-                Object.keys(errorData.errors).forEach(key => {
-                    let cleanKey = key.replace('$.', '');
-                    const fieldName = cleanKey.charAt(0).toUpperCase() + cleanKey.slice(1);
-                    mappedErrors[fieldName] = errorData.errors[key][0];
-                });
-            }
-            setFieldErrors(mappedErrors);
-        } catch (e) {
-            setErro('Verifique os campos preenchidos e tente novamente.');
+        const { fieldErrors: mappedErrors, message } = await extrairErrosCampos(res);
+        setFieldErrors(mappedErrors);
+
+        if (Object.keys(mappedErrors).length === 0 && message) {
+            setErro(message);
         }
     };
 
@@ -111,8 +97,9 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
             });
 
             if (response.ok) {
+                const mensagem = await extrairMensagem(response);
                 setShowModalNovo(false);
-                setSucesso('Espaço cadastrado com sucesso.');
+                if (mensagem) setSucesso(mensagem);
                 carregarEspacos();
             } else if (response.status === 400) {
                 await parseBackendErrors(response);
@@ -121,7 +108,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 setErro(mensagem);
             }
         } catch (error) {
-            setErro('Erro de conexão com o servidor.');
+            console.error(error);
         }
     };
 
@@ -142,9 +129,12 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 setQuantidadesEditadas(Object.fromEntries(
                     itens.map(item => [item.itemEstoqueId, formatQuantityInput(item.quantidade)])
                 ));
+            } else {
+                const mensagem = await extrairErro(res);
+                if (mensagem) setErro(mensagem);
             }
         } catch (err) {
-            setErro('Erro ao carregar os itens deste espaço.');
+            console.error(err);
         } finally {
             setLoadingItens(false);
         }
@@ -178,7 +168,8 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
             });
 
             if (response.ok) {
-                setSucesso('Espaço atualizado com sucesso.');
+                const mensagem = await extrairMensagem(response);
+                if (mensagem) setSucesso(mensagem);
                 setEspacoSelecionado({ ...espacoSelecionado, nome: formEdicao.nome, descricao: formEdicao.descricao });
             } else if (response.status === 400) {
                 await parseBackendErrors(response);
@@ -187,7 +178,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 setErro(mensagem);
             }
         } catch (error) {
-            setErro('Erro de conexão com o servidor.');
+            console.error(error);
         }
     };
 
@@ -200,16 +191,17 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
             });
 
             if (response.ok || response.status === 204) {
+                const mensagem = await extrairMensagem(response);
                 setShowDeleteModal(false);
                 voltarParaLista();
-                setTimeout(() => setSucesso('Espaço excluído com sucesso.'), 100);
+                if (mensagem) setTimeout(() => setSucesso(mensagem), 100);
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);
                 setShowDeleteModal(false);
             }
         } catch (error) {
-            setErro('Erro de conexão com o servidor.');
+            console.error(error);
             setShowDeleteModal(false);
         }
     };
@@ -243,6 +235,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
             });
 
             if (response.ok) {
+                const mensagem = await extrairMensagem(response);
                 setItensDoEspaco(prev => prev.map(atual =>
                     atual.itemEstoqueId === item.itemEstoqueId
                         ? { ...atual, quantidade: novaQuantidade }
@@ -252,7 +245,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                     ...prev,
                     [item.itemEstoqueId]: formatQuantityInput(novaQuantidade)
                 }));
-                setSucesso('Quantidade atualizada com sucesso.');
+                if (mensagem) setSucesso(mensagem);
             } else if (response.status === 400) {
                 await parseBackendErrors(response);
             } else {
@@ -260,7 +253,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 setErro(mensagem);
             }
         } catch (error) {
-            setErro('Erro de conexão com o servidor.');
+            console.error(error);
         } finally {
             setSalvandoItemId(null);
         }

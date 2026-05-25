@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { extrairErro } from '../utils/apiUtils';
+import { extrairErro, extrairErrosCampos, extrairMensagem } from '../utils/apiUtils';
 import { formatQuantity, formatQuantityInput, maskQuantityInput, parseQuantity } from '../utils/quantity';
 import LoadingWaves from './LoadingWaves';
 import MessageModal from './MessageModal';
@@ -101,10 +101,11 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 setItens(ordenarItens(itensFiltrados));
                 setEspacos(espacosRecebidos);
             } else {
-                setErro('Falha ao carregar os dados do estoque.');
+                const mensagem = await extrairErro(!resItens.ok ? resItens : resEspacos);
+                if (mensagem) setErro(mensagem);
             }
         } catch (err) {
-            setErro('Erro de comunicação com o servidor.');
+            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -131,26 +132,11 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     };
 
     const parseBackendErrors = async (res) => {
-        try {
-            const text = await res.text();
-            if (!text) return;
-            const errorData = JSON.parse(text);
-            const mappedErrors = {};
-            if (Array.isArray(errorData)) {
-                errorData.forEach(err => {
-                    const fieldName = err.field || err.Field;
-                    if (fieldName) mappedErrors[fieldName] = err.error || err.Error;
-                });
-            } else if (errorData.errors) {
-                Object.keys(errorData.errors).forEach(key => {
-                    let cleanKey = key.replace('$.', '');
-                    const fieldName = cleanKey.charAt(0).toUpperCase() + cleanKey.slice(1);
-                    mappedErrors[fieldName] = errorData.errors[key][0];
-                });
-            }
-            setFieldErrors(mappedErrors);
-        } catch (e) {
-            setErro('Verifique os campos preenchidos e tente novamente.');
+        const { fieldErrors: mappedErrors, message } = await extrairErrosCampos(res);
+        setFieldErrors(mappedErrors);
+
+        if (Object.keys(mappedErrors).length === 0 && message) {
+            setErro(message);
         }
     };
 
@@ -194,8 +180,9 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
             });
 
             if (response.ok) {
+                const mensagem = await extrairMensagem(response);
                 setShowModalNovo(false);
-                setSucesso('Item cadastrado com sucesso.');
+                if (mensagem) setSucesso(mensagem);
                 carregarDados();
             } else if (response.status === 400) {
                 await parseBackendErrors(response);
@@ -203,7 +190,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 const msg = await extrairErro(response);
                 setErro(msg);
             }
-        } catch (error) { setErro('Erro de conexão com o servidor.'); }
+        } catch (error) { console.error(error); }
     };
 
     const houveMudanca = itemAtivo && (
@@ -232,7 +219,8 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
             });
 
             if (response.ok) {
-                setSucesso('Item atualizado com sucesso.');
+                const mensagem = await extrairMensagem(response);
+                if (mensagem) setSucesso(mensagem);
                 setItemAtivo({ ...itemAtivo, ...payload });
             } else if (response.status === 400) {
                 await parseBackendErrors(response);
@@ -240,7 +228,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 const msg = await extrairErro(response);
                 setErro(msg);
             }
-        } catch (error) { setErro('Erro de conexão com o servidor.'); }
+        } catch (error) { console.error(error); }
     };
 
     const handleExcluir = async () => {
@@ -251,26 +239,22 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
+                const mensagem = await extrairMensagem(response);
                 setShowDeleteModal(false);
                 voltarParaLista();
-                setTimeout(() => setSucesso('Item excluído com sucesso.'), 100);
+                if (mensagem) setTimeout(() => setSucesso(mensagem), 100);
             } else {
                 const msg = await extrairErro(response);
                 setErro(msg);
                 setShowDeleteModal(false);
             }
-        } catch (error) { setErro('Erro de conexão.'); setShowDeleteModal(false); }
+        } catch (error) { console.error(error); setShowDeleteModal(false); }
     };
 
     const handleTransferir = async (e) => {
         e.preventDefault();
         setErro('');
         setSucesso('');
-
-        if (!novoEspacoId) {
-            setErro('Selecione o novo espaço de destino.');
-            return;
-        }
 
         try {
             const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/itens-estoque/${itemAtivo.itemEstoqueId}/transferir`, {
@@ -283,7 +267,8 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
             });
 
             if (response.ok) {
-                setSucesso('Item transferido com sucesso!');
+                const mensagem = await extrairMensagem(response);
+                if (mensagem) setSucesso(mensagem);
                 setShowTransferirModal(false);
 
                 //atualiza na lista geral
@@ -302,7 +287,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 setErro(await extrairErro(response));
             }
         } catch (error) {
-            setErro('Erro ao tentar transferir o item de espaço.');
+            console.error(error);
         }
     };
 
@@ -311,11 +296,6 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
         setErro(''); setSucesso(''); setFieldErrors({});
 
         const quantidadeMovimento = parseQuantity(movimentacaoData.quantidadeMovimento);
-        if (!movimentacaoData.quantidadeMovimento || quantidadeMovimento <= 0) {
-            setFieldErrors({ QuantidadeMovimento: 'Informe uma quantidade maior que zero.' });
-            return;
-        }
-
         const payload = {
             quantidade: quantidadeMovimento,
             tipoMovimentacao: parseInt(movimentacaoData.tipoMovimentacao),
@@ -330,7 +310,8 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
             });
 
             if (response.ok) {
-                setSucesso('Movimentação realizada com sucesso!');
+                const mensagem = await extrairMensagem(response);
+                if (mensagem) setSucesso(mensagem);
                 setShowMovimentarModal(false);
 
                 carregarHistorico(itemAtivo.itemEstoqueId);
@@ -347,7 +328,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 const msg = await extrairErro(response);
                 setErro(msg);
             }
-        } catch (error) { setErro('Erro de conexão.'); }
+        } catch (error) { console.error(error); }
     };
 
     const getNomeEspaco = (id) => {
@@ -392,8 +373,6 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
 
                 {loading ? (
                     <LoadingWaves rows={3} label="Carregando itens" />
-                ) : espacos.length === 0 ? (
-                    <div className="alert alert-error">Você precisa cadastrar um Espaço antes de criar Itens.</div>
                 ) : itens.length === 0 ? (
                     <div className="card empty-state-card">
                         <div className="empty-state-body">
@@ -483,9 +462,6 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
             <div className="detail-heading">
                 <h2 className="no-margin">Detalhes do Item</h2>
             </div>
-
-            {erro && <div className="alert alert-error mb-1">{erro}</div>}
-            {sucesso && <div className="alert alert-success mb-1">{sucesso}</div>}
 
             <div className="card detail-card">
                 <div className="detail-card-body">

@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import UnidadeComboBox from '../components/UnidadeComboBox';
 import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
-import { extrairErro } from '../utils/apiUtils';
+import { extrairErro, extrairErrosCampos } from '../utils/apiUtils';
 import ThemeToggle from '../components/ThemeToggle';
 import MessageModal from '../components/MessageModal';
 
-export default function LoginPage({ onLogin, onNavigate }) {
+export default function LoginPage({ onLogin, onNavigate, onPendingApproval }) {
     const [formData, setFormData] = useState({ username: '', senha: '', unidadeOrganizacionalId: '' });
     const [erro, setErro] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
@@ -32,36 +32,22 @@ export default function LoginPage({ onLogin, onNavigate }) {
                 const data = await response.json();
                 onLogin(data.token);
             } else if (response.status === 400) {
-                const errorData = await response.json();
-                const mappedErrors = {};
-
-                if (Array.isArray(errorData)) {
-                    errorData.forEach(err => {
-                        const fieldName = err.field || err.Field;
-                        const errorMessage = err.error || err.Error;
-                        if (fieldName) {
-                            mappedErrors[fieldName] = errorMessage;
-                        }
-                    });
-                }
-                else if (errorData.errors) {
-                    Object.keys(errorData.errors).forEach(key => {
-                        const fieldName = key.charAt(0).toUpperCase() + key.slice(1);
-                        mappedErrors[fieldName] = errorData.errors[key][0];
-                    });
-                } else {
-                    setErro("Verifique os campos obrigatórios.");
-                }
-
+                const { fieldErrors: mappedErrors, message } = await extrairErrosCampos(response);
                 setFieldErrors(mappedErrors);
+                if (Object.keys(mappedErrors).length === 0 && message) setErro(message);
             } else if (response.status === 403) {
-                onNavigate('pending');
+                const mensagem = await extrairErro(response);
+                if (mensagem && onPendingApproval) {
+                    onPendingApproval(mensagem);
+                } else if (mensagem) {
+                    setErro(mensagem);
+                }
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);
             }
         } catch (error) {
-            setErro('Erro de conexão com o servidor.');
+            console.error(error);
         }
     };
 

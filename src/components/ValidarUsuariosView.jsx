@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { extrairErro } from '../utils/apiUtils';
+import { extrairErro, extrairMensagem } from '../utils/apiUtils';
 import MessageModal from './MessageModal';
 
 export default function ValidarUsuariosView({ token }) {
@@ -17,10 +17,11 @@ export default function ValidarUsuariosView({ token }) {
             if (response.ok) {
                 setUsuarios(await response.json());
             } else {
-                setErro('Falha ao carregar usuários pendentes.');
+                const mensagem = await extrairErro(response);
+                if (mensagem) setErro(mensagem);
             }
         } catch (err) {
-            setErro('Erro de comunicação.');
+            console.error(err);
         }
     }, [token]);
 
@@ -36,13 +37,14 @@ export default function ValidarUsuariosView({ token }) {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
-                setSucesso('Usuário aprovado com sucesso!');
+                const mensagem = await extrairMensagem(response);
+                if (mensagem) setSucesso(mensagem);
                 setUsuarios(prev => prev.filter(u => u.usuarioId !== usuarioId));
             } else {
                 setErro(await extrairErro(response));
             }
         } catch (error) {
-            setErro('Erro ao tentar aprovar usuário.');
+            console.error(error);
         }
     };
 

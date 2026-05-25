@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage';
 export default function App() {
     const [currentPage, setCurrentPage] = useState('login');
     const [token, setToken] = useState(localStorage.getItem('token'));
+    const [pendingMessage, setPendingMessage] = useState('');
 
     const handleLogin = (userToken) => {
         localStorage.setItem('token', userToken);
@@ -20,11 +21,16 @@ export default function App() {
         setCurrentPage('login');
     };
 
+    const handlePendingApproval = (message) => {
+        setPendingMessage(message);
+        setCurrentPage('pending');
+    };
+
     if (!token) {
         if (currentPage === 'register') return <RegisterPage onNavigate={setCurrentPage} />;
         if (currentPage === 'forgot') return <ForgotPasswordPage onNavigate={setCurrentPage} />;
-        if (currentPage === 'pending') return <PendingApprovalPage onNavigate={setCurrentPage} />;
-        return <LoginPage onLogin={handleLogin} onNavigate={setCurrentPage} />;
+        if (currentPage === 'pending') return <PendingApprovalPage onNavigate={setCurrentPage} message={pendingMessage} />;
+        return <LoginPage onLogin={handleLogin} onNavigate={setCurrentPage} onPendingApproval={handlePendingApproval} />;
     }
 
     return (

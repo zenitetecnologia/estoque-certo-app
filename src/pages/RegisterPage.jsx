@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import UnidadeComboBox from '../components/UnidadeComboBox';
 import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
-import { extrairErro } from '../utils/apiUtils';
+import { extrairErro, extrairErrosCampos, extrairMensagem } from '../utils/apiUtils';
 import ThemeToggle from '../components/ThemeToggle';
 import MessageModal from '../components/MessageModal';
 
@@ -31,30 +31,19 @@ export default function RegisterPage({ onNavigate }) {
             });
 
             if (response.ok) {
-                setSucesso('Conta criada com sucesso! Redirecionando...');
+                const mensagem = await extrairMensagem(response);
+                if (mensagem) setSucesso(mensagem);
                 setTimeout(() => onNavigate('login'), 2000);
             } else if (response.status === 400) {
-                const errorData = await response.json();
-                const mappedErrors = {};
-
-                if (Array.isArray(errorData)) {
-                    errorData.forEach(err => {
-                        const fieldName = err.field || err.Field;
-                        if (fieldName) mappedErrors[fieldName] = err.error || err.Error;
-                    });
-                } else if (errorData.errors) {
-                    Object.keys(errorData.errors).forEach(key => {
-                        const fieldName = key.charAt(0).toUpperCase() + key.slice(1);
-                        mappedErrors[fieldName] = errorData.errors[key][0];
-                    });
-                }
+                const { fieldErrors: mappedErrors, message } = await extrairErrosCampos(response);
                 setFieldErrors(mappedErrors);
+                if (Object.keys(mappedErrors).length === 0 && message) setErro(message);
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);
             }
         } catch (error) {
-            setErro('Erro de conexão com o servidor.');
+            console.error(error);
         }
     };
 

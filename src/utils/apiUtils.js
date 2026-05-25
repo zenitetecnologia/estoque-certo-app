@@ -1,26 +1,128 @@
-export const extrairErro = async (response) => {
+const obterValor = (objeto, ...chaves) => {
+    if (!objeto || typeof objeto !== 'object') return '';
+
+    for (const chave of chaves) {
+        if (typeof objeto[chave] === 'string' && objeto[chave].trim()) {
+            return objeto[chave];
+        }
+    }
+
+    return '';
+};
+
+const normalizarCampo = (campo) => {
+    if (!campo) return '';
+
+    const limpo = String(campo).replace('$.', '');
+    return limpo.charAt(0).toUpperCase() + limpo.slice(1);
+};
+
+export const lerRespostaApi = async (response) => {
+    const text = await response.text();
+    if (!text) return null;
+
     try {
-        const text = await response.text();
-        if (!text) {
-            return `Erro HTTP: ${response.status}`;
-        }
-
-        try {
-            const data = JSON.parse(text);
-
-            if (Array.isArray(data)) {
-                return data.map(err => err.error).join(' | ');
-            }
-
-            if (data.mensagem) {
-                return data.mensagem;
-            }
-
-            return text;
-        } catch (e) {
-            return text;
-        }
+        return JSON.parse(text);
     } catch (error) {
-        return 'Erro ao ler a resposta do servidor.';
+        return text;
+    }
+};
+
+export const extrairMensagemDados = (dados) => {
+    if (!dados) return '';
+
+    if (typeof dados === 'string') {
+        return dados;
+    }
+
+    if (Array.isArray(dados)) {
+        return dados
+            .map(item => extrairMensagemDados(item))
+            .filter(Boolean)
+            .join(' | ');
+    }
+
+    if (typeof dados !== 'object') return '';
+
+    const mensagemDireta = obterValor(
+        dados,
+        'mensagem',
+        'Mensagem',
+        'message',
+        'Message',
+        'erro',
+        'Erro',
+        'error',
+        'Error',
+        'detail',
+        'Detail',
+        'title',
+        'Title'
+    );
+
+    if (mensagemDireta) return mensagemDireta;
+
+    if (dados.errors && typeof dados.errors === 'object') {
+        return Object.values(dados.errors)
+            .flat()
+            .filter(Boolean)
+            .join(' | ');
+    }
+
+    return '';
+};
+
+export const extrairErrosCamposDados = (dados) => {
+    const mappedErrors = {};
+
+    const adicionarErro = (campo, mensagem) => {
+        const campoNormalizado = normalizarCampo(campo);
+        if (campoNormalizado && mensagem) {
+            mappedErrors[campoNormalizado] = mensagem;
+        }
+    };
+
+    if (Array.isArray(dados)) {
+        dados.forEach(err => {
+            adicionarErro(
+                err?.field || err?.Field || err?.campo || err?.Campo,
+                err?.error || err?.Error || err?.mensagem || err?.Mensagem || err?.message || err?.Message
+            );
+        });
+    } else if (dados?.errors && typeof dados.errors === 'object') {
+        Object.keys(dados.errors).forEach(key => {
+            const mensagens = Array.isArray(dados.errors[key])
+                ? dados.errors[key]
+                : [dados.errors[key]];
+
+            adicionarErro(key, mensagens.filter(Boolean).join(' | '));
+        });
+    }
+
+    return mappedErrors;
+};
+
+export const extrairMensagem = async (response) => {
+    try {
+        return extrairMensagemDados(await lerRespostaApi(response));
+    } catch (error) {
+        return '';
+    }
+};
+
+export const extrairErro = extrairMensagem;
+
+export const extrairErrosCampos = async (response) => {
+    try {
+        const dados = await lerRespostaApi(response);
+        return {
+            fieldErrors: extrairErrosCamposDados(dados),
+            message: extrairMensagemDados(dados)
+        };
+    } catch (error) {
+        return {
+            fieldErrors: {},
+            message: ''
+        };
     }
 };

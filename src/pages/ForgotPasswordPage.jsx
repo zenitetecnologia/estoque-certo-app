@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import UnidadeComboBox from '../components/UnidadeComboBox';
 import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
-import { extrairErro } from '../utils/apiUtils';
+import { extrairErro, extrairErrosCampos, extrairMensagem } from '../utils/apiUtils';
 import ThemeToggle from '../components/ThemeToggle';
 import MessageModal from '../components/MessageModal';
 
@@ -12,22 +12,15 @@ export default function ForgotPasswordPage({ onNavigate }) {
     const [erro, setErro] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
 
     const parseBackendErrors = async (res) => {
-        const errorData = await res.json();
-        const mappedErrors = {};
-        if (Array.isArray(errorData)) {
-            errorData.forEach(err => {
-                const fieldName = err.field || err.Field;
-                if (fieldName) mappedErrors[fieldName] = err.error || err.Error;
-            });
-        } else if (errorData.errors) {
-            Object.keys(errorData.errors).forEach(key => {
-                const fieldName = key.charAt(0).toUpperCase() + key.slice(1);
-                mappedErrors[fieldName] = errorData.errors[key][0];
-            });
-        }
+        const { fieldErrors: mappedErrors, message } = await extrairErrosCampos(res);
         setFieldErrors(mappedErrors);
+
+        if (Object.keys(mappedErrors).length === 0 && message) {
+            setErro(message);
+        }
     };
 
     const handleForgot = async (e) => {
@@ -46,17 +39,12 @@ export default function ForgotPasswordPage({ onNavigate }) {
             if (res.ok) setStep(2);
             else if (res.status === 400) await parseBackendErrors(res);
             else setErro(await extrairErro(res));
-        } catch (error) { setErro('Erro de conexão.'); }
+        } catch (error) { console.error(error); }
     };
 
     const handleVerifyCode = async (e) => {
         e.preventDefault();
         setErro('');
-
-        if (!data.code || data.code.trim() === '') {
-            setErro('Por favor, informe o código recebido.');
-            return;
-        }
 
         try {
             const res = await fetch('https://api.estoquecerto.zenitetecnologia.ia.br/v1/auth/verify', {
@@ -67,7 +55,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
 
             if (res.ok) {
                 const result = await res.json();
-                setData(prev => ({ ...prev, codigoAcessoId: result.codigoAcessoId }));
+                setData(prev => ({ ...prev, codigoAcessoId: result.codigoAcessoId || result.codigoResetId || '' }));
                 setStep(3);
             } else if (res.status === 400) {
                 await parseBackendErrors(res);
@@ -75,7 +63,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
                 setErro(await extrairErro(res));
             }
         } catch (error) {
-            setErro('Erro de conexão ao verificar o código.');
+            console.error(error);
         }
     };
 
@@ -83,20 +71,21 @@ export default function ForgotPasswordPage({ onNavigate }) {
         e.preventDefault();
         setErro('');
         setFieldErrors({});
-        if (data.senha !== data.confirmaSenha) {
-            setFieldErrors({ ConfirmaSenha: 'As senhas não coincidem.' });
-            return;
-        }
+
         try {
             const res = await fetch('https://api.estoquecerto.zenitetecnologia.ia.br/v1/auth/reset', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ codigoAcessoId: data.codigoAcessoId, senha: data.senha })
+                body: JSON.stringify({ codigoAcessoId: data.codigoAcessoId, senha: data.senha, confirmaSenha: data.confirmaSenha })
             });
-            if (res.ok) setShowSuccessModal(true);
+            if (res.ok) {
+                const mensagem = await extrairMensagem(res);
+                setSuccessMessage(mensagem);
+                if (mensagem) setShowSuccessModal(true);
+            }
             else if (res.status === 400) await parseBackendErrors(res);
             else setErro(await extrairErro(res));
-        } catch (error) { setErro('Erro de conexão.'); }
+        } catch (error) { console.error(error); }
     };
 
     return (
@@ -177,12 +166,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
             {showSuccessModal && (
                 <MessageModal
                     type="success"
-                    title="Senha Redefinida!"
-                    message={(
-                        <>
-                            Sua senha foi alterada com sucesso.<br />Você já pode acessar o sistema.
-                        </>
-                    )}
+                    message={successMessage}
                     onClose={() => onNavigate('login')}
                     buttonLabel="Ir para Login"
                     autoClose={8000}
