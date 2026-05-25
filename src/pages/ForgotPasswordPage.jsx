@@ -3,6 +3,7 @@ import UnidadeComboBox from '../components/UnidadeComboBox';
 import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
+import { getBaseUrl } from '../utils/apiConfig';
 import ThemeToggle from '../components/ThemeToggle';
 import MessageModal from '../components/MessageModal';
 
@@ -19,7 +20,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
         setErro('');
         setFieldErrors({});
         try {
-            const res = await fetch('https://api.estoquecerto.zenitetecnologia.ia.br/v1/auth/forgot', {
+            const res = await fetch(`${getBaseUrl()}/v1/auth/forgot`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -38,7 +39,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
         setErro('');
 
         try {
-            const res = await fetch('https://api.estoquecerto.zenitetecnologia.ia.br/v1/auth/verify', {
+            const res = await fetch(`${getBaseUrl()}/v1/auth/verify`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code: data.code })
@@ -64,7 +65,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
         setFieldErrors({});
 
         try {
-            const res = await fetch('https://api.estoquecerto.zenitetecnologia.ia.br/v1/auth/reset', {
+            const res = await fetch(`${getBaseUrl()}/v1/auth/reset`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ codigoAcessoId: data.codigoAcessoId, senha: data.senha, confirmaSenha: data.confirmaSenha })

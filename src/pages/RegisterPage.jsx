@@ -3,6 +3,7 @@ import UnidadeComboBox from '../components/UnidadeComboBox';
 import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
+import { getBaseUrl } from '../utils/apiConfig';
 import ThemeToggle from '../components/ThemeToggle';
 import MessageModal from '../components/MessageModal';
 
@@ -24,7 +25,7 @@ export default function RegisterPage({ onNavigate }) {
         };
 
         try {
-            const response = await fetch('https://api.estoquecerto.zenitetecnologia.ia.br/v1/usuarios', {
+            const response = await fetch(`${getBaseUrl()}/v1/usuarios`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

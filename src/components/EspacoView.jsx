@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
+import { getBaseUrl } from '../utils/apiConfig';
 import { formatQuantity, formatQuantityInput, maskQuantityInput, parseQuantity } from '../utils/quantity';
 import { TIPO_UNIDADE } from '../constants/tipoUnidade';
 import LoadingWaves from './LoadingWaves';
@@ -32,7 +33,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         setLoading(true);
         setErro('');
         try {
-            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/espacos?unidadeOrganizacionalId=${unidadeOrganizacionalId}&skip=0&top=50`, {
+            const response = await fetch(`${getBaseUrl()}/v1/espacos?unidadeOrganizacionalId=${unidadeOrganizacionalId}&skip=0&top=50`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
@@ -74,7 +75,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         };
 
         try {
-            const response = await fetch('https://api.estoquecerto.zenitetecnologia.ia.br/v1/espacos', {
+            const response = await fetch(`${getBaseUrl()}/v1/espacos`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(payload)
@@ -104,7 +105,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
 
         setLoadingItens(true);
         try {
-            const res = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/itens-estoque?espacoId=${espaco.espacoId}&top=50`, {
+            const res = await fetch(`${getBaseUrl()}/v1/itens-estoque?espacoId=${espaco.espacoId}&top=50`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
@@ -145,7 +146,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         };
 
         try {
-            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/espacos/${espacoSelecionado.espacoId}`, {
+            const response = await fetch(`${getBaseUrl()}/v1/espacos/${espacoSelecionado.espacoId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(payload)
@@ -169,7 +170,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     const handleExcluirEspaco = async () => {
         setErro(''); setSucesso('');
         try {
-            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/espacos/${espacoSelecionado.espacoId}`, {
+            const response = await fetch(`${getBaseUrl()}/v1/espacos/${espacoSelecionado.espacoId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -212,7 +213,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         };
 
         try {
-            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/itens-estoque/${item.itemEstoqueId}`, {
+            const response = await fetch(`${getBaseUrl()}/v1/itens-estoque/${item.itemEstoqueId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(payload)

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { parseJwt } from '../utils/jwt';
 import PasswordInput from '../components/PasswordInput';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
+import { getBaseUrl } from '../utils/apiConfig';
 import EspacoView from '../components/EspacoView';
 import ItemEstoqueView from '../components/ItemEstoqueView';
 import ThemeToggle from '../components/ThemeToggle';
@@ -57,7 +58,7 @@ export default function HomePage({ token, onLogout }) {
         }
 
         try {
-            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/usuarios/${usuarioId}`, {
+            const response = await fetch(`${getBaseUrl()}/v1/usuarios/${usuarioId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

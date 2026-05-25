@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
+import { getBaseUrl } from '../utils/apiConfig';
 import { formatQuantity, formatQuantityInput, maskQuantityInput, parseQuantity } from '../utils/quantity';
 import { TIPO_UNIDADE } from '../constants/tipoUnidade';
 import LoadingWaves from './LoadingWaves';
@@ -78,10 +79,10 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 paramsItens.set('filtro', pesquisa.trim());
             }
 
-            const resItens = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/itens-estoque?${paramsItens.toString()}`, {
+            const resItens = await fetch(`${getBaseUrl()}/v1/itens-estoque?${paramsItens.toString()}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            const resEspacos = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/espacos?unidadeOrganizacionalId=${unidadeOrganizacionalId}&top=50`, {
+            const resEspacos = await fetch(`${getBaseUrl()}/v1/espacos?unidadeOrganizacionalId=${unidadeOrganizacionalId}&top=50`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -110,7 +111,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     const carregarHistorico = async (id) => {
         setLoadingHistorico(true);
         try {
-            const res = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/itens-estoque/${id}/historico`, {
+            const res = await fetch(`${getBaseUrl()}/v1/itens-estoque/${id}/historico`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
@@ -156,7 +157,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
         };
 
         try {
-            const response = await fetch('https://api.estoquecerto.zenitetecnologia.ia.br/v1/itens-estoque', {
+            const response = await fetch(`${getBaseUrl()}/v1/itens-estoque`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(payload)
@@ -195,7 +196,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
         };
 
         try {
-            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/itens-estoque/${itemAtivo.itemEstoqueId}`, {
+            const response = await fetch(`${getBaseUrl()}/v1/itens-estoque/${itemAtivo.itemEstoqueId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(payload)
@@ -217,7 +218,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     const handleExcluir = async () => {
         setErro(''); setSucesso('');
         try {
-            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/itens-estoque/${itemAtivo.itemEstoqueId}`, {
+            const response = await fetch(`${getBaseUrl()}/v1/itens-estoque/${itemAtivo.itemEstoqueId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -240,7 +241,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
         setSucesso('');
 
         try {
-            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/itens-estoque/${itemAtivo.itemEstoqueId}/transferir`, {
+            const response = await fetch(`${getBaseUrl()}/v1/itens-estoque/${itemAtivo.itemEstoqueId}/transferir`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -286,7 +287,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
         };
 
         try {
-            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/itens-estoque/${itemAtivo.itemEstoqueId}`, {
+            const response = await fetch(`${getBaseUrl()}/v1/itens-estoque/${itemAtivo.itemEstoqueId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(payload)

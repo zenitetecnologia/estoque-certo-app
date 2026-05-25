@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { formatCnpj } from '../utils/cnpj';
+import { getBaseUrl } from '../utils/apiConfig';
 
 export default function UnidadeComboBox({ value, onChange, error, errorMessage }) {
     const [unidades, setUnidades] = useState([]);
@@ -10,7 +11,7 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
     const listRef = useRef(null);
 
     useEffect(() => {
-        fetch('https://api.estoquecerto.zenitetecnologia.ia.br/v1/unidades-organizacionais')
+        fetch(`${getBaseUrl()}/v1/unidades-organizacionais`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {

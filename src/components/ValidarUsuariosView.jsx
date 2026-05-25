@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { extrairErro, extrairMensagem } from '../utils/apiUtils';
+import { getBaseUrl } from '../utils/apiConfig';
 import { formatPhone } from '../utils/phone';
 import MessageModal from './MessageModal';
 
@@ -12,7 +13,7 @@ export default function ValidarUsuariosView({ token }) {
     const carregarUsuariosPendentes = useCallback(async () => {
         setErro('');
         try {
-            const response = await fetch('https://api.estoquecerto.zenitetecnologia.ia.br/v1/usuarios?valido=false&top=1000', {
+            const response = await fetch(`${getBaseUrl()}/v1/usuarios?valido=false&top=1000`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
@@ -33,7 +34,7 @@ export default function ValidarUsuariosView({ token }) {
     const handleAprovar = async (usuarioId) => {
         setErro(''); setSucesso('');
         try {
-            const response = await fetch(`https://api.estoquecerto.zenitetecnologia.ia.br/v1/usuarios/${usuarioId}`, {
+            const response = await fetch(`${getBaseUrl()}/v1/usuarios/${usuarioId}`, {
                 method: 'PATCH',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
