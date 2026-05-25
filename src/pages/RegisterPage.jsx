@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import UnidadeComboBox from '../components/UnidadeComboBox';
 import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
@@ -7,7 +8,8 @@ import { getBaseUrl } from '../utils/apiConfig';
 import ThemeToggle from '../components/ThemeToggle';
 import MessageModal from '../components/MessageModal';
 
-export default function RegisterPage({ onNavigate }) {
+export default function RegisterPage() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({ nome: '', username: '', senha: '', unidadeOrganizacionalId: '' });
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
@@ -34,7 +36,7 @@ export default function RegisterPage({ onNavigate }) {
             if (response.ok) {
                 const mensagem = await extrairMensagem(response);
                 if (mensagem) setSucesso(mensagem);
-                setTimeout(() => onNavigate('login'), 2000);
+                setTimeout(() => navigate('/login'), 2000);
             } else if (response.status === 400) {
                 await aplicarErrosCampos(response, setFieldErrors, setErro);
             } else {
@@ -93,7 +95,7 @@ export default function RegisterPage({ onNavigate }) {
 
                             <button type="submit" className="button button-full mt-1">Cadastrar</button>
                             <div className="auth-link-row-centered">
-                                <a className="link-action" onClick={() => onNavigate('login')}>Já tenho uma conta</a>
+                                <Link className="link-action" to="/login">Já tenho uma conta</Link>
                             </div>
                         </form>
                     </div>

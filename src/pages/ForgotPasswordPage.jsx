@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import UnidadeComboBox from '../components/UnidadeComboBox';
 import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
@@ -7,7 +8,8 @@ import { getBaseUrl } from '../utils/apiConfig';
 import ThemeToggle from '../components/ThemeToggle';
 import MessageModal from '../components/MessageModal';
 
-export default function ForgotPasswordPage({ onNavigate }) {
+export default function ForgotPasswordPage() {
+    const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [data, setData] = useState({ username: '', unidadeOrganizacionalId: '', code: '', senha: '', confirmaSenha: '', codigoAcessoId: '' });
     const [erro, setErro] = useState('');
@@ -104,7 +106,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
                                     errorMessage={fieldErrors.UnidadeOrganizacionalId}
                                 />
                                 <button type="submit" className="button button-full mt-1">Enviar Código</button>
-                                <button type="button" className="button button-outline button-full mt-1" onClick={() => onNavigate('login')}>Cancelar</button>
+                                <button type="button" className="button button-outline button-full mt-1" onClick={() => navigate('/login')}>Cancelar</button>
                             </form>
                         )}
 
@@ -159,7 +161,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
                 <MessageModal
                     type="success"
                     message={successMessage}
-                    onClose={() => onNavigate('login')}
+                    onClose={() => navigate('/login')}
                     buttonLabel="Ir para Login"
                     autoClose={8000}
                 />

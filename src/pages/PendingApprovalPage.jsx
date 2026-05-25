@@ -1,16 +1,20 @@
-import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ThemeToggle from '../components/ThemeToggle';
 
-export default function PendingApprovalPage({ onNavigate, message }) {
+export default function PendingApprovalPage({ message }) {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const pendingMessage = location.state?.message || message;
+
     return (
         <>
             <ThemeToggle />
             <div className="container">
                 <div className="auth-page">
                     <div className="card auth-card text-center">
-                        {message && (
+                        {pendingMessage && (
                             <p className="pending-description">
-                                {message}
+                                {pendingMessage}
                             </p>
                         )}
 
@@ -18,7 +22,7 @@ export default function PendingApprovalPage({ onNavigate, message }) {
                             type="button"
                             className="button button-outline button-full"
 
-                            onClick={() => onNavigate('login')}
+                            onClick={() => navigate('/login')}
                         >
                             Voltar
                         </button>

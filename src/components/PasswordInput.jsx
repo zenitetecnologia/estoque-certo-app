@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export default function PasswordInput({ label = "Senha", value, onChange, placeholder = "Senha", error, errorMessage }) {
     const [show, setShow] = useState(false);

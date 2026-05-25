@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import UnidadeComboBox from '../components/UnidadeComboBox';
 import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
@@ -7,7 +8,7 @@ import { getBaseUrl } from '../utils/apiConfig';
 import ThemeToggle from '../components/ThemeToggle';
 import MessageModal from '../components/MessageModal';
 
-export default function LoginPage({ onLogin, onNavigate, onPendingApproval }) {
+export default function LoginPage({ onLogin, onPendingApproval }) {
     const [formData, setFormData] = useState({ username: '', senha: '', unidadeOrganizacionalId: '' });
     const [erro, setErro] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
@@ -84,8 +85,8 @@ export default function LoginPage({ onLogin, onNavigate, onPendingApproval }) {
                         <button type="submit" className="button button-full mt-1">Entrar</button>
 
                         <div className="auth-link-row">
-                            <a className="link-action" onClick={() => onNavigate('register')}>Registrar</a>
-                            <a className="link-action" onClick={() => onNavigate('forgot')}>Esqueci a senha</a>
+                            <Link className="link-action" to="/register">Registrar</Link>
+                            <Link className="link-action" to="/forgot-password">Esqueci a senha</Link>
                         </div>
                     </form>
                 </div>
