@@ -1,17 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { extrairErro, extrairErrosCampos, extrairMensagem } from '../utils/apiUtils';
+import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
 import { formatQuantity, formatQuantityInput, maskQuantityInput, parseQuantity } from '../utils/quantity';
+import { TIPO_UNIDADE } from '../constants/tipoUnidade';
 import LoadingWaves from './LoadingWaves';
 import MessageModal from './MessageModal';
-
-const TIPO_UNIDADE = {
-    1: 'Quilos (KG)',
-    2: 'Gramas (G)',
-    3: 'Miligramas (MG)',
-    4: 'Litros (L)',
-    5: 'Mililitros (ML)',
-    6: 'Unidades (UN)'
-};
 
 export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuarioId }) {
     const [viewMode, setViewMode] = useState('list');
@@ -131,15 +123,6 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
         }
     };
 
-    const parseBackendErrors = async (res) => {
-        const { fieldErrors: mappedErrors, message } = await extrairErrosCampos(res);
-        setFieldErrors(mappedErrors);
-
-        if (Object.keys(mappedErrors).length === 0 && message) {
-            setErro(message);
-        }
-    };
-
     const abrirDetalhes = (item) => {
         setItemAtivo(item);
         setFormEdicao({
@@ -185,7 +168,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 if (mensagem) setSucesso(mensagem);
                 carregarDados();
             } else if (response.status === 400) {
-                await parseBackendErrors(response);
+                await aplicarErrosCampos(response, setFieldErrors, setErro);
             } else {
                 const msg = await extrairErro(response);
                 setErro(msg);
@@ -223,7 +206,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 if (mensagem) setSucesso(mensagem);
                 setItemAtivo({ ...itemAtivo, ...payload });
             } else if (response.status === 400) {
-                await parseBackendErrors(response);
+                await aplicarErrosCampos(response, setFieldErrors, setErro);
             } else {
                 const msg = await extrairErro(response);
                 setErro(msg);
@@ -323,7 +306,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 setFormEdicao(prev => ({ ...prev, quantidade: formatQuantityInput(novaQtde) }));
 
             } else if (response.status === 400) {
-                await parseBackendErrors(response);
+                await aplicarErrosCampos(response, setFieldErrors, setErro);
             } else {
                 const msg = await extrairErro(response);
                 setErro(msg);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { parseJwt } from '../utils/jwt';
 import PasswordInput from '../components/PasswordInput';
-import { extrairErro, extrairErrosCampos, extrairMensagem } from '../utils/apiUtils';
+import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
 import EspacoView from '../components/EspacoView';
 import ItemEstoqueView from '../components/ItemEstoqueView';
 import ThemeToggle from '../components/ThemeToggle';
@@ -71,9 +71,7 @@ export default function HomePage({ token, onLogout }) {
                 if (mensagem) setSucesso(mensagem);
                 setFormData(prev => ({ ...prev, senha: '', confirmaSenha: '' }));
             } else if (response.status === 400) {
-                const { fieldErrors: mappedErrors, message } = await extrairErrosCampos(response);
-                setFieldErrors(mappedErrors);
-                if (Object.keys(mappedErrors).length === 0 && message) setErro(message);
+                await aplicarErrosCampos(response, setFieldErrors, setErro);
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);

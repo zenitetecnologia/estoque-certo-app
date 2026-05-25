@@ -1,17 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { extrairErro, extrairErrosCampos, extrairMensagem } from '../utils/apiUtils';
+import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
 import { formatQuantity, formatQuantityInput, maskQuantityInput, parseQuantity } from '../utils/quantity';
+import { TIPO_UNIDADE } from '../constants/tipoUnidade';
 import LoadingWaves from './LoadingWaves';
 import MessageModal from './MessageModal';
 
-const TIPO_UNIDADE = {
-    1: 'Quilos (KG)',
-    2: 'Gramas (G)',
-    3: 'Miligramas (MG)',
-    4: 'Litros (L)',
-    5: 'Mililitros (ML)',
-    6: 'Unidades (UN)'
-};
 export default function EspacoView({ token, unidadeOrganizacionalId }) {
 
     const [viewMode, setViewMode] = useState('list');
@@ -70,15 +63,6 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         return () => clearTimeout(timer);
     }, [erro, sucesso]);
 
-    const parseBackendErrors = async (res) => {
-        const { fieldErrors: mappedErrors, message } = await extrairErrosCampos(res);
-        setFieldErrors(mappedErrors);
-
-        if (Object.keys(mappedErrors).length === 0 && message) {
-            setErro(message);
-        }
-    };
-
     const handleCriarEspaco = async (e) => {
         e.preventDefault();
         setErro(''); setSucesso(''); setFieldErrors({});
@@ -102,7 +86,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 if (mensagem) setSucesso(mensagem);
                 carregarEspacos();
             } else if (response.status === 400) {
-                await parseBackendErrors(response);
+                await aplicarErrosCampos(response, setFieldErrors, setErro);
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);
@@ -172,7 +156,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 if (mensagem) setSucesso(mensagem);
                 setEspacoSelecionado({ ...espacoSelecionado, nome: formEdicao.nome, descricao: formEdicao.descricao });
             } else if (response.status === 400) {
-                await parseBackendErrors(response);
+                await aplicarErrosCampos(response, setFieldErrors, setErro);
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);
@@ -247,7 +231,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 }));
                 if (mensagem) setSucesso(mensagem);
             } else if (response.status === 400) {
-                await parseBackendErrors(response);
+                await aplicarErrosCampos(response, setFieldErrors, setErro);
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);

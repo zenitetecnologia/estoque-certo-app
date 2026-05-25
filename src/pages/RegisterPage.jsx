@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import UnidadeComboBox from '../components/UnidadeComboBox';
 import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
-import { extrairErro, extrairErrosCampos, extrairMensagem } from '../utils/apiUtils';
+import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
 import ThemeToggle from '../components/ThemeToggle';
 import MessageModal from '../components/MessageModal';
 
@@ -35,9 +35,7 @@ export default function RegisterPage({ onNavigate }) {
                 if (mensagem) setSucesso(mensagem);
                 setTimeout(() => onNavigate('login'), 2000);
             } else if (response.status === 400) {
-                const { fieldErrors: mappedErrors, message } = await extrairErrosCampos(response);
-                setFieldErrors(mappedErrors);
-                if (Object.keys(mappedErrors).length === 0 && message) setErro(message);
+                await aplicarErrosCampos(response, setFieldErrors, setErro);
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import UnidadeComboBox from '../components/UnidadeComboBox';
 import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
-import { extrairErro, extrairErrosCampos } from '../utils/apiUtils';
+import { aplicarErrosCampos, extrairErro } from '../utils/apiUtils';
 import ThemeToggle from '../components/ThemeToggle';
 import MessageModal from '../components/MessageModal';
 
@@ -32,9 +32,7 @@ export default function LoginPage({ onLogin, onNavigate, onPendingApproval }) {
                 const data = await response.json();
                 onLogin(data.token);
             } else if (response.status === 400) {
-                const { fieldErrors: mappedErrors, message } = await extrairErrosCampos(response);
-                setFieldErrors(mappedErrors);
-                if (Object.keys(mappedErrors).length === 0 && message) setErro(message);
+                await aplicarErrosCampos(response, setFieldErrors, setErro);
             } else if (response.status === 403) {
                 const mensagem = await extrairErro(response);
                 if (mensagem && onPendingApproval) {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import UnidadeComboBox from '../components/UnidadeComboBox';
 import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
-import { extrairErro, extrairErrosCampos, extrairMensagem } from '../utils/apiUtils';
+import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
 import ThemeToggle from '../components/ThemeToggle';
 import MessageModal from '../components/MessageModal';
 
@@ -13,15 +13,6 @@ export default function ForgotPasswordPage({ onNavigate }) {
     const [fieldErrors, setFieldErrors] = useState({});
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
-
-    const parseBackendErrors = async (res) => {
-        const { fieldErrors: mappedErrors, message } = await extrairErrosCampos(res);
-        setFieldErrors(mappedErrors);
-
-        if (Object.keys(mappedErrors).length === 0 && message) {
-            setErro(message);
-        }
-    };
 
     const handleForgot = async (e) => {
         e.preventDefault();
@@ -37,7 +28,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
                 })
             });
             if (res.ok) setStep(2);
-            else if (res.status === 400) await parseBackendErrors(res);
+            else if (res.status === 400) await aplicarErrosCampos(res, setFieldErrors, setErro);
             else setErro(await extrairErro(res));
         } catch (error) { console.error(error); }
     };
@@ -58,7 +49,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
                 setData(prev => ({ ...prev, codigoAcessoId: result.codigoAcessoId || result.codigoResetId || '' }));
                 setStep(3);
             } else if (res.status === 400) {
-                await parseBackendErrors(res);
+                await aplicarErrosCampos(res, setFieldErrors, setErro);
             } else {
                 setErro(await extrairErro(res));
             }
@@ -83,7 +74,7 @@ export default function ForgotPasswordPage({ onNavigate }) {
                 setSuccessMessage(mensagem);
                 if (mensagem) setShowSuccessModal(true);
             }
-            else if (res.status === 400) await parseBackendErrors(res);
+            else if (res.status === 400) await aplicarErrosCampos(res, setFieldErrors, setErro);
             else setErro(await extrairErro(res));
         } catch (error) { console.error(error); }
     };

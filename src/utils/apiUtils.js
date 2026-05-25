@@ -126,3 +126,12 @@ export const extrairErrosCampos = async (response) => {
         };
     }
 };
+
+export const aplicarErrosCampos = async (response, setFieldErrors, setErro) => {
+    const { fieldErrors, message } = await extrairErrosCampos(response);
+    setFieldErrors(fieldErrors);
+
+    if (Object.keys(fieldErrors).length === 0 && message) {
+        setErro(message);
+    }
+};
