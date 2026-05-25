@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { formatCnpj } from '../utils/cnpj';
+import { useEffect, useRef, useState } from 'react';
 import { getBaseUrl } from '../utils/apiConfig';
+import { formatCnpj } from '../utils/cnpj';
 
 export default function UnidadeComboBox({ value, onChange, error, errorMessage }) {
     const [unidades, setUnidades] = useState([]);

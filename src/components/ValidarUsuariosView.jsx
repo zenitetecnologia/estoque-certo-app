@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { extrairErro, extrairMensagem } from '../utils/apiUtils';
+import { useCallback, useEffect, useState } from 'react';
 import { getBaseUrl } from '../utils/apiConfig';
+import { extrairErro, extrairMensagem } from '../utils/apiUtils';
 import { formatPhone } from '../utils/phone';
 import MessageModal from './MessageModal';
 

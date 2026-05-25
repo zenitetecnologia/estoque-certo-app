@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import UnidadeComboBox from '../components/UnidadeComboBox';
+import MessageModal from '../components/MessageModal';
 import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
-import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
-import { getBaseUrl } from '../utils/apiConfig';
 import ThemeToggle from '../components/ThemeToggle';
-import MessageModal from '../components/MessageModal';
+import UnidadeComboBox from '../components/UnidadeComboBox';
+import { getBaseUrl } from '../utils/apiConfig';
+import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
 
 export default function RegisterPage() {
     const navigate = useNavigate();

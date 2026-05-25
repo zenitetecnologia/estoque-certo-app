@@ -1,4 +1,3 @@
-import React from 'react';
 import { formatPhone } from '../utils/phone';
 
 export default function PhoneInput({ value, onChange, error, errorMessage }) {
