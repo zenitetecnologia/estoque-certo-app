@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { formatCnpj } from '../utils/cnpj';
 
 export default function UnidadeComboBox({ value, onChange, error, errorMessage }) {
     const [unidades, setUnidades] = useState([]);
@@ -28,9 +29,16 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
         return u.nomeFantasia || u.razaoSocial || 'Unidade sem nome';
     };
 
-    const filteredUnidades = unidadesSeguras.filter(u =>
-        getNomeExibicao(u).toLowerCase().includes(search.toLowerCase())
-    );
+    const filteredUnidades = unidadesSeguras.filter(u => {
+        const termo = search.toLowerCase();
+        const cnpj = String(u.cnpj || '');
+
+        return (
+            getNomeExibicao(u).toLowerCase().includes(termo) ||
+            cnpj.toLowerCase().includes(termo) ||
+            formatCnpj(cnpj).toLowerCase().includes(termo)
+        );
+    });
 
     const selected = unidadesSeguras.find(u => u.unidadeOrganizacionalId === value);
     const displayValue = isOpen ? search : getNomeExibicao(selected);
@@ -125,7 +133,7 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
                         >
                             <div className="zf-cb-left">
                                 <span className="zf-cb-name">{getNomeExibicao(u)}</span>
-                                <span className="zf-cb-cpf">{u.cnpj}</span>
+                                <span className="zf-cb-cpf">{formatCnpj(u.cnpj)}</span>
                             </div>
                         </li>
                     ))}
