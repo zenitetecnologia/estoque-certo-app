@@ -1,15 +1,7 @@
 import React from 'react';
+import { formatPhone } from '../utils/phone';
 
 export default function PhoneInput({ value, onChange, error, errorMessage }) {
-    const formatPhone = (val) => {
-        if (!val) return '';
-        const numbers = val.replace(/\D/g, '');
-        if (numbers.length === 0) return '';
-        if (numbers.length <= 2) return `(${numbers}`;
-        if (numbers.length <= 7) return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
-        return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
-    };
-
     const handleChange = (e) => {
         const input = e.target;
         const cursorPosition = input.selectionStart;

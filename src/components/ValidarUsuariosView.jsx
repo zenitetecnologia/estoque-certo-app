@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { extrairErro, extrairMensagem } from '../utils/apiUtils';
+import { formatPhone } from '../utils/phone';
 import MessageModal from './MessageModal';
 
 export default function ValidarUsuariosView({ token }) {
@@ -53,6 +54,7 @@ export default function ValidarUsuariosView({ token }) {
         return (
             user.nome?.toLowerCase().includes(termo) ||
             user.username?.toLowerCase().includes(termo) ||
+            formatPhone(user.username).toLowerCase().includes(termo) ||
             user.nomeUnidadeOrganizacional?.toLowerCase().includes(termo)
         );
     });
@@ -86,7 +88,7 @@ export default function ValidarUsuariosView({ token }) {
                                 <h3 className="validation-user-title">{user.nome}</h3>
 
                                 <p className="validation-user-meta">
-                                    <strong>Username:</strong> {user.username}
+                                    <strong>Username:</strong> {formatPhone(user.username)}
                                 </p>
 
                                 <p className="validation-user-description">
