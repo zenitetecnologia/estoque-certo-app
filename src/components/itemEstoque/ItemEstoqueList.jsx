@@ -37,7 +37,7 @@ export default function ItemEstoqueList({
             </div>
 
             {loading ? (
-                <LoadingWaves rows={3} label="Carregando itens" />
+                <LoadingWaves variant="cards" rows={4} label="Carregando itens" className="inventory-grid-compact" />
             ) : itens.length === 0 ? (
                 <div className="card empty-state-card">
                     <div className="empty-state-body">

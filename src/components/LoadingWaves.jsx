@@ -1,9 +1,8 @@
-export default function LoadingWaves({ variant = 'list', rows = 3, label = 'Carregando conteúdo' }) {
+export default function LoadingWaves({ variant = 'list', rows = 3, label = 'Carregando conteúdo', className = '' }) {
     const lines = Array.from({ length: rows });
 
     return (
-        <div className={`loading-waves loading-waves-${variant}`} role="status" aria-label={label}>
-            <span className="v-hidden">{label}</span>
+        <div className={`loading-waves loading-waves-${variant} ${className}`.trim()} role="status" aria-label={label}>
             {lines.map((_, index) => (
                 <div className="loading-wave-card" key={index}>
                     <div className="skeleton skeleton-title" />

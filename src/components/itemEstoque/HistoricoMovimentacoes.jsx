@@ -1,9 +1,36 @@
 import { formatQuantity } from '../../utils/quantity';
 import LoadingWaves from '../LoadingWaves';
 
+const getHistoricoVisual = (tipo) => {
+    if (tipo === 1) {
+        return {
+            titulo: 'Entrada (+)',
+            cardClass: 'history-entry',
+            amountClass: 'history-amount-entry',
+            valor: '+'
+        };
+    }
+
+    if (tipo === 2) {
+        return {
+            titulo: 'Saída (-)',
+            cardClass: 'history-exit',
+            amountClass: 'history-amount-exit',
+            valor: '-'
+        };
+    }
+
+    return {
+        titulo: 'Transferência',
+        cardClass: 'history-transfer',
+        amountClass: 'history-amount-transfer',
+        valor: '↔'
+    };
+};
+
 export default function HistoricoMovimentacoes({ historico, loading }) {
     if (loading) {
-        return <LoadingWaves rows={3} label="Carregando histórico" />;
+        return <LoadingWaves variant="cards" rows={4} label="Carregando histórico" className="history-grid" />;
     }
 
     if (historico.length === 0) {
@@ -23,14 +50,15 @@ export default function HistoricoMovimentacoes({ historico, loading }) {
                 const tipo = hist.tipoMovimentacao;
                 const data = hist.dataHora;
                 const nome = hist.nome || 'Sistema (Sem usuário)';
+                const visual = getHistoricoVisual(tipo);
 
                 return (
                     <div key={hist.historicoId || index} className="history-grid-item">
-                        <div className={`card history-card ${tipo === 1 ? 'history-entry' : 'history-exit'}`}>
+                        <div className={`card history-card ${visual.cardClass}`}>
                             <div className="history-card-content">
                                 <div className="history-card-info">
                                     <h4 className="history-card-title">
-                                        {tipo === 1 ? 'Entrada (+)' : 'Saída (-)'}
+                                        {visual.titulo}
                                     </h4>
                                     <small className="history-card-meta">
                                         Data: {new Date(data).toLocaleString()}
@@ -38,9 +66,15 @@ export default function HistoricoMovimentacoes({ historico, loading }) {
                                     <small className="history-card-meta">
                                         Responsável: <span className="text-accent">{nome}</span>
                                     </small>
+                                    {tipo === 3 && (
+                                        <small className="history-card-meta">
+                                            De: <span className="text-accent">{hist.espacoOrigemNome || 'Espaço anterior'}</span>
+                                            {' '}Para: <span className="text-accent">{hist.espacoDestinoNome || 'Novo espaço'}</span>
+                                        </small>
+                                    )}
                                 </div>
-                                <div className={`history-card-amount ${tipo === 1 ? 'history-amount-entry' : 'history-amount-exit'}`}>
-                                    {tipo === 1 ? '+' : '-'}{formatQuantity(qtd)}
+                                <div className={`history-card-amount ${visual.amountClass}`}>
+                                    {tipo === 3 ? visual.valor : `${visual.valor}${formatQuantity(qtd)}`}
                                 </div>
                             </div>
                         </div>

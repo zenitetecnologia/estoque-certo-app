@@ -46,11 +46,11 @@ export const excluirItemEstoque = ({ token, itemEstoqueId }) => (
     })
 );
 
-export const transferirItemEstoque = ({ token, itemEstoqueId, novoEspacoId }) => (
+export const transferirItemEstoque = ({ token, itemEstoqueId, novoEspacoId, usuarioId }) => (
     fetch(`${getBaseUrl()}/v1/itens-estoque/${itemEstoqueId}/transferir`, {
         method: 'PATCH',
         headers: jsonHeaders(token),
-        body: JSON.stringify({ novoEspacoId })
+        body: JSON.stringify({ novoEspacoId, usuarioId })
     })
 );
 

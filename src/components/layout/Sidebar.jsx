@@ -9,7 +9,10 @@ const isIOS = () => {
 export default function Sidebar({ isAdmin, onLogoutClick }) {
     const closeMenu = () => {
         const menuToggle = document.getElementById('menu-toggle');
-        if (menuToggle) menuToggle.checked = false;
+        if (menuToggle) {
+            menuToggle.checked = false;
+            menuToggle.dispatchEvent(new Event('change', { bubbles: true }));
+        }
     };
 
     return (

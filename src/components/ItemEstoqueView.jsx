@@ -190,7 +190,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
         setSucesso('');
 
         try {
-            const response = await transferirItemEstoque({ token, itemEstoqueId: itemAtivo.itemEstoqueId, novoEspacoId });
+            const response = await transferirItemEstoque({ token, itemEstoqueId: itemAtivo.itemEstoqueId, novoEspacoId, usuarioId });
 
             if (response.ok) {
                 const mensagem = await extrairMensagem(response);
@@ -207,6 +207,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 //atualiza o item ativo e o form na tela de detalhes
                 setItemAtivo(prev => ({ ...prev, espacoId: novoEspacoId }));
                 setFormEdicao(prev => ({ ...prev, espacoId: novoEspacoId }));
+                carregarHistorico(itemAtivo.itemEstoqueId);
 
                 setNovoEspacoId('');
             } else {

@@ -37,7 +37,7 @@ export default function EspacoList({
             </div>
 
             {loading ? (
-                <LoadingWaves rows={3} label="Carregando espaços" />
+                <LoadingWaves variant="cards" rows={4} label="Carregando espaços" />
             ) : espacosFiltrados.length === 0 ? (
                 <div className="card empty-state-card">
                     <div className="empty-state-body">
