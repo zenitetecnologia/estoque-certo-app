@@ -4,7 +4,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { registerSW } from 'virtual:pwa-register';
 import App from './App.jsx';
 
-
 registerSW({
   onNeedRefresh() {
     console.log('Nova atualização disponível.');
