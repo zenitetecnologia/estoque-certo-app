@@ -2,16 +2,19 @@ import { useCallback, useEffect, useState } from 'react';
 import { getBaseUrl } from '../utils/apiConfig';
 import { extrairErro, extrairMensagem } from '../utils/apiUtils';
 import { formatPhone } from '../utils/phone';
+import LoadingWaves from './LoadingWaves';
 import MessageModal from './MessageModal';
 
 export default function ValidarUsuariosView({ token }) {
     const [usuarios, setUsuarios] = useState([]);
     const [pesquisa, setPesquisa] = useState('');
+    const [loading, setLoading] = useState(false);
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
 
     const carregarUsuariosPendentes = useCallback(async () => {
         setErro('');
+        setLoading(true);
         try {
             const response = await fetch(`${getBaseUrl()}/v1/usuarios?valido=false&top=1000`, {
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -24,6 +27,8 @@ export default function ValidarUsuariosView({ token }) {
             }
         } catch (err) {
             console.error(err);
+        } finally {
+            setLoading(false);
         }
     }, [token]);
 
@@ -74,7 +79,9 @@ export default function ValidarUsuariosView({ token }) {
                 />
             </div>
 
-            {usuariosFiltrados.length === 0 ? (
+            {loading ? (
+                <LoadingWaves variant="cards" rows={3} label="Carregando usuários pendentes" />
+            ) : usuariosFiltrados.length === 0 ? (
                 <div className="card validation-empty-card">
                     <p className="empty-state-text">
                         {usuarios.length === 0 ? 'Nenhum usuário pendente de validação.' : 'Nenhum resultado encontrado para a pesquisa.'}
