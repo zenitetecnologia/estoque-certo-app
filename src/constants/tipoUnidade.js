@@ -6,3 +6,8 @@ export const TIPO_UNIDADE = {
     5: 'Miligramas (MG)',
     6: 'Unidades (UN)'
 };
+
+export const getTipoUnidadeSigla = (tipoUnidadeMedida) => {
+    const unidade = TIPO_UNIDADE[tipoUnidadeMedida] || TIPO_UNIDADE[6];
+    return unidade.match(/\(([^)]+)\)/)?.[1] || unidade;
+};

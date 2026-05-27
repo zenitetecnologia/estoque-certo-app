@@ -1,3 +1,4 @@
+import { getTipoUnidadeSigla } from '../../constants/tipoUnidade';
 import { formatQuantity } from '../../utils/quantity';
 import LoadingWaves from '../LoadingWaves';
 import NovoItemModal from './NovoItemModal';
@@ -53,7 +54,7 @@ export default function ItemEstoqueList({
                                     <div className="inventory-card-title-row">
                                         <h3 className="inventory-card-title">{item.descricao}</h3>
                                         <span className="inventory-card-badge">
-                                            {formatQuantity(item.quantidade)}
+                                            {formatQuantity(item.quantidade)} {getTipoUnidadeSigla(item.tipoUnidadeMedida)}
                                         </span>
                                     </div>
                                     <p className="inventory-card-description">
