@@ -41,8 +41,8 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     const [novoEspacoId, setNovoEspacoId] = useState('');
 
     const [itemAtivo, setItemAtivo] = useState(null);
-    const [formDataNovo, setFormDataNovo] = useState({ espacoId: '', descricao: '', tipoUnidadeMedida: 6, quantidade: '' });
-    const [formEdicao, setFormEdicao] = useState({ espacoId: '', descricao: '', tipoUnidadeMedida: 6, quantidade: '' });
+    const [formDataNovo, setFormDataNovo] = useState({ espacoId: '', descricao: '', tipoUnidadeMedida: 1, quantidade: '' });
+    const [formEdicao, setFormEdicao] = useState({ espacoId: '', descricao: '', tipoUnidadeMedida: 1, quantidade: '' });
     const [movimentacaoData, setMovimentacaoData] = useState({ tipoMovimentacao: 1, quantidadeMovimento: '' });
 
     const carregarDados = useCallback(async () => {
@@ -280,7 +280,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 loading={loading}
                 onAbrirDetalhes={abrirDetalhes}
                 onAbrirNovo={() => {
-                    setFormDataNovo({ espacoId: espacos.length > 0 ? espacos[0].espacoId : '', descricao: '', tipoUnidadeMedida: 6, quantidade: '' });
+                    setFormDataNovo({ espacoId: espacos.length > 0 ? espacos[0].espacoId : '', descricao: '', tipoUnidadeMedida: 1, quantidade: '' });
                     setShowModalNovo(true);
                     setFieldErrors({});
                     setErro('');
