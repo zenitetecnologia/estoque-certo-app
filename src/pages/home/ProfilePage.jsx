@@ -16,7 +16,7 @@ export default function ProfilePage({
 
                         <form onSubmit={onSubmit} noValidate>
                             <div className="mb-1">
-                                <label className={`label-sm ${fieldErrors.Nome ? 'error' : ''}`}>
+                                <label className="label-sm">
                                     Nome
                                 </label>
                                 <input
