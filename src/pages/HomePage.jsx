@@ -4,6 +4,7 @@ import AppHeader from '../components/layout/AppHeader';
 import LogoutModal from '../components/layout/LogoutModal';
 import Sidebar from '../components/layout/Sidebar';
 import { useProfileForm } from '../hooks/useProfileForm';
+import { usePwaInstall } from '../hooks/usePwaInstall';
 import AuthenticatedRoutes from '../routes/AuthenticatedRoutes';
 import { getUserFromToken } from '../utils/authUser';
 
@@ -19,6 +20,7 @@ export default function HomePage({ token, onLogout }) {
         handleCancelProfile,
         clearMessages
     } = useProfileForm({ token, usuario });
+    const pwaInstall = usePwaInstall();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
 
     return (
@@ -26,7 +28,7 @@ export default function HomePage({ token, onLogout }) {
             <input type="checkbox" id="menu-toggle" className="sidebar-checkbox" />
 
             <AppHeader />
-            <Sidebar isAdmin={usuario.isAdmin} onLogoutClick={() => setShowLogoutModal(true)} />
+            <Sidebar isAdmin={usuario.isAdmin} onInstallClick={pwaInstall.install} onLogoutClick={() => setShowLogoutModal(true)} />
 
             <main className="container app-main">
                 <AuthenticatedRoutes

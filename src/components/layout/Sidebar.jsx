@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 const isIOS = () => {
     if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
@@ -6,7 +6,9 @@ const isIOS = () => {
     return /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
 };
 
-export default function Sidebar({ isAdmin, onLogoutClick }) {
+export default function Sidebar({ isAdmin, onInstallClick, onLogoutClick }) {
+    const navigate = useNavigate();
+
     const closeMenu = () => {
         const menuToggle = document.getElementById('menu-toggle');
         if (menuToggle) {
@@ -36,9 +38,13 @@ export default function Sidebar({ isAdmin, onLogoutClick }) {
 
                         <NavLink
                             to="/instalar-ios"
-                            onClick={(event) => {
+                            onClick={async (event) => {
                                 closeMenu();
-                                if (!isIOS()) event.preventDefault();
+                                if (isIOS()) return;
+
+                                event.preventDefault();
+                                const installed = await onInstallClick();
+                                if (!installed) navigate('/instalar-ios');
                             }}
                         >
                             Adicionar a tela inicial
