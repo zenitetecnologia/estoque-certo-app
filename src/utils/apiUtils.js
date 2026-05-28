@@ -17,6 +17,17 @@ const normalizarCampo = (campo) => {
     return limpo.charAt(0).toUpperCase() + limpo.slice(1);
 };
 
+const extrairMensagemHeader = (response) => {
+    const mensagem = response.headers.get('X-Zenite-Message');
+    if (!mensagem) return '';
+
+    try {
+        return decodeURIComponent(mensagem);
+    } catch (error) {
+        return mensagem;
+    }
+};
+
 export const lerRespostaApi = async (response) => {
     const text = await response.text();
     if (!text) return null;
@@ -104,7 +115,7 @@ export const extrairErrosCamposDados = (dados) => {
 
 export const extrairMensagem = async (response) => {
     try {
-        return extrairMensagemDados(await lerRespostaApi(response));
+        return extrairMensagemDados(await lerRespostaApi(response)) || extrairMensagemHeader(response);
     } catch (error) {
         return '';
     }
