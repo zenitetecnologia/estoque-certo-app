@@ -6,7 +6,7 @@ const isIOS = () => {
     return /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
 };
 
-export default function Sidebar({ isAdmin, onInstallClick, onLogoutClick }) {
+export default function Sidebar({ isAdmin, isInstalled, onInstallClick, onLogoutClick }) {
     const navigate = useNavigate();
 
     const closeMenu = () => {
@@ -38,19 +38,21 @@ export default function Sidebar({ isAdmin, onInstallClick, onLogoutClick }) {
                             <NavLink to="/aprovar-usuarios" onClick={closeMenu}>Aprovar Usuários</NavLink>
                         )}
 
-                        <NavLink
-                            to="/instalar-ios"
-                            onClick={async (event) => {
-                                closeMenu();
-                                if (isIOS()) return;
+                        {!isInstalled && (
+                            <NavLink
+                                to="/instalar-ios"
+                                onClick={async (event) => {
+                                    closeMenu();
+                                    if (isIOS()) return;
 
-                                event.preventDefault();
-                                const installed = await onInstallClick();
-                                if (!installed) navigate('/instalar-ios');
-                            }}
-                        >
-                            Adicionar a tela inicial
-                        </NavLink>
+                                    event.preventDefault();
+                                    const installed = await onInstallClick();
+                                    if (!installed) navigate('/instalar-ios');
+                                }}
+                            >
+                                Adicionar a tela inicial
+                            </NavLink>
+                        )}
                     </div>
                 </div>
 

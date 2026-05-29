@@ -28,7 +28,12 @@ export default function HomePage({ token, onLogout }) {
             <input type="checkbox" id="menu-toggle" className="sidebar-checkbox" />
 
             <AppHeader />
-            <Sidebar isAdmin={usuario.isAdmin} onInstallClick={pwaInstall.install} onLogoutClick={() => setShowLogoutModal(true)} />
+            <Sidebar
+                isAdmin={usuario.isAdmin}
+                isInstalled={pwaInstall.isInstalled}
+                onInstallClick={pwaInstall.install}
+                onLogoutClick={() => setShowLogoutModal(true)}
+            />
 
             <main className="container app-main">
                 <AuthenticatedRoutes
