@@ -2,9 +2,11 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import EspacoView from '../components/EspacoView';
 import ItemEstoqueView from '../components/ItemEstoqueView';
 import ValidarUsuariosView from '../components/ValidarUsuariosView';
+import NovoEspacoPage from '../pages/espacos/NovoEspacoPage';
 import HomeHero from '../pages/home/HomeHero';
 import InstallIosPage from '../pages/home/InstallIosPage';
 import ProfilePage from '../pages/home/ProfilePage';
+import NovoItemEstoquePage from '../pages/itemEstoque/NovoItemEstoquePage';
 
 export default function AuthenticatedRoutes({
     fieldErrors,
@@ -21,8 +23,16 @@ export default function AuthenticatedRoutes({
         <Routes>
             <Route index element={<HomeHero />} />
             <Route
+                path="espacos/novo"
+                element={<NovoEspacoPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} />}
+            />
+            <Route
                 path="espacos"
                 element={<EspacoView token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} />}
+            />
+            <Route
+                path="itens-estoque/novo"
+                element={<NovoItemEstoquePage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} />}
             />
             <Route
                 path="itens-estoque"

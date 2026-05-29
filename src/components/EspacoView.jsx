@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
     atualizarEspaco,
-    criarEspaco,
     excluirEspaco,
     listarEspacos,
     listarItensDoEspaco
@@ -15,6 +15,8 @@ import EspacoDetail from './espacos/EspacoDetail';
 import EspacoList from './espacos/EspacoList';
 
 export default function EspacoView({ token, unidadeOrganizacionalId }) {
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const [viewMode, setViewMode] = useState('list');
     const [espacos, setEspacos] = useState([]);
@@ -23,9 +25,6 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     const [sucesso, setSucesso] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
     const [pesquisa, setPesquisa] = useState('');
-
-    const [showModalNovo, setShowModalNovo] = useState(false);
-    const [formDataNovo, setFormDataNovo] = useState({ nome: '', descricao: '' });
 
     const [espacoSelecionado, setEspacoSelecionado] = useState(null);
     const [formEdicao, setFormEdicao] = useState({ nome: '', descricao: '' });
@@ -61,6 +60,13 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
     }, [carregarEspacos]);
 
     useEffect(() => {
+        if (!location.state?.sucesso) return;
+
+        setSucesso(location.state.sucesso);
+        navigate(location.pathname, { replace: true, state: null });
+    }, [location.pathname, location.state, navigate]);
+
+    useEffect(() => {
         if (!erro && !sucesso) return;
 
         const timer = setTimeout(() => {
@@ -69,31 +75,6 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
         }, 8000);
         return () => clearTimeout(timer);
     }, [erro, sucesso]);
-
-    const handleCriarEspaco = async (e) => {
-        e.preventDefault();
-        setErro(''); setSucesso(''); setFieldErrors({});
-
-        const payload = criarPayloadEspaco({ unidadeOrganizacionalId, formData: formDataNovo });
-
-        try {
-            const response = await criarEspaco({ token, payload });
-
-            if (response.ok) {
-                const mensagem = await extrairMensagem(response);
-                setShowModalNovo(false);
-                if (mensagem) setSucesso(mensagem);
-                carregarEspacos();
-            } else if (response.status === 400) {
-                await aplicarErrosCampos(response, setFieldErrors, setErro);
-            } else {
-                const mensagem = await extrairErro(response);
-                setErro(mensagem);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
 
     const abrirDetalhes = async (espaco) => {
         setEspacoSelecionado(espaco);
@@ -241,23 +222,16 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
             <EspacoList
                 espacos={espacos}
                 espacosFiltrados={espacosFiltrados}
-                fieldErrors={fieldErrors}
-                formDataNovo={formDataNovo}
                 loading={loading}
                 messageModal={messageModal}
                 onAbrirDetalhes={abrirDetalhes}
                 onAbrirNovo={() => {
-                    setFormDataNovo({ nome: '', descricao: '' });
-                    setShowModalNovo(true);
                     setFieldErrors({});
                     setErro('');
+                    navigate('/espacos/novo');
                 }}
-                onChangeFormNovo={setFormDataNovo}
                 onChangePesquisa={setPesquisa}
-                onCloseNovo={() => setShowModalNovo(false)}
-                onSubmitNovo={handleCriarEspaco}
                 pesquisa={pesquisa}
-                showModalNovo={showModalNovo}
             />
         );
     }

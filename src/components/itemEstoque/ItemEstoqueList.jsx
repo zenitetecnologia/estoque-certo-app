@@ -1,23 +1,15 @@
 import { getTipoUnidadeSigla } from '../../constants/tipoUnidade';
 import { formatQuantity } from '../../utils/quantity';
 import LoadingWaves from '../LoadingWaves';
-import NovoItemModal from './NovoItemModal';
 
 export default function ItemEstoqueList({
-    espacos,
-    fieldErrors,
-    formDataNovo,
     getNomeEspaco,
     itens,
     loading,
     onAbrirDetalhes,
     onAbrirNovo,
-    onChangeFormNovo,
     onChangePesquisa,
-    onCloseNovo,
-    onSubmitNovo,
     pesquisa,
-    showModalNovo,
     messageModal
 }) {
     return (
@@ -70,17 +62,6 @@ export default function ItemEstoqueList({
                         </div>
                     ))}
                 </div>
-            )}
-
-            {showModalNovo && (
-                <NovoItemModal
-                    espacos={espacos}
-                    fieldErrors={fieldErrors}
-                    formData={formDataNovo}
-                    onChange={onChangeFormNovo}
-                    onClose={onCloseNovo}
-                    onSubmit={onSubmitNovo}
-                />
             )}
 
             {messageModal}

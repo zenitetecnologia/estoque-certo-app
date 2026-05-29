@@ -1,21 +1,14 @@
 import LoadingWaves from '../LoadingWaves';
-import NovoEspacoModal from './NovoEspacoModal';
 
 export default function EspacoList({
     espacos,
     espacosFiltrados,
-    fieldErrors,
-    formDataNovo,
     loading,
     messageModal,
     onAbrirDetalhes,
     onAbrirNovo,
-    onChangeFormNovo,
     onChangePesquisa,
-    onCloseNovo,
-    onSubmitNovo,
-    pesquisa,
-    showModalNovo
+    pesquisa
 }) {
     return (
         <div className="w-full">
@@ -66,16 +59,6 @@ export default function EspacoList({
                         </div>
                     ))}
                 </div>
-            )}
-
-            {showModalNovo && (
-                <NovoEspacoModal
-                    fieldErrors={fieldErrors}
-                    formData={formDataNovo}
-                    onChange={onChangeFormNovo}
-                    onClose={onCloseNovo}
-                    onSubmit={onSubmitNovo}
-                />
             )}
 
             {messageModal}

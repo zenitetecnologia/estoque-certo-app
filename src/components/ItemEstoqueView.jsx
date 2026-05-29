@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { listarEspacos } from '../services/espacoService';
 import {
     atualizarItemEstoque,
-    criarItemEstoque,
     excluirItemEstoque,
     listarHistoricoItem,
     listarItensEstoque,
@@ -22,6 +22,8 @@ import ItemEstoqueDetail from './itemEstoque/ItemEstoqueDetail';
 import ItemEstoqueList from './itemEstoque/ItemEstoqueList';
 
 export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuarioId }) {
+    const navigate = useNavigate();
+    const location = useLocation();
     const [viewMode, setViewMode] = useState('list');
     const [itens, setItens] = useState([]);
     const [espacos, setEspacos] = useState([]);
@@ -34,14 +36,12 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     const [pesquisa, setPesquisa] = useState('');
 
     //modais
-    const [showModalNovo, setShowModalNovo] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showMovimentarModal, setShowMovimentarModal] = useState(false);
     const [showTransferirModal, setShowTransferirModal] = useState(false);
     const [novoEspacoId, setNovoEspacoId] = useState('');
 
     const [itemAtivo, setItemAtivo] = useState(null);
-    const [formDataNovo, setFormDataNovo] = useState({ espacoId: '', descricao: '', tipoUnidadeMedida: 1, quantidade: '' });
     const [formEdicao, setFormEdicao] = useState({ espacoId: '', descricao: '', tipoUnidadeMedida: 1, quantidade: '' });
     const [movimentacaoData, setMovimentacaoData] = useState({ tipoMovimentacao: 1, quantidadeMovimento: '' });
 
@@ -75,6 +75,13 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
         carregarDados();
     }, [carregarDados]);
 
+    useEffect(() => {
+        if (!location.state?.sucesso) return;
+
+        setSucesso(location.state.sucesso);
+        navigate(location.pathname, { replace: true, state: null });
+    }, [location.pathname, location.state, navigate]);
+
     const carregarHistorico = async (id) => {
         setLoadingHistorico(true);
         try {
@@ -107,33 +114,6 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
         setItemAtivo(null);
         setErro(''); setSucesso(''); setFieldErrors({});
         carregarDados();
-    };
-
-    const handleCriar = async (e) => {
-        e.preventDefault();
-        setErro(''); setSucesso(''); setFieldErrors({});
-
-        const payload = criarPayloadItemEstoque({
-            unidadeOrganizacionalId,
-            formData: formDataNovo,
-            quantidadePadraoZero: true
-        });
-
-        try {
-            const response = await criarItemEstoque({ token, payload });
-
-            if (response.ok) {
-                const mensagem = await extrairMensagem(response);
-                setShowModalNovo(false);
-                if (mensagem) setSucesso(mensagem);
-                carregarDados();
-            } else if (response.status === 400) {
-                await aplicarErrosCampos(response, setFieldErrors, setErro);
-            } else {
-                const msg = await extrairErro(response);
-                setErro(msg);
-            }
-        } catch (error) { console.error(error); }
     };
 
     const houveMudanca = itemAtivo && (
@@ -272,25 +252,17 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
     if (viewMode === 'list') {
         return (
             <ItemEstoqueList
-                espacos={espacos}
-                fieldErrors={fieldErrors}
-                formDataNovo={formDataNovo}
                 getNomeEspaco={getNomeEspaco}
                 itens={itens}
                 loading={loading}
                 onAbrirDetalhes={abrirDetalhes}
                 onAbrirNovo={() => {
-                    setFormDataNovo({ espacoId: espacos.length > 0 ? espacos[0].espacoId : '', descricao: '', tipoUnidadeMedida: 1, quantidade: '' });
-                    setShowModalNovo(true);
                     setFieldErrors({});
                     setErro('');
+                    navigate('/itens-estoque/novo');
                 }}
-                onChangeFormNovo={setFormDataNovo}
                 onChangePesquisa={setPesquisa}
-                onCloseNovo={() => setShowModalNovo(false)}
-                onSubmitNovo={handleCriar}
                 pesquisa={pesquisa}
-                showModalNovo={showModalNovo}
                 messageModal={messageModal}
             />
         );
