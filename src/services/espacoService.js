@@ -7,6 +7,12 @@ export const listarEspacos = ({ token, unidadeOrganizacionalId, skip = 0, top = 
     })
 );
 
+export const obterEspaco = ({ token, espacoId }) => (
+    fetch(`${getBaseUrl()}/v1/espacos/${espacoId}`, {
+        headers: authHeaders(token)
+    })
+);
+
 export const criarEspaco = ({ token, payload }) => (
     fetch(`${getBaseUrl()}/v1/espacos`, {
         method: 'POST',

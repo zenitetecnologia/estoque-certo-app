@@ -2,10 +2,12 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import EspacoView from '../components/EspacoView';
 import ItemEstoqueView from '../components/ItemEstoqueView';
 import ValidarUsuariosView from '../components/ValidarUsuariosView';
+import EspacoDetailPage from '../pages/espacos/EspacoDetailPage';
 import NovoEspacoPage from '../pages/espacos/NovoEspacoPage';
 import HomeHero from '../pages/home/HomeHero';
 import InstallIosPage from '../pages/home/InstallIosPage';
 import ProfilePage from '../pages/home/ProfilePage';
+import ItemEstoqueDetailPage from '../pages/itemEstoque/ItemEstoqueDetailPage';
 import NovoItemEstoquePage from '../pages/itemEstoque/NovoItemEstoquePage';
 
 export default function AuthenticatedRoutes({
@@ -27,12 +29,20 @@ export default function AuthenticatedRoutes({
                 element={<NovoEspacoPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} />}
             />
             <Route
+                path="espacos/:espacoId"
+                element={<EspacoDetailPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} />}
+            />
+            <Route
                 path="espacos"
                 element={<EspacoView token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} />}
             />
             <Route
                 path="itens-estoque/novo"
                 element={<NovoItemEstoquePage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} />}
+            />
+            <Route
+                path="itens-estoque/:itemEstoqueId"
+                element={<ItemEstoqueDetailPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} usuarioId={usuarioId} />}
             />
             <Route
                 path="itens-estoque"

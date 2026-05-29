@@ -23,6 +23,12 @@ export const listarHistoricoItem = ({ token, itemEstoqueId }) => (
     })
 );
 
+export const obterItemEstoque = ({ token, itemEstoqueId }) => (
+    fetch(`${getBaseUrl()}/v1/itens-estoque/${itemEstoqueId}`, {
+        headers: authHeaders(token)
+    })
+);
+
 export const criarItemEstoque = ({ token, payload }) => (
     fetch(`${getBaseUrl()}/v1/itens-estoque`, {
         method: 'POST',
