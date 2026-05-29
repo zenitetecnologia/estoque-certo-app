@@ -25,8 +25,10 @@ export default function Sidebar({ isAdmin, onInstallClick, onLogoutClick }) {
 
             <aside className="sidebar">
                 <div className="sidebar-body">
-                    <h3 className="sidebar-title">Zênite Tecnologia</h3>
-                    <p>Estoque Certo</p>
+                    <div className="sidebar-brand-block">
+                        <h3 className="sidebar-title">Zênite Tecnologia</h3>
+                        <p className="sidebar-subtitle">Estoque Certo</p>
+                    </div>
                     <div className="sidebar-nav">
                         <NavLink to="/" end onClick={closeMenu}>Início</NavLink>
                         <NavLink to="/espacos" onClick={closeMenu}>Espaços</NavLink>
