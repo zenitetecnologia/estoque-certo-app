@@ -40,7 +40,7 @@ export default function MovimentarEstoqueModal({
 
                         <div className="modal-actions">
                             <button type="button" className="button button-outline" onClick={onClose}>Cancelar</button>
-                            <button type="submit" className={`button ${movimentacaoData.tipoMovimentacao == 2 ? 'button-exit' : 'button-accent-confirm'}`}>Confirmar</button>
+                            <button type="submit" className="button button-accent-confirm">Confirmar</button>
                         </div>
                     </form>
                 </div>

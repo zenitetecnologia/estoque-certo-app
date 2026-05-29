@@ -77,7 +77,7 @@ export default function ItemEstoqueDetail({
             </button>
 
             <div className="stock-movement-actions">
-                <button className="button button-full" onClick={() => onAbrirMovimentacao(1)}>
+                <button className="button button-entry button-full" onClick={() => onAbrirMovimentacao(1)}>
                     + Entrada
                 </button>
                 <button className="button button-exit button-full" onClick={() => onAbrirMovimentacao(2)}>
