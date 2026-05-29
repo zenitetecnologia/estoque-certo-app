@@ -79,18 +79,20 @@ export default function NovoItemEstoquePage({ token, unidadeOrganizacionalId }) 
     };
 
     return (
-        <div className="row profile-row">
-            <div className="column-6">
-                <div className="card profile-card">
-                    <div className="modal-card-body">
-                        <h2 className="auth-title">Novo Item</h2>
+        <div className="detail-view w-full">
+            <div className="detail-heading">
+                <h2 className="no-margin">Novo Item</h2>
+            </div>
 
+            <form onSubmit={handleSubmit} noValidate>
+                <div className="card detail-card">
+                    <div className="detail-card-body">
                         {loading ? (
                             <LoadingWaves variant="list" rows={1} label="Carregando espaços" />
                         ) : (
-                            <form onSubmit={handleSubmit} noValidate>
-                                <div className="mb-1">
-                                    <label className="label-sm">Descrição do Produto</label>
+                            <div className="row">
+                                <div className="column-4 mb-1">
+                                    <label className={`label-sm ${fieldErrors.Descricao ? 'error' : ''}`}>Descrição do Produto</label>
                                     <input
                                         type="text"
                                         value={formData.descricao}
@@ -100,35 +102,33 @@ export default function NovoItemEstoquePage({ token, unidadeOrganizacionalId }) 
                                     {fieldErrors.Descricao && <small className="invalid-feedback d-block">{fieldErrors.Descricao}</small>}
                                 </div>
 
-                                <div className="row">
-                                    <div className="column-6 mb-1">
-                                        <label className="label-sm">Local (Espaço)</label>
-                                        <select
-                                            value={formData.espacoId}
-                                            onChange={e => setFormData({ ...formData, espacoId: e.target.value })}
-                                            className={getInputClassName(fieldErrors.EspacoId)}
-                                        >
-                                            <option value="" disabled>Selecione...</option>
-                                            {espacos.map(espaco => <option key={espaco.espacoId} value={espaco.espacoId}>{espaco.nome}</option>)}
-                                        </select>
-                                        {fieldErrors.EspacoId && <small className="invalid-feedback d-block">{fieldErrors.EspacoId}</small>}
-                                    </div>
-
-                                    <div className="column-6 mb-1">
-                                        <label className="label-sm">Unidade de Medida</label>
-                                        <select
-                                            value={formData.tipoUnidadeMedida}
-                                            onChange={e => setFormData({ ...formData, tipoUnidadeMedida: e.target.value })}
-                                            className={getInputClassName(fieldErrors.TipoUnidadeMedida)}
-                                        >
-                                            {Object.entries(TIPO_UNIDADE).map(([key, val]) => <option key={key} value={key}>{val}</option>)}
-                                        </select>
-                                        {fieldErrors.TipoUnidadeMedida && <small className="invalid-feedback d-block">{fieldErrors.TipoUnidadeMedida}</small>}
-                                    </div>
+                                <div className="column-3 mb-1">
+                                    <label className={`label-sm ${fieldErrors.EspacoId ? 'error' : ''}`}>Local (Espaço)</label>
+                                    <select
+                                        value={formData.espacoId}
+                                        onChange={e => setFormData({ ...formData, espacoId: e.target.value })}
+                                        className={getInputClassName(fieldErrors.EspacoId)}
+                                    >
+                                        <option value="" disabled>Selecione...</option>
+                                        {espacos.map(espaco => <option key={espaco.espacoId} value={espaco.espacoId}>{espaco.nome}</option>)}
+                                    </select>
+                                    {fieldErrors.EspacoId && <small className="invalid-feedback d-block">{fieldErrors.EspacoId}</small>}
                                 </div>
 
-                                <div className="mb-2">
-                                    <label className="label-sm">Quantidade Inicial</label>
+                                <div className="column-3 mb-1">
+                                    <label className={`label-sm ${fieldErrors.TipoUnidadeMedida ? 'error' : ''}`}>Unidade</label>
+                                    <select
+                                        value={formData.tipoUnidadeMedida}
+                                        onChange={e => setFormData({ ...formData, tipoUnidadeMedida: e.target.value })}
+                                        className={getInputClassName(fieldErrors.TipoUnidadeMedida)}
+                                    >
+                                        {Object.entries(TIPO_UNIDADE).map(([key, val]) => <option key={key} value={key}>{val}</option>)}
+                                    </select>
+                                    {fieldErrors.TipoUnidadeMedida && <small className="invalid-feedback d-block">{fieldErrors.TipoUnidadeMedida}</small>}
+                                </div>
+
+                                <div className="column-2 mb-1">
+                                    <label className={`label-sm ${fieldErrors.Quantidade ? 'error' : 'text-muted'}`}>Saldo Inicial</label>
                                     <input
                                         type="text"
                                         inputMode="decimal"
@@ -138,20 +138,20 @@ export default function NovoItemEstoquePage({ token, unidadeOrganizacionalId }) 
                                     />
                                     {fieldErrors.Quantidade && <small className="invalid-feedback d-block">{fieldErrors.Quantidade}</small>}
                                 </div>
-
-                                <div className="modal-actions profile-actions">
-                                    <button type="button" className="button button-outline" onClick={() => navigate('/itens-estoque')}>
-                                        Cancelar
-                                    </button>
-                                    <button type="submit" className="button">
-                                        Salvar
-                                    </button>
-                                </div>
-                            </form>
+                            </div>
                         )}
                     </div>
                 </div>
-            </div>
+
+                <div className="detail-action-bar detail-action-bar-two">
+                    <button type="button" className="button button-outline" onClick={() => navigate('/itens-estoque')}>
+                        Voltar
+                    </button>
+                    <button type="submit" className="button" disabled={loading}>
+                        Salvar
+                    </button>
+                </div>
+            </form>
 
             {erro && (
                 <MessageModal

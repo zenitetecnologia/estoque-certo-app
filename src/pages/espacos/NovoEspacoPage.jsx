@@ -36,15 +36,17 @@ export default function NovoEspacoPage({ token, unidadeOrganizacionalId }) {
     };
 
     return (
-        <div className="row profile-row">
-            <div className="column-6">
-                <div className="card profile-card">
-                    <div className="modal-card-body">
-                        <h2 className="auth-title">Novo Espaço</h2>
+        <div className="detail-view w-full">
+            <div className="detail-heading">
+                <h2 className="no-margin">Novo Espaço</h2>
+            </div>
 
-                        <form onSubmit={handleSubmit} noValidate>
-                            <div className="mb-1">
-                                <label className="label-sm">Nome do Espaço (Obrigatório)</label>
+            <form onSubmit={handleSubmit} noValidate>
+                <div className="card detail-card">
+                    <div className="detail-card-body">
+                        <div className="row">
+                            <div className="column-6 mb-1">
+                                <label className={`label-sm ${fieldErrors.Nome ? 'error' : ''}`}>Nome do Espaço</label>
                                 <input
                                     type="text"
                                     value={formData.nome}
@@ -53,9 +55,8 @@ export default function NovoEspacoPage({ token, unidadeOrganizacionalId }) {
                                 />
                                 {fieldErrors.Nome && <small className="invalid-feedback d-block">{fieldErrors.Nome}</small>}
                             </div>
-
-                            <div className="mb-2">
-                                <label className="label-sm">Descrição (Opcional)</label>
+                            <div className="column-6 mb-1">
+                                <label className={`label-sm ${fieldErrors.Descricao ? 'error' : ''}`}>Descrição</label>
                                 <input
                                     type="text"
                                     value={formData.descricao}
@@ -64,19 +65,19 @@ export default function NovoEspacoPage({ token, unidadeOrganizacionalId }) {
                                 />
                                 {fieldErrors.Descricao && <small className="invalid-feedback d-block">{fieldErrors.Descricao}</small>}
                             </div>
-
-                            <div className="modal-actions profile-actions">
-                                <button type="button" className="button button-outline" onClick={() => navigate('/espacos')}>
-                                    Cancelar
-                                </button>
-                                <button type="submit" className="button">
-                                    Salvar
-                                </button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
-            </div>
+
+                <div className="detail-action-bar detail-action-bar-two">
+                    <button type="button" className="button button-outline" onClick={() => navigate('/espacos')}>
+                        Voltar
+                    </button>
+                    <button type="submit" className="button">
+                        Salvar
+                    </button>
+                </div>
+            </form>
 
             {erro && (
                 <MessageModal
