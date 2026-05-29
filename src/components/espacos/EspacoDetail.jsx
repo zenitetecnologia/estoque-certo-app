@@ -68,7 +68,7 @@ export default function EspacoDetail({
                     Voltar
                 </button>
                 <button className="button" onClick={onConfirmarEdicao} disabled={!houveMudanca}>
-                    Editar
+                    Salvar
                 </button>
                 <button className="button button-danger" onClick={onOpenDelete}>
                     Excluir
