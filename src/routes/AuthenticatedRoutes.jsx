@@ -4,7 +4,7 @@ import ItemEstoqueView from '../components/ItemEstoqueView';
 import ValidarUsuariosView from '../components/ValidarUsuariosView';
 import EspacoDetailPage from '../pages/espacos/EspacoDetailPage';
 import NovoEspacoPage from '../pages/espacos/NovoEspacoPage';
-import HomeHero from '../pages/home/HomeHero';
+import DashboardPage from '../pages/home/DashboardPage';
 import InstallIosPage from '../pages/home/InstallIosPage';
 import ProfilePage from '../pages/home/ProfilePage';
 import ItemEstoqueDetailPage from '../pages/itemEstoque/ItemEstoqueDetailPage';
@@ -23,7 +23,15 @@ export default function AuthenticatedRoutes({
 }) {
     return (
         <Routes>
-            <Route index element={<HomeHero />} />
+            <Route
+                index
+                element={
+                    <DashboardPage
+                        token={token}
+                        unidadeOrganizacionalId={unidadeOrganizacionalId}
+                    />
+                }
+            />
             <Route
                 path="espacos/novo"
                 element={<NovoEspacoPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} />}
