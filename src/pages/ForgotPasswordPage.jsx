@@ -7,6 +7,7 @@ import ThemeToggle from '../components/ThemeToggle';
 import UnidadeComboBox from '../components/UnidadeComboBox';
 import { getBaseUrl } from '../utils/apiConfig';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
+import { encryptedJsonBody } from '../utils/payloadCrypto';
 
 export default function ForgotPasswordPage() {
     const navigate = useNavigate();
@@ -25,7 +26,7 @@ export default function ForgotPasswordPage() {
             const res = await fetch(`${getBaseUrl()}/v1/auth/forgot`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+                body: await encryptedJsonBody({
                     username: data.username,
                     unidadeOrganizacionalId: data.unidadeOrganizacionalId === '' ? null : data.unidadeOrganizacionalId
                 })
@@ -44,7 +45,7 @@ export default function ForgotPasswordPage() {
             const res = await fetch(`${getBaseUrl()}/v1/auth/verify`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code: data.code })
+                body: await encryptedJsonBody({ code: data.code })
             });
 
             if (res.ok) {
@@ -70,7 +71,7 @@ export default function ForgotPasswordPage() {
             const res = await fetch(`${getBaseUrl()}/v1/auth/reset`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ codigoAcessoId: data.codigoAcessoId, senha: data.senha, confirmaSenha: data.confirmaSenha })
+                body: await encryptedJsonBody({ codigoAcessoId: data.codigoAcessoId, senha: data.senha, confirmaSenha: data.confirmaSenha })
             });
             if (res.ok) {
                 const mensagem = await extrairMensagem(res);
