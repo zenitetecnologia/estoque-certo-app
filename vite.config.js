@@ -10,14 +10,6 @@ export default defineConfig(({ mode }) => {
     define: {
       __ENCRYPT_PUBLIC_KEY__: JSON.stringify(encryptPublicKey)
     },
-    server: {
-      fs: {
-        allow: [
-          'C:/Users/dougl/source/Repositórios/estoque-certo-app',
-          'C:/Users/dougl/source/Repositórios/zenite-ui'
-        ]
-      }
-    },
     plugins: [
       react(),
       VitePWA({
