@@ -1,6 +1,7 @@
 import { TIPO_UNIDADE, getTipoUnidadeSigla } from '../../constants/tipoUnidade';
 import { formatQuantity } from '../../utils/quantity';
 import LoadingWaves from '../LoadingWaves';
+import ZeniteIcon from '../ZeniteIcon';
 
 export default function ItensDoEspacoGrid({
     itens,
@@ -33,17 +34,21 @@ export default function ItensDoEspacoGrid({
                                     <h4 className="space-item-title">{item.descricao}</h4>
                                     <small className="space-item-unit">{TIPO_UNIDADE[item.tipoUnidadeMedida] || 'UN'}</small>
                                 </div>
-                                <div className="space-item-quantity-badge">
-                                    {formatQuantity(item.quantidade)} {getTipoUnidadeSigla(item.tipoUnidadeMedida)}
+                                <div className="space-item-actions">
+                                    <div className="space-item-quantity-badge">
+                                        {formatQuantity(item.quantidade)} {getTipoUnidadeSigla(item.tipoUnidadeMedida)}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="button-icon-danger"
+                                        onClick={() => onExcluirItem(item)}
+                                        disabled={excluindoItemId === item.itemEstoqueId}
+                                        aria-label={`Excluir ${item.descricao}`}
+                                    >
+                                        <ZeniteIcon name="trash" size={20} />
+                                    </button>
                                 </div>
                             </div>
-                            <button
-                                className="button button-outline button-full"
-                                onClick={() => onExcluirItem(item)}
-                                disabled={excluindoItemId === item.itemEstoqueId}
-                            >
-                                Excluir item
-                            </button>
                         </div>
                     </div>
                 </div>
