@@ -7,7 +7,7 @@ import ThemeToggle from '../components/ThemeToggle';
 import UnidadeComboBox from '../components/UnidadeComboBox';
 import { getBaseUrl } from '../utils/apiConfig';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
-import { encryptedJsonBody } from '../utils/payloadCrypto';
+import { decryptEncryptedResponse, encryptedJsonBody, encryptedJsonBodyWithKey } from '../utils/payloadCrypto';
 
 export default function ForgotPasswordPage() {
     const navigate = useNavigate();
@@ -42,14 +42,15 @@ export default function ForgotPasswordPage() {
         setErro('');
 
         try {
+            const encryptedRequest = await encryptedJsonBodyWithKey({ code: data.code });
             const res = await fetch(`${getBaseUrl()}/v1/auth/verify`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: await encryptedJsonBody({ code: data.code })
+                body: encryptedRequest.body
             });
 
             if (res.ok) {
-                const result = await res.json();
+                const result = await decryptEncryptedResponse(await res.json(), encryptedRequest.aesKey);
                 setData(prev => ({ ...prev, codigoAcessoId: result.codigoAcessoId || result.codigoResetId || '' }));
                 setStep(3);
             } else if (res.status === 400) {

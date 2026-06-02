@@ -38,6 +38,12 @@ const getPublicKey = () => {
 };
 
 export const encryptPayload = async (payload) => {
+    const { encryptedPayload } = await encryptPayloadWithKey(payload);
+
+    return encryptedPayload;
+};
+
+export const encryptPayloadWithKey = async (payload) => {
     const publicKeyBase64 = getPublicKey();
     const publicKey = await window.crypto.subtle.importKey(
         'spki',
@@ -56,7 +62,7 @@ export const encryptPayload = async (payload) => {
             length: 256
         },
         true,
-        ['encrypt']
+        ['encrypt', 'decrypt']
     );
 
     const iv = window.crypto.getRandomValues(new Uint8Array(12));
@@ -77,9 +83,46 @@ export const encryptPayload = async (payload) => {
     );
 
     return {
-        key: arrayBufferToBase64(encryptedKeyBuffer),
-        iv: arrayBufferToBase64(iv),
-        payload: arrayBufferToBase64(encryptedPayloadBuffer)
+        aesKey,
+        encryptedPayload: {
+            key: arrayBufferToBase64(encryptedKeyBuffer),
+            iv: arrayBufferToBase64(iv),
+            payload: arrayBufferToBase64(encryptedPayloadBuffer)
+        }
+    };
+};
+
+export const decryptEncryptedResponse = async (encryptedResponse, aesKey) => {
+    const iv = base64ToArrayBuffer(encryptedResponse.iv);
+    const payloadBytes = base64ToArrayBuffer(encryptedResponse.payload);
+
+    const tagSize = 16;
+    const cipherText = new Uint8Array(payloadBytes.slice(0, payloadBytes.byteLength - tagSize));
+    const tag = new Uint8Array(payloadBytes.slice(payloadBytes.byteLength - tagSize));
+    const encryptedBytes = new Uint8Array(cipherText.length + tag.length);
+    encryptedBytes.set(cipherText);
+    encryptedBytes.set(tag, cipherText.length);
+
+    const decryptedBuffer = await window.crypto.subtle.decrypt(
+        {
+            name: 'AES-GCM',
+            iv
+        },
+        aesKey,
+        encryptedBytes
+    );
+
+    const json = new TextDecoder().decode(decryptedBuffer);
+
+    return JSON.parse(json);
+};
+
+export const encryptedJsonBodyWithKey = async (payload) => {
+    const { aesKey, encryptedPayload } = await encryptPayloadWithKey(payload);
+
+    return {
+        aesKey,
+        body: JSON.stringify(encryptedPayload)
     };
 };
 
