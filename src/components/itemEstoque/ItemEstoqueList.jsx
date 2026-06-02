@@ -1,6 +1,7 @@
 import { getTipoUnidadeSigla } from '../../constants/tipoUnidade';
 import { formatQuantity } from '../../utils/quantity';
 import LoadingWaves from '../LoadingWaves';
+import ZeniteIcon from '../ZeniteIcon';
 
 export default function ItemEstoqueList({
     getNomeEspaco,
@@ -21,7 +22,10 @@ export default function ItemEstoqueList({
         <div className={`w-full inventory-list-page ${quantidadeSelecionada > 0 ? 'has-selection-toolbar' : ''}`}>
             <div className="inventory-list-header">
                 <h2 className="no-margin">Itens de Estoque</h2>
-                <button className="button inventory-list-header-action no-margin" onClick={onAbrirNovo}>+ Novo Item</button>
+                <button className="button inventory-list-header-action no-margin" onClick={onAbrirNovo}>
+                    <ZeniteIcon name="plus" />
+                    <span className="button-icon-text">Novo Item</span>
+                </button>
             </div>
 
             <div className="mb-2">
@@ -83,7 +87,8 @@ export default function ItemEstoqueList({
                         {quantidadeSelecionada} itens selecionados
                     </span>
                     <button className="button inventory-selection-action" onClick={onExcluirSelecionados}>
-                        Excluir Selecionados
+                        <ZeniteIcon name="trash" />
+                        <span className="button-icon-text">Excluir Selecionados</span>
                     </button>
                 </div>
             )}

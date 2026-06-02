@@ -1,4 +1,5 @@
 import { TIPO_UNIDADE } from '../../constants/tipoUnidade';
+import ZeniteIcon from '../ZeniteIcon';
 import ExcluirItemModal from './ExcluirItemModal';
 import HistoricoMovimentacoes from './HistoricoMovimentacoes';
 import MovimentarEstoqueModal from './MovimentarEstoqueModal';
@@ -77,10 +78,12 @@ export default function ItemEstoqueDetail({
 
             <div className="stock-movement-actions">
                 <button className="button button-entry button-full" onClick={() => onAbrirMovimentacao(1)}>
-                    + Entrada
+                    <ZeniteIcon name="plus" />
+                    <span className="button-icon-text">Entrada</span>
                 </button>
                 <button className="button button-exit button-full" onClick={() => onAbrirMovimentacao(2)}>
-                    - Saída
+                    <ZeniteIcon name="minus" />
+                    <span className="button-icon-text">Saída</span>
                 </button>
             </div>
 
