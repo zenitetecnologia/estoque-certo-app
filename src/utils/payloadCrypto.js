@@ -1,5 +1,3 @@
-import { getBaseUrl } from './apiConfig';
-
 let cachedPublicKey;
 
 const base64ToArrayBuffer = (base64Value) => {
@@ -25,23 +23,22 @@ const arrayBufferToBase64 = (buffer) => {
     return window.btoa(binary);
 };
 
-const getPublicKey = async () => {
+const getPublicKey = () => {
     if (cachedPublicKey) return cachedPublicKey;
 
-    const response = await fetch(`${getBaseUrl()}/v1/auth/public-key`);
+    const publicKey = __ENCRYPT_PUBLIC_KEY__ || '';
 
-    if (!response.ok) {
-        throw new Error('Não foi possível obter a chave pública de criptografia.');
+    if (!publicKey.trim()) {
+        throw new Error('encrypt_public_key não configurada.');
     }
 
-    const data = await response.json();
-    cachedPublicKey = data.publicKey;
+    cachedPublicKey = publicKey;
 
     return cachedPublicKey;
 };
 
 export const encryptPayload = async (payload) => {
-    const publicKeyBase64 = await getPublicKey();
+    const publicKeyBase64 = getPublicKey();
     const publicKey = await window.crypto.subtle.importKey(
         'spki',
         base64ToArrayBuffer(publicKeyBase64),
