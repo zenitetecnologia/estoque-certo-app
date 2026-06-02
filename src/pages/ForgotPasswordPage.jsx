@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
         return `${minutos}:${segundos}`;
     };
 
-    const solicitarCodigo = async () => {
+    const solicitarCodigo = async ({ iniciarCooldown = false } = {}) => {
         setErro('');
         setSucesso('');
         setFieldErrors({});
@@ -60,7 +60,7 @@ export default function ForgotPasswordPage() {
             if (mensagem) setSucesso(mensagem);
             setData(prev => ({ ...prev, code: '' }));
             setStep(2);
-            iniciarCooldownReenvio();
+            if (iniciarCooldown) iniciarCooldownReenvio();
         } else if (res.status === 400) {
             await aplicarErrosCampos(res, setFieldErrors, setErro);
         } else {
@@ -80,7 +80,7 @@ export default function ForgotPasswordPage() {
 
     const handleReenviarCodigo = async () => {
         try {
-            await solicitarCodigo();
+            await solicitarCodigo({ iniciarCooldown: true });
         } catch (error) {
             console.error(error);
         }
