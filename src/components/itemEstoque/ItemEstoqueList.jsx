@@ -10,16 +10,11 @@ export default function ItemEstoqueList({
     onAbrirDetalhes,
     onAbrirNovo,
     onChangePesquisa,
-    onExcluirSelecionados,
-    onSelecionarItem,
     pesquisa,
-    selecionados,
     messageModal
 }) {
-    const quantidadeSelecionada = selecionados.length;
-
     return (
-        <div className={`w-full inventory-list-page ${quantidadeSelecionada > 0 ? 'has-selection-toolbar' : ''}`}>
+        <div className="w-full">
             <div className="inventory-list-header">
                 <h2 className="no-margin">Itens de Estoque</h2>
                 <button className="button inventory-list-header-action no-margin" onClick={onAbrirNovo}>
@@ -50,15 +45,7 @@ export default function ItemEstoqueList({
                 <div className="inventory-grid inventory-grid-compact">
                     {itens.map(item => (
                         <div key={item.itemEstoqueId} className="inventory-grid-item">
-                            <div className={`card inventory-card inventory-list-card inventory-item-list-card inventory-card-surface ${selecionados.includes(item.itemEstoqueId) ? 'inventory-card-selected' : ''}`}>
-                                <label className="inventory-card-selector">
-                                    <input
-                                        type="checkbox"
-                                        checked={selecionados.includes(item.itemEstoqueId)}
-                                        onChange={() => onSelecionarItem(item.itemEstoqueId)}
-                                        aria-label={`Selecionar ${item.descricao}`}
-                                    />
-                                </label>
+                            <div className="card inventory-card inventory-list-card inventory-item-list-card inventory-card-surface">
                                 <div className="inventory-card-header">
                                     <div className="inventory-card-title-row">
                                         <h3 className="inventory-card-title">{item.descricao}</h3>
@@ -78,18 +65,6 @@ export default function ItemEstoqueList({
                             </div>
                         </div>
                     ))}
-                </div>
-            )}
-
-            {quantidadeSelecionada > 0 && (
-                <div className="inventory-selection-toolbar">
-                    <span className="inventory-selection-count">
-                        {quantidadeSelecionada} itens selecionados
-                    </span>
-                    <button className="button inventory-selection-action" onClick={onExcluirSelecionados}>
-                        <ZeniteIcon name="trash" />
-                        <span className="button-icon-text">Excluir Selecionados</span>
-                    </button>
                 </div>
             )}
 
