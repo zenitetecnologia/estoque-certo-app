@@ -1,9 +1,11 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import CodeValidatePage from '../pages/CodeValidatePage';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import PendingApprovalPage from '../pages/PendingApprovalPage';
 import RegisterPage from '../pages/RegisterPage';
+import ResetPasswordPage from '../pages/ResetPasswordPage';
 
 export default function AppRoutes({
     token,
@@ -25,6 +27,14 @@ export default function AppRoutes({
             <Route
                 path="/forgot-password"
                 element={token ? <Navigate to="/" replace /> : <ForgotPasswordPage />}
+            />
+            <Route
+                path="/code-validate"
+                element={token ? <Navigate to="/" replace /> : <CodeValidatePage />}
+            />
+            <Route
+                path="/reset-password"
+                element={token ? <Navigate to="/" replace /> : <ResetPasswordPage />}
             />
             <Route
                 path="/pending-approval"
