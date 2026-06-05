@@ -31,7 +31,7 @@ export default function ForgotPasswordPage() {
     }, [cooldownReenvio]);
 
     const iniciarCooldownReenvio = () => {
-        setCooldownReenvio(120);
+        setCooldownReenvio(300);
     };
 
     const formatCooldown = (seconds) => {
