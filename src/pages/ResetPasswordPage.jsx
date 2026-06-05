@@ -53,8 +53,8 @@ export default function ResetPasswordPage() {
         <>
             <div className="container">
                 <div className="auth-page">
+                    <ThemeToggle fixo={false} />
                     <div className="card auth-card">
-                        <ThemeToggle fixo={false} />
                         <h2 className="auth-title">Redefinir Senha</h2>
 
                         <form onSubmit={handleReset} noValidate>

@@ -15,6 +15,7 @@ export default function CodeValidatePage() {
     const [sucesso, setSucesso] = useState(recoveryData.mensagem || '');
     const [fieldErrors, setFieldErrors] = useState({});
     const [cooldownReenvio, setCooldownReenvio] = useState(0);
+    const codeError = fieldErrors.Code || fieldErrors.code || fieldErrors.Codigo || fieldErrors.codigo || '';
 
     useEffect(() => {
         if (!recoveryData.username || !recoveryData.unidadeOrganizacionalId) {
@@ -107,8 +108,8 @@ export default function CodeValidatePage() {
         <>
             <div className="container">
                 <div className="auth-page">
+                    <ThemeToggle fixo={false} />
                     <div className="card auth-card">
-                        <ThemeToggle fixo={false} />
                         <h2 className="auth-title">Validar Código</h2>
 
                         <form onSubmit={handleVerifyCode} noValidate>
@@ -118,9 +119,9 @@ export default function CodeValidatePage() {
                                     type="text"
                                     value={code}
                                     onChange={e => setCode(e.target.value)}
-                                    className={`w-full no-field-margin ${(erro || fieldErrors.Code) ? 'is-invalid' : ''}`}
+                                    className={`w-full no-field-margin ${codeError ? 'is-invalid' : ''}`}
                                 />
-                                {fieldErrors.Code && <small className="invalid-feedback d-block">{fieldErrors.Code}</small>}
+                                {codeError && <small className="invalid-feedback d-block">{codeError}</small>}
                             </div>
                             <button type="submit" className="button button-full">Verificar</button>
                             <button

@@ -54,8 +54,8 @@ export default function ForgotPasswordPage() {
         <>
             <div className="container">
                 <div className="auth-page">
+                    <ThemeToggle fixo={false} />
                     <div className="card auth-card">
-                        <ThemeToggle fixo={false} />
                         <h2 className="auth-title">Recuperar Acesso</h2>
 
                         <form onSubmit={handleForgot} noValidate>

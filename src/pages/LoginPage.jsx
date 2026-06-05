@@ -56,8 +56,8 @@ export default function LoginPage({ onLogin, onPendingApproval }) {
         <>
             <div className="container">
                 <div className="auth-page">
+                    <ThemeToggle fixo={false} />
                     <div className="card auth-card">
-                        <ThemeToggle fixo={false} />
                         <h2 className="auth-title">Login</h2>
                         <form onSubmit={handleSubmit} noValidate>
 
