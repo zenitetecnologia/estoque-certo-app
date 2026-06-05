@@ -1,9 +1,14 @@
-/* Overlay mais suave no MessageModal */
-.message-overlay.message-overlay-dim,
-.message-overlay.message-overlay-dim::before,
-.message-overlay.message-overlay-dim::after {
+/* Overlay blur para todos os modais de confirmação */
+.modal-overlay {
     background: transparent !important;
-    background-color: transparent !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+}
+
+/* Overlay blur para o MessageModal */
+.message-overlay,
+.message-overlay.message-overlay-dim {
+    background: transparent !important;
     backdrop-filter: blur(6px) !important;
     -webkit-backdrop-filter: blur(6px) !important;
 }
