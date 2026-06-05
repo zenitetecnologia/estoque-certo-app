@@ -135,10 +135,10 @@ export default function ForgotPasswordPage() {
 
     return (
         <>
-            <ThemeToggle />
             <div className="container">
                 <div className="auth-page">
                     <div className="card auth-card">
+                        <ThemeToggle fixo={false} />
                         <h2 className="auth-title">Recuperar Acesso</h2>
 
 

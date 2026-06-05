@@ -8,10 +8,10 @@ export default function PendingApprovalPage({ message }) {
 
     return (
         <>
-            <ThemeToggle />
             <div className="container">
                 <div className="auth-page">
                     <div className="card auth-card text-center">
+                        <ThemeToggle fixo={false} />
                         {pendingMessage && (
                             <p className="pending-description">
                                 {pendingMessage}

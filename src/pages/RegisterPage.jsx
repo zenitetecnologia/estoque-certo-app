@@ -51,10 +51,10 @@ export default function RegisterPage() {
 
     return (
         <>
-            <ThemeToggle />
             <div className="container">
                 <div className="auth-page">
                     <div className="card auth-card">
+                        <ThemeToggle fixo={false} />
                         <h2 className="auth-title">Criar Conta</h2>
                         <form onSubmit={handleSubmit} noValidate>
 
