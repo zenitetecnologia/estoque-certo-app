@@ -230,10 +230,20 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
             Visão geral do estoque
           </h3>
 
-          {loading && <p style={bodyTextStyle}>Carregando dados do dashboard...</p>}
+          {loading && 
+            <p style={{
+              ...bodyTextStyle,
+              textAlign: 'center'}}
+            >
+              Carregando dados do dashboard...
+            </p>}
 
           {!loading && pizzaData.length === 0 && (
-            <p style={bodyTextStyle}>
+            <p style={{
+              ...bodyTextStyle,
+              textAlign: 'center'
+            }}
+            >
               Não há dados para exibir com o filtro selecionado.
             </p>
           )}
@@ -295,6 +305,7 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
               className="inventory-card-title"
               style={{
                 ...cardTitleStyle,
+                textAlign: 'center',
                 whiteSpace: 'nowrap',
                 overflow: 'visible',
                 flexShrink: 0,
@@ -303,10 +314,20 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
               {espacoId ? 'Total do espaço' : 'Totais por espaço'}
             </h3>
 
-            {loading && <p style={bodyTextStyle}>Carregando totais...</p>}
+            {loading && <p style={{
+              ...bodyTextStyle,
+              textAlign: 'center'
+            }}>
+              Carregando totais...
+            </p>}
 
             {!loading && pizzaData.length === 0 && (
-              <p style={bodyTextStyle}>Sem dados para exibir.</p>
+              <p style={{
+                ...bodyTextStyle,
+                textAlign: 'center'
+              }}>
+                Sem dados para exibir.
+              </p>
             )}
 
             {!loading && !espacoId && pizzaData.length > 0 && (
