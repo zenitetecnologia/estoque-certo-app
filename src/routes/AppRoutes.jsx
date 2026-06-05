@@ -38,6 +38,10 @@ export default function AppRoutes({
             />
             <Route
                 path="/pending-approval"
+                element={<Navigate to="/waiting-approval" replace />}
+            />
+            <Route
+                path="/waiting-approval"
                 element={token ? <Navigate to="/" replace /> : <PendingApprovalPage message={pendingMessage} />}
             />
             <Route
