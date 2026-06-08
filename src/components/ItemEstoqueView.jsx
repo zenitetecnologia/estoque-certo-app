@@ -170,7 +170,7 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
                 itens={itens}
                 loading={loading}
                 onAbrirMovimentacao={abrirMovimentacao}
-                onAbrirNovo={() => navigate('/itens-estoque/novo')}
+                onAbrirNovo={() => navigate('/espacos')}
                 onChangePesquisa={setPesquisa}
                 onEditarItem={(item) => navigate(`/itens-estoque/${item.itemEstoqueId}`)}
                 onExcluirItem={setItemParaExcluir}
