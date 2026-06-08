@@ -7,6 +7,7 @@ import ThemeToggle from '../components/ThemeToggle';
 import UnidadeComboBox from '../components/UnidadeComboBox';
 import { getBaseUrl } from '../utils/apiConfig';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
+import { JORNADA_USUARIO_NOME } from '../utils/jornadaUsuario';
 import { encryptedJsonBody } from '../utils/payloadCrypto';
 
 export default function RegisterPage() {
@@ -34,9 +35,14 @@ export default function RegisterPage() {
 
             if (response.ok) {
                 const mensagem = await extrairMensagem(response);
-                navigate('/waiting-approval', {
+                navigate('/code-validate', {
                     replace: true,
-                    state: { message: mensagem }
+                    state: {
+                        username: formData.username,
+                        unidadeOrganizacionalId: formData.unidadeOrganizacionalId,
+                        jornadaUsuario: JORNADA_USUARIO_NOME.CODE_VALIDATE_PAGE,
+                        mensagem
+                    }
                 });
             } else if (response.status === 400) {
                 await aplicarErrosCampos(response, setFieldErrors, setErro);
