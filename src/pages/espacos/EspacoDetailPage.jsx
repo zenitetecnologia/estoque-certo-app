@@ -102,8 +102,7 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId }) {
 
             if (response.ok) {
                 const mensagem = await extrairMensagem(response);
-                if (mensagem) setSucesso(mensagem);
-                setEspacoSelecionado({ ...espacoSelecionado, nome: formEdicao.nome, descricao: formEdicao.descricao });
+                navigate('/espacos', { replace: true, state: { sucesso: mensagem } });
             } else if (response.status === 400) {
                 await aplicarErrosCampos(response, setFieldErrors, setErro);
             } else {
