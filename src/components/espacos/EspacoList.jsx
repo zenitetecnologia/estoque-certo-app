@@ -6,7 +6,9 @@ export default function EspacoList({
     espacosFiltrados,
     loading,
     messageModal,
-    onAbrirDetalhes,
+    onEditarEspaco,
+    onExcluirEspaco,
+    onGerenciarItens,
     onAbrirNovo,
     onChangePesquisa,
     pesquisa
@@ -48,16 +50,36 @@ export default function EspacoList({
                     <div className="inventory-grid">
                         {espacosFiltrados.map(espaco => (
                             <div key={espaco.espacoId} className="inventory-grid-item">
-                                <div className="card inventory-card inventory-list-card inventory-card-surface">
-                                    <div className="inventory-card-header">
-                                        <h3 className="inventory-card-title">{espaco.nome}</h3>
-                                        <p className="inventory-card-description">
-                                            {espaco.descricao || 'Sem descrição'}
-                                        </p>
+                                <div className="card inventory-card inventory-list-card space-list-card inventory-card-surface">
+                                    <div className="space-list-card-main">
+                                        <div className="inventory-card-header">
+                                            <h3 className="inventory-card-title">{espaco.nome}</h3>
+                                            <p className="inventory-card-description">
+                                                {espaco.descricao || 'Sem descrição'}
+                                            </p>
+                                        </div>
+                                        <div className="space-list-card-actions">
+                                            <button
+                                                type="button"
+                                                className="button-icon-accent"
+                                                onClick={() => onEditarEspaco(espaco)}
+                                                aria-label={`Editar ${espaco.nome}`}
+                                            >
+                                                <ZeniteIcon name="pencil" size={22} />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="button-icon-danger"
+                                                onClick={() => onExcluirEspaco(espaco)}
+                                                aria-label={`Excluir ${espaco.nome}`}
+                                            >
+                                                <ZeniteIcon name="trash" size={22} />
+                                            </button>
+                                        </div>
                                     </div>
                                     <div className="inventory-card-footer">
-                                        <button className="button button-outline inventory-card-action" onClick={() => onAbrirDetalhes(espaco)}>
-                                            Visualizar
+                                        <button className="button button-outline inventory-card-action" onClick={() => onGerenciarItens(espaco)}>
+                                            Itens
                                         </button>
                                     </div>
                                 </div>

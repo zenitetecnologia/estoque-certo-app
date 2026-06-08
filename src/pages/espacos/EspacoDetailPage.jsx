@@ -13,7 +13,7 @@ import { excluirItemEstoque } from '../../services/itemEstoqueService';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../../utils/apiUtils';
 import { criarPayloadEspaco } from '../../utils/espacoViewModel';
 
-export default function EspacoDetailPage({ token, unidadeOrganizacionalId }) {
+export default function EspacoDetailPage({ token, unidadeOrganizacionalId, mode = 'editar' }) {
     const navigate = useNavigate();
     const { espacoId } = useParams();
 
@@ -191,6 +191,7 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId }) {
             itensDoEspaco={itensDoEspaco}
             loadingItens={loadingItens}
             messageModal={messageModal}
+            mode={mode}
             onChangeFormEdicao={setFormEdicao}
             onCloseDelete={() => setShowDeleteModal(false)}
             onCloseDeleteItem={() => setItemParaExcluir(null)}

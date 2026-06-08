@@ -37,8 +37,12 @@ export default function AuthenticatedRoutes({
                 element={<NovoEspacoPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} />}
             />
             <Route
+                path="espacos/:espacoId/itens"
+                element={<EspacoDetailPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} mode="itens" />}
+            />
+            <Route
                 path="espacos/:espacoId"
-                element={<EspacoDetailPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} />}
+                element={<EspacoDetailPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} mode="editar" />}
             />
             <Route
                 path="espacos"
