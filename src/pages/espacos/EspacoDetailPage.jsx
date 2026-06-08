@@ -1,20 +1,24 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import LoadingWaves from '../../components/LoadingWaves';
 import MessageModal from '../../components/MessageModal';
 import EspacoDetail from '../../components/espacos/EspacoDetail';
+import MovimentarEstoqueModal from '../../components/itemEstoque/MovimentarEstoqueModal';
 import {
     atualizarEspaco,
     excluirEspaco,
     listarItensDoEspaco,
     obterEspaco
 } from '../../services/espacoService';
-import { excluirItemEstoque } from '../../services/itemEstoqueService';
+import { excluirItemEstoque, movimentarItemEstoque } from '../../services/itemEstoqueService';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../../utils/apiUtils';
 import { criarPayloadEspaco } from '../../utils/espacoViewModel';
+import { criarPayloadMovimentacao } from '../../utils/itemEstoqueViewModel';
+import { parseQuantity } from '../../utils/quantity';
 
-export default function EspacoDetailPage({ token, unidadeOrganizacionalId, mode = 'editar' }) {
+export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuarioId, mode = 'editar' }) {
     const navigate = useNavigate();
+    const location = useLocation();
     const { espacoId } = useParams();
 
     const [espacoSelecionado, setEspacoSelecionado] = useState(null);
@@ -28,6 +32,8 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, mode 
     const [fieldErrors, setFieldErrors] = useState({});
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemParaExcluir, setItemParaExcluir] = useState(null);
+    const [itemParaMovimentar, setItemParaMovimentar] = useState(null);
+    const [movimentacaoData, setMovimentacaoData] = useState({ tipoMovimentacao: 1, quantidadeMovimento: '' });
 
     const carregarItens = useCallback(async () => {
         if (!espacoId) return;
@@ -84,6 +90,13 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, mode 
 
         carregarEspaco();
     }, [carregarEspaco, espacoId, navigate]);
+
+    useEffect(() => {
+        if (!location.state?.sucesso) return;
+
+        setSucesso(location.state.sucesso);
+        navigate(location.pathname, { replace: true, state: {} });
+    }, [location.pathname, location.state, navigate]);
 
     const houveMudanca = espacoSelecionado && (
         espacoSelecionado.nome !== formEdicao.nome ||
@@ -162,6 +175,57 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, mode 
         }
     };
 
+    const abrirMovimentacaoItem = (item, tipoMovimentacao) => {
+        setItemParaMovimentar(item);
+        setMovimentacaoData({ tipoMovimentacao, quantidadeMovimento: '' });
+        setFieldErrors({});
+        setErro('');
+        setSucesso('');
+    };
+
+    const handleMovimentarItem = async (event) => {
+        event.preventDefault();
+        if (!itemParaMovimentar) return;
+
+        setErro('');
+        setSucesso('');
+        setFieldErrors({});
+
+        const payload = criarPayloadMovimentacao({ movimentacaoData, usuarioId });
+
+        try {
+            const response = await movimentarItemEstoque({
+                token,
+                itemEstoqueId: itemParaMovimentar.itemEstoqueId,
+                payload
+            });
+
+            if (response.ok) {
+                const mensagem = await extrairMensagem(response);
+                if (mensagem) setSucesso(mensagem);
+
+                const quantidadeAtual = parseQuantity(itemParaMovimentar.quantidade);
+                const novaQuantidade = payload.tipoMovimentacao === 1
+                    ? quantidadeAtual + payload.quantidade
+                    : quantidadeAtual - payload.quantidade;
+
+                setItensDoEspaco(prev => prev.map(item => (
+                    item.itemEstoqueId === itemParaMovimentar.itemEstoqueId
+                        ? { ...item, quantidade: novaQuantidade }
+                        : item
+                )));
+                setItemParaMovimentar(null);
+            } else if (response.status === 400) {
+                await aplicarErrosCampos(response, setFieldErrors, setErro);
+            } else {
+                const mensagem = await extrairErro(response);
+                setErro(mensagem);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     const messageModal = (erro || sucesso) && (
         <MessageModal
             type={erro ? 'error' : 'success'}
@@ -184,26 +248,42 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, mode 
     }
 
     return (
-        <EspacoDetail
-            fieldErrors={fieldErrors}
-            formEdicao={formEdicao}
-            houveMudanca={houveMudanca}
-            itensDoEspaco={itensDoEspaco}
-            loadingItens={loadingItens}
-            messageModal={messageModal}
-            mode={mode}
-            onChangeFormEdicao={setFormEdicao}
-            onCloseDelete={() => setShowDeleteModal(false)}
-            onCloseDeleteItem={() => setItemParaExcluir(null)}
-            onConfirmarEdicao={handleConfirmarEdicao}
-            onConfirmDeleteItem={handleExcluirItem}
-            onExcluir={handleExcluirEspaco}
-            onExcluirItem={setItemParaExcluir}
-            onOpenDelete={() => setShowDeleteModal(true)}
-            onVoltar={() => navigate('/espacos')}
-            excluindoItemId={excluindoItemId}
-            showDeleteItemModal={!!itemParaExcluir}
-            showDeleteModal={showDeleteModal}
-        />
+        <>
+            <EspacoDetail
+                fieldErrors={fieldErrors}
+                formEdicao={formEdicao}
+                houveMudanca={houveMudanca}
+                itensDoEspaco={itensDoEspaco}
+                loadingItens={loadingItens}
+                messageModal={messageModal}
+                mode={mode}
+                onChangeFormEdicao={setFormEdicao}
+                onCloseDelete={() => setShowDeleteModal(false)}
+                onCloseDeleteItem={() => setItemParaExcluir(null)}
+                onConfirmarEdicao={handleConfirmarEdicao}
+                onConfirmDeleteItem={handleExcluirItem}
+                onEditarItem={(item) => navigate(`/itens-estoque/${item.itemEstoqueId}`, { state: { espacoOrigemId: espacoId } })}
+                onExcluir={handleExcluirEspaco}
+                onExcluirItem={setItemParaExcluir}
+                onHistoricoItem={(item) => navigate(`/itens-estoque/${item.itemEstoqueId}?secao=historico`, { state: { espacoOrigemId: espacoId } })}
+                onNovoItem={() => navigate('/itens-estoque/novo', { state: { espacoId } })}
+                onAbrirMovimentacaoItem={abrirMovimentacaoItem}
+                onOpenDelete={() => setShowDeleteModal(true)}
+                onVoltar={() => navigate('/espacos')}
+                excluindoItemId={excluindoItemId}
+                showDeleteItemModal={!!itemParaExcluir}
+                showDeleteModal={showDeleteModal}
+            />
+            {itemParaMovimentar && (
+                <MovimentarEstoqueModal
+                    fieldErrors={fieldErrors}
+                    item={itemParaMovimentar}
+                    movimentacaoData={movimentacaoData}
+                    onChange={setMovimentacaoData}
+                    onClose={() => setItemParaMovimentar(null)}
+                    onSubmit={handleMovimentarItem}
+                />
+            )}
+        </>
     );
 }

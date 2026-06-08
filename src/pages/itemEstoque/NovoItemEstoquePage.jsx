@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import LoadingWaves from '../../components/LoadingWaves';
 import MessageModal from '../../components/MessageModal';
 import { TIPO_UNIDADE } from '../../constants/tipoUnidade';
@@ -13,6 +13,8 @@ const getInputClassName = (isError) => `w-full no-field-margin ${isError ? 'is-i
 
 export default function NovoItemEstoquePage({ token, unidadeOrganizacionalId }) {
     const navigate = useNavigate();
+    const location = useLocation();
+    const espacoOrigemId = location.state?.espacoId || '';
     const [espacos, setEspacos] = useState([]);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({ espacoId: '', descricao: '', tipoUnidadeMedida: 1, quantidade: '' });
@@ -33,7 +35,7 @@ export default function NovoItemEstoquePage({ token, unidadeOrganizacionalId }) 
                 setEspacos(data);
                 setFormData(prev => ({
                     ...prev,
-                    espacoId: prev.espacoId || data[0]?.espacoId || ''
+                    espacoId: prev.espacoId || espacoOrigemId || data[0]?.espacoId || ''
                 }));
             } else {
                 const mensagem = await extrairErro(response);
@@ -44,7 +46,7 @@ export default function NovoItemEstoquePage({ token, unidadeOrganizacionalId }) 
         } finally {
             setLoading(false);
         }
-    }, [token, unidadeOrganizacionalId]);
+    }, [token, unidadeOrganizacionalId, espacoOrigemId]);
 
     useEffect(() => {
         carregarEspacos();
@@ -66,7 +68,8 @@ export default function NovoItemEstoquePage({ token, unidadeOrganizacionalId }) 
 
             if (response.ok) {
                 const mensagem = await extrairMensagem(response);
-                navigate('/itens-estoque', { replace: true, state: { sucesso: mensagem } });
+                const rotaRetorno = espacoOrigemId ? `/espacos/${espacoOrigemId}/itens` : '/itens-estoque';
+                navigate(rotaRetorno, { replace: true, state: { sucesso: mensagem } });
             } else if (response.status === 400) {
                 await aplicarErrosCampos(response, setFieldErrors, setErro);
             } else {
@@ -144,7 +147,7 @@ export default function NovoItemEstoquePage({ token, unidadeOrganizacionalId }) 
                 </div>
 
                 <div className="detail-action-bar detail-action-bar-two">
-                    <button type="button" className="button button-outline" onClick={() => navigate('/itens-estoque')}>
+                    <button type="button" className="button button-outline" onClick={() => navigate(espacoOrigemId ? `/espacos/${espacoOrigemId}/itens` : '/itens-estoque')}>
                         Voltar
                     </button>
                     <button type="submit" className="button" disabled={loading}>

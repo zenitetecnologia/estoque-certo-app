@@ -38,11 +38,11 @@ export default function AuthenticatedRoutes({
             />
             <Route
                 path="espacos/:espacoId/itens"
-                element={<EspacoDetailPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} mode="itens" />}
+                element={<EspacoDetailPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} usuarioId={usuarioId} mode="itens" />}
             />
             <Route
                 path="espacos/:espacoId"
-                element={<EspacoDetailPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} mode="editar" />}
+                element={<EspacoDetailPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} usuarioId={usuarioId} mode="editar" />}
             />
             <Route
                 path="espacos"

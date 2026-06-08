@@ -1,4 +1,5 @@
 import ExcluirItemModal from '../itemEstoque/ExcluirItemModal';
+import ZeniteIcon from '../ZeniteIcon';
 import ExcluirEspacoModal from './ExcluirEspacoModal';
 import ItensDoEspacoGrid from './ItensDoEspacoGrid';
 
@@ -13,8 +14,12 @@ export default function EspacoDetail({
     onChangeFormEdicao,
     onCloseDelete,
     onConfirmarEdicao,
+    onEditarItem,
     onExcluir,
     onExcluirItem,
+    onHistoricoItem,
+    onNovoItem,
+    onAbrirMovimentacaoItem,
     onCloseDeleteItem,
     onConfirmDeleteItem,
     onOpenDelete,
@@ -27,9 +32,11 @@ export default function EspacoDetail({
 
     return (
         <div className="detail-view w-full">
-            <div className="detail-heading">
-                <h2 className="no-margin">{isItensMode ? 'Itens do Espaço' : 'Detalhes do Espaço'}</h2>
-            </div>
+            {!isItensMode && (
+                <div className="detail-heading">
+                    <h2 className="no-margin">Detalhes do Espaço</h2>
+                </div>
+            )}
 
             {!isItensMode && (
                 <div className="card detail-card">
@@ -62,17 +69,20 @@ export default function EspacoDetail({
 
             {isItensMode && (
                 <>
-                    <h3 className="section-title">Itens neste espaço</h3>
                     <ItensDoEspacoGrid
+                        espaco={formEdicao}
                         itens={itensDoEspaco}
                         loading={loadingItens}
+                        onAbrirMovimentacao={onAbrirMovimentacaoItem}
+                        onEditarItem={onEditarItem}
                         onExcluirItem={onExcluirItem}
+                        onHistoricoItem={onHistoricoItem}
                         excluindoItemId={excluindoItemId}
                     />
                 </>
             )}
 
-            <div className={`detail-action-bar ${isItensMode ? 'detail-action-bar-one' : ''}`}>
+            <div className={`detail-action-bar ${isItensMode ? 'detail-action-bar-two' : ''}`}>
                 <button className="button button-outline" onClick={onVoltar}>
                     Voltar
                 </button>
@@ -85,6 +95,12 @@ export default function EspacoDetail({
                             Excluir
                         </button>
                     </>
+                )}
+                {isItensMode && (
+                    <button className="button" onClick={onNovoItem}>
+                        <ZeniteIcon name="plus" size={20} />
+                        <span className="button-icon-text">Novo</span>
+                    </button>
                 )}
             </div>
 
