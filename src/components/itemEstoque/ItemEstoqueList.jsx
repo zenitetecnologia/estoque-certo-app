@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { TIPO_UNIDADE, getTipoUnidadeSigla } from '../../constants/tipoUnidade';
 import { formatQuantity, formatQuantityMasked } from '../../utils/quantity';
 import LoadingWaves from '../LoadingWaves';
@@ -43,6 +43,22 @@ export default function ItemEstoqueList({
 }) {
     const [tipoUnidadeSelecionada, setTipoUnidadeSelecionada] = useState('');
     const [menuAbertoId, setMenuAbertoId] = useState(null);
+
+    useEffect(() => {
+        if (!menuAbertoId) return;
+
+        const fecharMenuAoClicarFora = (event) => {
+            if (!event.target.closest('.space-item-management-menu')) {
+                setMenuAbertoId(null);
+            }
+        };
+
+        document.addEventListener('pointerdown', fecharMenuAoClicarFora);
+
+        return () => {
+            document.removeEventListener('pointerdown', fecharMenuAoClicarFora);
+        };
+    }, [menuAbertoId]);
 
     const itensFiltrados = useMemo(() => {
         if (!tipoUnidadeSelecionada) return itens;
