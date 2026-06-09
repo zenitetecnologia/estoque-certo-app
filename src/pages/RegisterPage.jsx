@@ -9,6 +9,7 @@ import { getBaseUrl } from '../utils/apiConfig';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
 import { JORNADA_USUARIO_NOME } from '../utils/jornadaUsuario';
 import { encryptedJsonBody } from '../utils/payloadCrypto';
+import { saveRouteSessionState } from '../utils/routeSessionState';
 
 export default function RegisterPage() {
     const navigate = useNavigate();
@@ -35,14 +36,17 @@ export default function RegisterPage() {
 
             if (response.ok) {
                 const mensagem = await extrairMensagem(response);
+                const routeState = {
+                    username: formData.username,
+                    unidadeOrganizacionalId: formData.unidadeOrganizacionalId,
+                    jornadaUsuario: JORNADA_USUARIO_NOME.CODE_VALIDATE_PAGE,
+                    mensagem
+                };
+
+                saveRouteSessionState('code-validate', routeState);
                 navigate('/code-validate', {
                     replace: true,
-                    state: {
-                        username: formData.username,
-                        unidadeOrganizacionalId: formData.unidadeOrganizacionalId,
-                        jornadaUsuario: JORNADA_USUARIO_NOME.CODE_VALIDATE_PAGE,
-                        mensagem
-                    }
+                    state: routeState
                 });
             } else if (response.status === 400) {
                 await aplicarErrosCampos(response, setFieldErrors, setErro);

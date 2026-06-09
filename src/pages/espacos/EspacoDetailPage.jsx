@@ -266,7 +266,7 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
                 onExcluir={handleExcluirEspaco}
                 onExcluirItem={setItemParaExcluir}
                 onHistoricoItem={(item) => navigate(`/itens-estoque/${item.itemEstoqueId}?secao=historico`, { state: { espacoOrigemId: espacoId } })}
-                onNovoItem={() => navigate('/itens-estoque/novo', { state: { espacoId } })}
+                onNovoItem={() => navigate(`/itens-estoque/novo?espacoId=${espacoId}`, { state: { espacoId } })}
                 onAbrirMovimentacaoItem={abrirMovimentacaoItem}
                 onOpenDelete={() => setShowDeleteModal(true)}
                 onVoltar={() => navigate('/espacos')}

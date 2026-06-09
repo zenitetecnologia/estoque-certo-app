@@ -7,6 +7,7 @@ import UnidadeComboBox from '../components/UnidadeComboBox';
 import { getBaseUrl } from '../utils/apiConfig';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
 import { encryptedJsonBody } from '../utils/payloadCrypto';
+import { saveRouteSessionState } from '../utils/routeSessionState';
 
 export default function ForgotPasswordPage() {
     const navigate = useNavigate();
@@ -33,12 +34,15 @@ export default function ForgotPasswordPage() {
 
             if (res.ok) {
                 const mensagem = await extrairMensagem(res);
+                const routeState = {
+                    username: data.username,
+                    unidadeOrganizacionalId: data.unidadeOrganizacionalId,
+                    mensagem
+                };
+
+                saveRouteSessionState('code-validate', routeState);
                 navigate('/code-validate', {
-                    state: {
-                        username: data.username,
-                        unidadeOrganizacionalId: data.unidadeOrganizacionalId,
-                        mensagem
-                    }
+                    state: routeState
                 });
             } else if (res.status === 400) {
                 await aplicarErrosCampos(res, setFieldErrors, setErro);

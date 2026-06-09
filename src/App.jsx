@@ -6,7 +6,6 @@ import AppRoutes from './routes/AppRoutes';
 export default function App() {
     const navigate = useNavigate();
     const [token, setToken] = useState(localStorage.getItem('token'));
-    const [pendingMessage, setPendingMessage] = useState('');
     const [sessionExpiredMessage, setSessionExpiredMessage] = useState('');
 
     useEffect(() => {
@@ -32,9 +31,8 @@ export default function App() {
         navigate('/login', { replace: true });
     };
 
-    const handlePendingApproval = (message) => {
-        setPendingMessage(message);
-        navigate('/waiting-approval', { replace: true, state: { message } });
+    const handlePendingApproval = () => {
+        navigate('/waiting-approval', { replace: true });
     };
 
     const handleSessionExpiredClose = () => {
@@ -46,7 +44,6 @@ export default function App() {
         <>
             <AppRoutes
                 token={token}
-                pendingMessage={pendingMessage}
                 onLogin={handleLogin}
                 onLogout={handleLogout}
                 onPendingApproval={handlePendingApproval}

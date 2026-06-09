@@ -6,11 +6,13 @@ import ThemeToggle from '../components/ThemeToggle';
 import { getBaseUrl } from '../utils/apiConfig';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
 import { encryptedJsonBody } from '../utils/payloadCrypto';
+import { clearRouteSessionState, readRouteSessionState, saveRouteSessionState } from '../utils/routeSessionState';
 
 export default function ResetPasswordPage() {
     const navigate = useNavigate();
     const location = useLocation();
-    const codigoAcessoId = location.state?.codigoAcessoId || '';
+    const [resetData] = useState(() => location.state || readRouteSessionState('reset-password') || {});
+    const codigoAcessoId = resetData.codigoAcessoId || '';
     const [data, setData] = useState({ senha: '', confirmaSenha: '' });
     const [erro, setErro] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
@@ -22,7 +24,10 @@ export default function ResetPasswordPage() {
     useEffect(() => {
         if (!codigoAcessoId) {
             navigate('/forgot-password', { replace: true });
+            return;
         }
+
+        saveRouteSessionState('reset-password', { codigoAcessoId });
     }, [codigoAcessoId, navigate]);
 
     const handleReset = async (e) => {
@@ -39,6 +44,7 @@ export default function ResetPasswordPage() {
 
             if (res.ok) {
                 const mensagem = await extrairMensagem(res);
+                clearRouteSessionState('reset-password');
                 setSuccessMessage(mensagem);
                 if (mensagem) setShowSuccessModal(true);
             } else if (res.status === 400) {

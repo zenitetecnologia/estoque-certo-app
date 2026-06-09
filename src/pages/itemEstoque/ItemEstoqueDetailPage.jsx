@@ -25,7 +25,6 @@ export default function ItemEstoqueDetailPage({ token, unidadeOrganizacionalId, 
     const { itemEstoqueId } = useParams();
     const mode = new URLSearchParams(location.search).get('secao') === 'historico' ? 'historico' : 'editar';
     const espacoOrigemId = location.state?.espacoOrigemId || '';
-    const rotaRetorno = espacoOrigemId ? `/espacos/${espacoOrigemId}/itens` : '/itens-estoque';
 
     const [itemAtivo, setItemAtivo] = useState(null);
     const [espacos, setEspacos] = useState([]);
@@ -41,6 +40,8 @@ export default function ItemEstoqueDetailPage({ token, unidadeOrganizacionalId, 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showMovimentarModal, setShowMovimentarModal] = useState(false);
     const [showTransferirModal, setShowTransferirModal] = useState(false);
+    const espacoRetornoId = espacoOrigemId || itemAtivo?.espacoId || '';
+    const rotaRetorno = espacoRetornoId ? `/espacos/${espacoRetornoId}/itens` : '/itens-estoque';
 
     const carregarHistorico = useCallback(async () => {
         if (!itemEstoqueId) return;

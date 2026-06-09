@@ -9,6 +9,7 @@ import { getBaseUrl } from '../utils/apiConfig';
 import { aplicarErrosCampos, extrairErro } from '../utils/apiUtils';
 import { isCodeValidateJourney, isWaitingApprovalJourney } from '../utils/jornadaUsuario';
 import { encryptedJsonBody } from '../utils/payloadCrypto';
+import { saveRouteSessionState } from '../utils/routeSessionState';
 
 export default function LoginPage({ onLogin, onPendingApproval }) {
     const navigate = useNavigate();
@@ -36,14 +37,17 @@ export default function LoginPage({ onLogin, onPendingApproval }) {
             if (response.ok) {
                 const data = await response.json();
                 if (isCodeValidateJourney(data.jornadaUsuario)) {
+                    const routeState = {
+                        username: formData.username,
+                        unidadeOrganizacionalId: formData.unidadeOrganizacionalId,
+                        jornadaUsuario: data.jornadaUsuario,
+                        mensagem: data.message
+                    };
+
+                    saveRouteSessionState('code-validate', routeState);
                     navigate('/code-validate', {
                         replace: true,
-                        state: {
-                            username: formData.username,
-                            unidadeOrganizacionalId: formData.unidadeOrganizacionalId,
-                            jornadaUsuario: data.jornadaUsuario,
-                            mensagem: data.message
-                        }
+                        state: routeState
                     });
                     return;
                 }
@@ -52,7 +56,7 @@ export default function LoginPage({ onLogin, onPendingApproval }) {
                     if (onPendingApproval) {
                         onPendingApproval(data.message);
                     } else {
-                        navigate('/waiting-approval', { replace: true, state: { message: data.message } });
+                        navigate('/waiting-approval', { replace: true });
                     }
                     return;
                 }

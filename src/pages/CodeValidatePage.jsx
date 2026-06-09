@@ -6,11 +6,12 @@ import { getBaseUrl } from '../utils/apiConfig';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
 import { isCodeValidateJourney, isWaitingApprovalJourney } from '../utils/jornadaUsuario';
 import { decryptEncryptedResponse, encryptedJsonBody, encryptedJsonBodyWithKey } from '../utils/payloadCrypto';
+import { clearRouteSessionState, readRouteSessionState, saveRouteSessionState } from '../utils/routeSessionState';
 
 export default function CodeValidatePage() {
     const navigate = useNavigate();
     const location = useLocation();
-    const recoveryData = location.state || {};
+    const [recoveryData] = useState(() => location.state || readRouteSessionState('code-validate') || {});
     const isCadastro = isCodeValidateJourney(recoveryData.jornadaUsuario);
     const [code, setCode] = useState('');
     const [erro, setErro] = useState('');
@@ -22,7 +23,10 @@ export default function CodeValidatePage() {
     useEffect(() => {
         if (!recoveryData.username || !recoveryData.unidadeOrganizacionalId) {
             navigate(isCadastro ? '/login' : '/forgot-password', { replace: true });
+            return;
         }
+
+        saveRouteSessionState('code-validate', recoveryData);
     }, [isCadastro, navigate, recoveryData.unidadeOrganizacionalId, recoveryData.username]);
 
     useEffect(() => {
@@ -75,14 +79,15 @@ export default function CodeValidatePage() {
                     '';
 
                 if (isWaitingApprovalJourney(jornadaUsuario)) {
-                    navigate('/waiting-approval', {
-                        replace: true,
-                        state: { message }
-                    });
+                    clearRouteSessionState('code-validate');
+                    navigate('/waiting-approval', { replace: true });
                     return;
                 }
 
+                clearRouteSessionState('code-validate');
+                saveRouteSessionState('reset-password', { codigoAcessoId });
                 navigate('/reset-password', {
+                    replace: true,
                     state: {
                         codigoAcessoId
                     }
@@ -127,6 +132,11 @@ export default function CodeValidatePage() {
         }
     };
 
+    const handleVoltar = () => {
+        clearRouteSessionState('code-validate');
+        navigate(isCadastro ? '/login' : '/forgot-password');
+    };
+
     return (
         <>
             <div className="container">
@@ -157,7 +167,7 @@ export default function CodeValidatePage() {
                                     ? `Reenviar código em ${formatCooldown(cooldownReenvio)}`
                                     : 'Reenviar código'}
                             </button>
-                            <button type="button" className="button button-outline button-full mt-1" onClick={() => navigate(isCadastro ? '/login' : '/forgot-password')}>Voltar</button>
+                            <button type="button" className="button button-outline button-full mt-1" onClick={handleVoltar}>Voltar</button>
                         </form>
                     </div>
                 </div>
