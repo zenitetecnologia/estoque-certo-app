@@ -17,7 +17,7 @@ import {
     criarPayloadItemEstoque,
     criarPayloadMovimentacao
 } from '../../utils/itemEstoqueViewModel';
-import { formatQuantityInput, parseQuantity } from '../../utils/quantity';
+import { formatQuantityMasked, parseQuantity } from '../../utils/quantity';
 
 export default function ItemEstoqueDetailPage({ token, unidadeOrganizacionalId, usuarioId }) {
     const navigate = useNavigate();
@@ -79,7 +79,7 @@ export default function ItemEstoqueDetailPage({ token, unidadeOrganizacionalId, 
                     espacoId: item.espacoId || '',
                     descricao: item.descricao || '',
                     tipoUnidadeMedida: item.tipoUnidadeMedida || 1,
-                    quantidade: formatQuantityInput(item.quantidade || 0)
+                    quantidade: formatQuantityMasked(item.quantidade || 0)
                 });
             } else {
                 const mensagem = await extrairErro(!responseItem.ok ? responseItem : responseEspacos);
@@ -121,7 +121,7 @@ export default function ItemEstoqueDetailPage({ token, unidadeOrganizacionalId, 
             unidadeOrganizacionalId,
             formData: {
                 ...formEdicao,
-                quantidade: formatQuantityInput(itemAtivo.quantidade || 0)
+                quantidade: formatQuantityMasked(itemAtivo.quantidade || 0)
             }
         });
 
@@ -212,7 +212,7 @@ export default function ItemEstoqueDetailPage({ token, unidadeOrganizacionalId, 
                     : parseQuantity(itemAtivo.quantidade) - payload.quantidade;
 
                 setItemAtivo(prev => ({ ...prev, quantidade: novaQtde }));
-                setFormEdicao(prev => ({ ...prev, quantidade: formatQuantityInput(novaQtde) }));
+                setFormEdicao(prev => ({ ...prev, quantidade: formatQuantityMasked(novaQtde) }));
             } else if (response.status === 400) {
                 await aplicarErrosCampos(response, setFieldErrors, setErro);
             } else {

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { TIPO_UNIDADE, getTipoUnidadeSigla } from '../../constants/tipoUnidade';
-import { formatQuantity } from '../../utils/quantity';
+import { formatQuantity, formatQuantityMasked } from '../../utils/quantity';
 import LoadingWaves from '../LoadingWaves';
 import ZeniteIcon from '../ZeniteIcon';
 
@@ -68,7 +68,7 @@ export default function ItemEstoqueList({
                             <ZeniteIcon name="check" size={16} />
                         </span>
                         <strong>Total:</strong>
-                        <span>{formatQuantity(totalFiltrado)} {unidadeSelecionadaLabel}</span>
+                        <span>{tipoUnidadeSelecionada ? formatQuantityMasked(totalFiltrado) : formatQuantity(totalFiltrado)} {unidadeSelecionadaLabel}</span>
                     </div>
                 </div>
 
@@ -135,7 +135,7 @@ export default function ItemEstoqueList({
                                         Local: {getNomeEspaco(item.espacoId)}
                                     </p>
                                     <p className="space-item-management-quantity">
-                                        {formatQuantity(item.quantidade)} {getTipoUnidadeSigla(item.tipoUnidadeMedida)}
+                                        {formatQuantityMasked(item.quantidade)} {getTipoUnidadeSigla(item.tipoUnidadeMedida)}
                                     </p>
                                     {formatItemDate(item) && (
                                         <time className="space-item-management-date">{formatItemDate(item)}</time>
