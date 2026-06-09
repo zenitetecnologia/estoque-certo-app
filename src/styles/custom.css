@@ -1,57 +1,20 @@
-/* Overlay blur para todos os modais de confirmação */
-.modal-overlay {
-    background: transparent !important;
-    backdrop-filter: blur(6px) !important;
-    -webkit-backdrop-filter: blur(6px) !important;
-}
-
-/* Overlay blur para o MessageModal */
-.message-overlay,
-.message-overlay.message-overlay-dim {
-    background: transparent !important;
-    backdrop-filter: blur(6px) !important;
-    -webkit-backdrop-filter: blur(6px) !important;
-}
-
-/* Botão outline vermelho (erro) */
-.button-outline-error {
-    background: transparent;
-    border: 2px solid var(--color-error, #e53e3e);
-    color: var(--color-error, #e53e3e);
-}
-.button-outline-error:hover,
-.button-outline-error:active {
-    background: rgba(229, 62, 62, 0.10);
-}
-
-/* Botão outline verde (sucesso) */
-.button-outline-success {
-    background: transparent;
-    border: 2px solid var(--color-success, #38a169);
-    color: var(--color-success, #38a169);
-}
-.button-outline-success:hover,
-.button-outline-success:active {
-    background: rgba(56, 161, 105, 0.10);
-}
-
 /* ===== Mensagens de validação de campo ===== */
 
 /* Tema claro — vermelho sólido, legível */
 html[data-theme='light'] .invalid-feedback,
 html[data-theme='light'] .is-invalid {
-     border-color: transparent !important;
+    border-color: transparent !important;
     border-bottom-color: #7A5208 !important;
     box-shadow: none !important;
     border-radius: 0 !important;
-    color: 	#7A5208 !important;
+    color: #7A5208 !important;
     padding-left: 0.25rem;
 }
 
 /* Tema escuro — vermelho suave, contrasta no fundo azul marinho */
 html[data-theme='dark'] .invalid-feedback,
 html[data-theme='dark'] .is-invalid {
-     border-color: transparent !important;
+    border-color: transparent !important;
     border-bottom-color: #D4A017 !important;
     box-shadow: none !important;
     border-radius: 0 !important;
