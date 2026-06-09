@@ -1,3 +1,4 @@
+import Ban from 'lucide-react/dist/esm/icons/ban.mjs';
 import CircleCheck from 'lucide-react/dist/esm/icons/circle-check.mjs';
 import CircleMinus from 'lucide-react/dist/esm/icons/circle-minus.mjs';
 import CirclePlus from 'lucide-react/dist/esm/icons/circle-plus.mjs';
@@ -12,6 +13,7 @@ import Sun from 'lucide-react/dist/esm/icons/sun.mjs';
 import Trash2 from 'lucide-react/dist/esm/icons/trash-2.mjs';
 
 const ICONS = {
+    ban: Ban,
     check: CircleCheck,
     clock: Clock,
     ellipsis: Ellipsis,
