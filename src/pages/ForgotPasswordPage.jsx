@@ -57,26 +57,33 @@ export default function ForgotPasswordPage() {
     return (
         <>
             <div className="container">
-                <div className="auth-page">
-                    <ThemeToggle fixo={false} />
-                    <div className="card auth-card">
-                        <h2 className="auth-title">Recuperar Acesso</h2>
+                <div className="auth-page auth-page-flow">
+                    <div className="card auth-card auth-card-flow">
+                        <form className="auth-flow-layout" onSubmit={handleForgot} noValidate>
+                            <div className="auth-flow-header">
+                                <h2 className="auth-title">Recuperar Acesso</h2>
+                                <ThemeToggle fixo={false} />
+                            </div>
 
-                        <form onSubmit={handleForgot} noValidate>
-                            <PhoneInput
-                                value={data.username}
-                                onChange={e => setData({ ...data, username: e.target.value })}
-                                error={!!fieldErrors.Username}
-                                errorMessage={fieldErrors.Username}
-                            />
-                            <UnidadeComboBox
-                                value={data.unidadeOrganizacionalId}
-                                onChange={val => setData({ ...data, unidadeOrganizacionalId: val })}
-                                error={!!fieldErrors.UnidadeOrganizacionalId}
-                                errorMessage={fieldErrors.UnidadeOrganizacionalId}
-                            />
-                            <button type="submit" className="button button-full mt-1">Enviar Código</button>
-                            <button type="button" className="button button-outline button-full mt-1" onClick={() => navigate('/login')}>Cancelar</button>
+                            <div className="auth-flow-body">
+                                <PhoneInput
+                                    value={data.username}
+                                    onChange={e => setData({ ...data, username: e.target.value })}
+                                    error={!!fieldErrors.Username}
+                                    errorMessage={fieldErrors.Username}
+                                />
+                                <UnidadeComboBox
+                                    value={data.unidadeOrganizacionalId}
+                                    onChange={val => setData({ ...data, unidadeOrganizacionalId: val })}
+                                    error={!!fieldErrors.UnidadeOrganizacionalId}
+                                    errorMessage={fieldErrors.UnidadeOrganizacionalId}
+                                />
+                            </div>
+
+                            <div className="auth-flow-footer">
+                                <button type="submit" className="button button-full">Enviar Código</button>
+                                <button type="button" className="button button-outline button-full" onClick={() => navigate('/login')}>Cancelar</button>
+                            </div>
                         </form>
                     </div>
                 </div>

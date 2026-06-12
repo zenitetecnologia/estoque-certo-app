@@ -140,34 +140,41 @@ export default function CodeValidatePage() {
     return (
         <>
             <div className="container">
-                <div className="auth-page">
-                    <ThemeToggle fixo={false} />
-                    <div className="card auth-card">
-                        <h2 className="auth-title">Validar Código</h2>
-
-                        <form onSubmit={handleVerifyCode} noValidate>
-                            <div className="mb-1">
-                                <label>Código Enviado</label>
-                                <input
-                                    type="text"
-                                    value={code}
-                                    onChange={e => setCode(e.target.value)}
-                                    className={`w-full no-field-margin ${codeError ? 'is-invalid' : ''}`}
-                                />
-                                {codeError && <small className="invalid-feedback d-block">{codeError}</small>}
+                <div className="auth-page auth-page-flow">
+                    <div className="card auth-card auth-card-flow auth-card-code-validation">
+                        <form className="auth-flow-layout" onSubmit={handleVerifyCode} noValidate>
+                            <div className="auth-flow-header">
+                                <h2 className="auth-title">Validar Código</h2>
+                                <ThemeToggle fixo={false} />
                             </div>
-                            <button type="submit" className="button button-full">Verificar</button>
-                            <button
-                                type="button"
-                                className="button button-outline button-full mt-1"
-                                onClick={handleReenviarCodigo}
-                                disabled={cooldownReenvio > 0}
-                            >
-                                {cooldownReenvio > 0
-                                    ? `Reenviar código em ${formatCooldown(cooldownReenvio)}`
-                                    : 'Reenviar código'}
-                            </button>
-                            <button type="button" className="button button-outline button-full mt-1" onClick={handleVoltar}>Voltar</button>
+
+                            <div className="auth-flow-body">
+                                <div className="mb-1">
+                                    <label>Código Enviado</label>
+                                    <input
+                                        type="text"
+                                        value={code}
+                                        onChange={e => setCode(e.target.value)}
+                                        className={`w-full no-field-margin ${codeError ? 'is-invalid' : ''}`}
+                                    />
+                                    {codeError && <small className="invalid-feedback d-block">{codeError}</small>}
+                                </div>
+                            </div>
+
+                            <div className="auth-flow-footer auth-flow-footer-compact">
+                                <button type="submit" className="button button-full">Verificar</button>
+                                <button
+                                    type="button"
+                                    className="button button-outline button-full"
+                                    onClick={handleReenviarCodigo}
+                                    disabled={cooldownReenvio > 0}
+                                >
+                                    {cooldownReenvio > 0
+                                        ? `Reenviar código em ${formatCooldown(cooldownReenvio)}`
+                                        : 'Reenviar código'}
+                                </button>
+                                <button type="button" className="button button-outline button-full" onClick={handleVoltar}>Voltar</button>
+                            </div>
                         </form>
                     </div>
                 </div>

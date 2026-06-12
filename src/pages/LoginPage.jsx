@@ -83,40 +83,45 @@ export default function LoginPage({ onLogin, onPendingApproval }) {
     return (
         <>
             <div className="container">
-                <div className="auth-page">
-                    <ThemeToggle fixo={false} />
-                    <div className="card auth-card auth-card-fixed">
-                        <h2 className="auth-title">Login</h2>
-                        <form onSubmit={handleSubmit} noValidate>
+                <div className="auth-page auth-page-flow">
+                    <div className="card auth-card auth-card-fixed auth-card-flow">
+                        <form className="auth-flow-layout" onSubmit={handleSubmit} noValidate>
+                            <div className="auth-flow-header">
+                                <h2 className="auth-title">Login</h2>
+                                <ThemeToggle fixo={false} />
+                            </div>
 
-                            <PhoneInput
-                                value={formData.username}
-                                onChange={e => setFormData({ ...formData, username: e.target.value })}
-                                error={!!fieldErrors.Username}
-                                errorMessage={fieldErrors.Username}
-                            />
+                            <div className="auth-flow-body">
+                                <PhoneInput
+                                    value={formData.username}
+                                    onChange={e => setFormData({ ...formData, username: e.target.value })}
+                                    error={!!fieldErrors.Username}
+                                    errorMessage={fieldErrors.Username}
+                                />
 
-                            <PasswordInput
-                                label="Senha"
-                                placeholder="******"
-                                value={formData.senha}
-                                onChange={e => setFormData({ ...formData, senha: e.target.value })}
-                                error={!!fieldErrors.Senha}
-                                errorMessage={fieldErrors.Senha}
-                            />
+                                <PasswordInput
+                                    label="Senha"
+                                    placeholder="******"
+                                    value={formData.senha}
+                                    onChange={e => setFormData({ ...formData, senha: e.target.value })}
+                                    error={!!fieldErrors.Senha}
+                                    errorMessage={fieldErrors.Senha}
+                                />
 
-                            <UnidadeComboBox
-                                value={formData.unidadeOrganizacionalId}
-                                onChange={val => setFormData({ ...formData, unidadeOrganizacionalId: val })}
-                                error={!!fieldErrors.UnidadeOrganizacionalId}
-                                errorMessage={fieldErrors.UnidadeOrganizacionalId}
-                            />
+                                <UnidadeComboBox
+                                    value={formData.unidadeOrganizacionalId}
+                                    onChange={val => setFormData({ ...formData, unidadeOrganizacionalId: val })}
+                                    error={!!fieldErrors.UnidadeOrganizacionalId}
+                                    errorMessage={fieldErrors.UnidadeOrganizacionalId}
+                                />
+                            </div>
 
-                            <button type="submit" className="button button-full mt-1">Entrar</button>
-
+                            <div className="auth-flow-footer">
+                                <button type="submit" className="button button-full">Entrar</button>
                             <div className="auth-link-row">
                                 <Link className="link-action" to="/register">Registrar</Link>
                                 <Link className="link-action" to="/forgot-password">Esqueci a senha</Link>
+                            </div>
                             </div>
                         </form>
                     </div>

@@ -60,27 +60,34 @@ export default function ResetPasswordPage() {
     return (
         <>
             <div className="container">
-                <div className="auth-page">
-                    <ThemeToggle fixo={false} />
-                    <div className="card auth-card">
-                        <h2 className="auth-title">Redefinir Senha</h2>
+                <div className="auth-page auth-page-flow">
+                    <div className="card auth-card auth-card-flow">
+                        <form className="auth-flow-layout" onSubmit={handleReset} noValidate>
+                            <div className="auth-flow-header">
+                                <h2 className="auth-title">Redefinir Senha</h2>
+                                <ThemeToggle fixo={false} />
+                            </div>
 
-                        <form onSubmit={handleReset} noValidate>
-                            <PasswordInput
-                                label="Nova Senha"
-                                value={data.senha}
-                                onChange={e => setData({ ...data, senha: e.target.value })}
-                                error={!!senhaError}
-                                errorMessage={senhaError}
-                            />
-                            <PasswordInput
-                                label="Confirmar Nova Senha"
-                                value={data.confirmaSenha}
-                                onChange={e => setData({ ...data, confirmaSenha: e.target.value })}
-                                error={!!confirmaSenhaError}
-                                errorMessage={confirmaSenhaError}
-                            />
-                            <button type="submit" className="button button-full mt-1">Redefinir Senha</button>
+                            <div className="auth-flow-body">
+                                <PasswordInput
+                                    label="Nova Senha"
+                                    value={data.senha}
+                                    onChange={e => setData({ ...data, senha: e.target.value })}
+                                    error={!!senhaError}
+                                    errorMessage={senhaError}
+                                />
+                                <PasswordInput
+                                    label="Confirmar Nova Senha"
+                                    value={data.confirmaSenha}
+                                    onChange={e => setData({ ...data, confirmaSenha: e.target.value })}
+                                    error={!!confirmaSenhaError}
+                                    errorMessage={confirmaSenhaError}
+                                />
+                            </div>
+
+                            <div className="auth-flow-footer">
+                                <button type="submit" className="button button-full">Redefinir Senha</button>
+                            </div>
                         </form>
                     </div>
                 </div>
