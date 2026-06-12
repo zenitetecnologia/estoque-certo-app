@@ -15,7 +15,7 @@ export default function CodeValidatePage() {
     const isCadastro = isCodeValidateJourney(recoveryData.jornadaUsuario);
     const [code, setCode] = useState('');
     const [erro, setErro] = useState('');
-    const [sucesso, setSucesso] = useState(recoveryData.mensagem || '');
+    const [sucesso, setSucesso] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
     const [cooldownReenvio, setCooldownReenvio] = useState(0);
     const codeError = fieldErrors.Code || fieldErrors.code || fieldErrors.Codigo || fieldErrors.codigo || '';
