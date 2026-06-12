@@ -141,7 +141,10 @@ export default function CodeValidatePage() {
         <>
             <div className="container">
                 <div className="auth-page auth-page-flow">
-                    <div className="card auth-card auth-card-flow auth-card-code-validation">
+                    <div className="auth-page-theme">
+                        <ThemeToggle fixo={false} />
+                    </div>
+                    <div className="card auth-card auth-card-flow">
                         <form className="auth-flow-layout" onSubmit={handleVerifyCode} noValidate>
                             <div className="auth-flow-header">
                                 <h2 className="auth-title">Validar Código</h2>
@@ -161,19 +164,21 @@ export default function CodeValidatePage() {
                                 </div>
                             </div>
 
-                            <div className="auth-flow-footer auth-flow-footer-compact">
+                            <div className="auth-flow-footer">
                                 <button type="submit" className="button button-full">Verificar</button>
-                                <button
-                                    type="button"
-                                    className="button button-outline button-full"
-                                    onClick={handleReenviarCodigo}
-                                    disabled={cooldownReenvio > 0}
-                                >
-                                    {cooldownReenvio > 0
-                                        ? `Reenviar código em ${formatCooldown(cooldownReenvio)}`
-                                        : 'Reenviar código'}
-                                </button>
-                                <button type="button" className="button button-outline button-full" onClick={handleVoltar}>Voltar</button>
+                                <div className="auth-link-row">
+                                    <button
+                                        type="button"
+                                        className="link-action button-link"
+                                        onClick={handleReenviarCodigo}
+                                        disabled={cooldownReenvio > 0}
+                                    >
+                                        {cooldownReenvio > 0
+                                            ? `Reenviar ${formatCooldown(cooldownReenvio)}`
+                                            : 'Reenviar código'}
+                                    </button>
+                                    <button type="button" className="link-action button-link" onClick={handleVoltar}>Voltar</button>
+                                </div>
                             </div>
                         </form>
                     </div>

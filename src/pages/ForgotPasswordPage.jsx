@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import MessageModal from '../components/MessageModal';
 import PhoneInput from '../components/PhoneInput';
 import ThemeToggle from '../components/ThemeToggle';
@@ -58,6 +58,9 @@ export default function ForgotPasswordPage() {
         <>
             <div className="container">
                 <div className="auth-page auth-page-flow">
+                    <div className="auth-page-theme">
+                        <ThemeToggle fixo={false} />
+                    </div>
                     <div className="card auth-card auth-card-flow">
                         <form className="auth-flow-layout" onSubmit={handleForgot} noValidate>
                             <div className="auth-flow-header">
@@ -82,7 +85,9 @@ export default function ForgotPasswordPage() {
 
                             <div className="auth-flow-footer">
                                 <button type="submit" className="button button-full">Enviar Código</button>
-                                <button type="button" className="button button-outline button-full" onClick={() => navigate('/login')}>Cancelar</button>
+                                <div className="auth-link-row-centered">
+                                    <Link className="link-action" to="/login">Cancelar</Link>
+                                </div>
                             </div>
                         </form>
                     </div>

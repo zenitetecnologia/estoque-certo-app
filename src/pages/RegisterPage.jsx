@@ -13,7 +13,7 @@ import { saveRouteSessionState } from '../utils/routeSessionState';
 
 export default function RegisterPage() {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({ nome: '', username: '', senha: '', unidadeOrganizacionalId: '' });
+    const [formData, setFormData] = useState({ nome: '', username: '', senha: '', confirmaSenha: '', unidadeOrganizacionalId: '' });
     const [erro, setErro] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
 
@@ -63,6 +63,9 @@ export default function RegisterPage() {
         <>
             <div className="container">
                 <div className="auth-page auth-page-flow">
+                    <div className="auth-page-theme">
+                        <ThemeToggle fixo={false} />
+                    </div>
                     <div className="card auth-card auth-card-fixed auth-card-flow">
                         <form className="auth-flow-layout" onSubmit={handleSubmit} noValidate>
                             <div className="auth-flow-header">
@@ -98,6 +101,14 @@ export default function RegisterPage() {
                                     onChange={e => setFormData({ ...formData, senha: e.target.value })}
                                     error={!!(fieldErrors.Senha || fieldErrors.senha)}
                                     errorMessage={fieldErrors.Senha || fieldErrors.senha}
+                                />
+
+                                <PasswordInput
+                                    label="Confirmar Senha"
+                                    value={formData.confirmaSenha}
+                                    onChange={e => setFormData({ ...formData, confirmaSenha: e.target.value })}
+                                    error={!!(fieldErrors.ConfirmaSenha || fieldErrors.confirmaSenha)}
+                                    errorMessage={fieldErrors.ConfirmaSenha || fieldErrors.confirmaSenha}
                                 />
 
                                 <UnidadeComboBox

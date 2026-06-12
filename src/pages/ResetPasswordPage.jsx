@@ -61,6 +61,9 @@ export default function ResetPasswordPage() {
         <>
             <div className="container">
                 <div className="auth-page auth-page-flow">
+                    <div className="auth-page-theme">
+                        <ThemeToggle fixo={false} />
+                    </div>
                     <div className="card auth-card auth-card-flow">
                         <form className="auth-flow-layout" onSubmit={handleReset} noValidate>
                             <div className="auth-flow-header">
