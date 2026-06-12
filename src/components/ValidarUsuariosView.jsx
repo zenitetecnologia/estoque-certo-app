@@ -66,7 +66,7 @@ export default function ValidarUsuariosView({ token }) {
     });
 
     return (
-        <div className="w-full">
+        <div className="validation-page w-full">
             <h2 className="mb-2">Usuários Pendentes</h2>
 
             <div className="mb-2">
