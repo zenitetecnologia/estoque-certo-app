@@ -67,7 +67,7 @@ export default function RegisterPage() {
                         <ThemeToggle fixo={false} />
                     </div>
                     <div className="card auth-card auth-card-fixed auth-card-flow">
-                        <form className="auth-flow-layout" onSubmit={handleSubmit} noValidate>
+                        <form className="auth-flow-layout auth-register-flow" onSubmit={handleSubmit} noValidate>
                             <div className="auth-flow-header">
                                 <h2 className="auth-title">Criar Conta</h2>
                                 <ThemeToggle fixo={false} />
