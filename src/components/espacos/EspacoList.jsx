@@ -48,6 +48,9 @@ export default function EspacoList({
                         </div>
                     ) : (
                         <div className="empty-state-plain">
+                            <div className="empty-state-icon">
+                                <ZeniteIcon name="ban" size={92} strokeWidth={1.7} />
+                            </div>
                             <p className="empty-state-text">Nenhum espaço encontrado para a pesquisa.</p>
                         </div>
                     )
