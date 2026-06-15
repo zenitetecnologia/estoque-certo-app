@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MessageModal from '../../components/MessageModal';
+import ZeniteIcon from '../../components/ZeniteIcon';
 import { criarEspaco } from '../../services/espacoService';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../../utils/apiUtils';
 import { criarPayloadEspaco } from '../../utils/espacoViewModel';
-import ZeniteIcon from '../../components/ZeniteIcon';
 
 export default function NovoEspacoPage({ token, unidadeOrganizacionalId }) {
     const navigate = useNavigate();
@@ -39,7 +39,7 @@ export default function NovoEspacoPage({ token, unidadeOrganizacionalId }) {
     return (
         <div className="detail-view detail-form-view w-full">
             <div className="detail-heading">
-                <h2 className="no-margin">Novo Espaço</h2>
+                <h2 className="page-title no-margin">Novo Espaço</h2>
             </div>
 
             <form className="detail-form-layout" onSubmit={handleSubmit} noValidate>

@@ -239,7 +239,7 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
         return (
             <div className="detail-view w-full">
                 <div className="detail-heading">
-                    <h2 className="no-margin">Detalhes do Espaço</h2>
+                    <h2 className="page-title no-margin">Detalhes do Espaço</h2>
                 </div>
                 <LoadingWaves variant="list" rows={1} label="Carregando espaço" />
                 {messageModal}
