@@ -31,7 +31,7 @@ export default function EspacoDetail({
     const isItensMode = mode === 'itens';
 
     return (
-        <div className={`detail-view w-full ${isItensMode ? '' : 'detail-form-view'}`}>
+        <div className={isItensMode ? 'w-full inventory-list-fixed' : 'detail-view w-full detail-form-view'}>
             {!isItensMode && (
                 <div className="detail-heading">
                     <h2 className="page-title no-margin">Detalhes do Espaço</h2>

@@ -8,6 +8,7 @@ const TIPOS_UNIDADE_FILTRO = Object.entries(TIPO_UNIDADE).map(([value, label]) =
     value: Number(value),
     label
 }));
+const TIPO_UNIDADE_LITROS = 1;
 
 const getItemDate = (item) => item.dataCadastro || item.dataCriacao || item.criadoEm || item.createdAt || item.dataHoraCadastro;
 
@@ -41,7 +42,7 @@ export default function ItemEstoqueList({
     excluindoItemId,
     messageModal
 }) {
-    const [tipoUnidadeSelecionada, setTipoUnidadeSelecionada] = useState('');
+    const [tipoUnidadeSelecionada, setTipoUnidadeSelecionada] = useState(TIPO_UNIDADE_LITROS);
     const [menuAbertoId, setMenuAbertoId] = useState(null);
     const [menuDirection, setMenuDirection] = useState('down');
     const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 220, triggerLeft: 0, triggerWidth: 0 });
@@ -71,17 +72,25 @@ export default function ItemEstoqueList({
     const totalFiltrado = useMemo(() => {
         if (!tipoUnidadeSelecionada) return itensFiltrados.length;
         return itensFiltrados.reduce((total, item) => total + Number(item.quantidade || 0), 0);
-    }, [itensFiltrados, tipoUnidadeSelecionada]);
+    }, [itensFiltrados]);
 
-    const unidadeSelecionadaLabel = tipoUnidadeSelecionada ? getTipoUnidadeSigla(tipoUnidadeSelecionada) : 'itens';
+    const unidadeSelecionadaLabel = getTipoUnidadeSigla(tipoUnidadeSelecionada);
+    const renderEmptyState = (message) => (
+        <div className="empty-state-plain">
+            <div className="empty-state-icon">
+                <ZeniteIcon name="ban" size={92} strokeWidth={1.7} />
+            </div>
+            <p className="empty-state-text">{message}</p>
+        </div>
+    );
 
     const arrowOffsetLeft = menuPos.triggerLeft - menuPos.left + menuPos.triggerWidth / 2 - 8;
 
     return (
-        <div className="detail-view w-full">
-            <div className={`space-items-manager ${menuAbertoId ? 'space-items-manager-open' : ''}`}>
+        <div className="w-full inventory-list-fixed">
+            <div className="inventory-list-fixed-header">
                 <div className="space-items-heading">
-                    <h2 className="space-items-title">Itens de Estoque</h2>
+                    <h2 className="page-title no-margin">Itens de Estoque</h2>
                     <div className="space-items-total">
                         <span className="space-items-total-icon">
                             <ZeniteIcon name="check" size={16} />
@@ -105,16 +114,6 @@ export default function ItemEstoqueList({
                 </label>
 
                 <div className="space-items-unit-filter" role="radiogroup" aria-label="Filtrar por unidade de medida">
-                    <label className="space-items-unit-option">
-                        <input
-                            type="radio"
-                            name="tipoUnidadeMedidaItensEstoque"
-                            value=""
-                            checked={tipoUnidadeSelecionada === ''}
-                            onChange={() => setTipoUnidadeSelecionada('')}
-                        />
-                        <span>Todos os itens</span>
-                    </label>
                     {TIPOS_UNIDADE_FILTRO.map(unidade => (
                         <label key={unidade.value} className="space-items-unit-option">
                             <input
@@ -128,21 +127,15 @@ export default function ItemEstoqueList({
                         </label>
                     ))}
                 </div>
+            </div>
 
+            <div className={`inventory-list-scroll space-items-manager ${menuAbertoId ? 'space-items-manager-open' : ''}`}>
                 {loading ? (
                     <LoadingWaves variant="cards" rows={4} label="Carregando itens" />
                 ) : itens.length === 0 ? (
-                    <div className="card detail-card">
-                        <div className="empty-state-body-compact">
-                            <p className="empty-state-text">Nenhum item de estoque cadastrado.</p>
-                        </div>
-                    </div>
+                    renderEmptyState('Nenhum item de estoque cadastrado.')
                 ) : itensFiltrados.length === 0 ? (
-                    <div className="card detail-card">
-                        <div className="empty-state-body-compact">
-                            <p className="empty-state-text">Nenhum item encontrado para os filtros.</p>
-                        </div>
-                    </div>
+                    renderEmptyState('Nenhum item encontrado para os filtros.')
                 ) : (
                     <div className="space-items-list">
                         {itensFiltrados.map(item => (
