@@ -4,13 +4,16 @@ import { formatQuantity, formatQuantityMasked } from '../../utils/quantity';
 import LoadingWaves from '../LoadingWaves';
 import ZeniteIcon from '../ZeniteIcon';
 
+
 const TIPOS_UNIDADE_FILTRO = Object.entries(TIPO_UNIDADE).map(([value, label]) => ({
     value: Number(value),
     label
 }));
 const TIPO_UNIDADE_LITROS = 1;
 
+
 const getItemDate = (item) => item.dataCadastro || item.dataCriacao || item.criadoEm || item.createdAt || item.dataHoraCadastro;
+
 
 const formatItemDate = (item) => {
     const rawDate = getItemDate(item);
@@ -27,6 +30,7 @@ const formatItemDate = (item) => {
         minute: '2-digit'
     }).format(date);
 };
+
 
 export default function ItemEstoqueList({
     getNomeEspaco,
@@ -45,8 +49,9 @@ export default function ItemEstoqueList({
     const [tipoUnidadeSelecionada, setTipoUnidadeSelecionada] = useState(TIPO_UNIDADE_LITROS);
     const [menuAbertoId, setMenuAbertoId] = useState(null);
     const [menuDirection, setMenuDirection] = useState('down');
-    const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 220, triggerLeft: 0, triggerWidth: 0 });
+    const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 220, triggerLeft: 0, triggerWidth: 0, triggerBottom: 0 });
     const menuTriggerRefs = useRef({});
+
 
     useEffect(() => {
         if (!menuAbertoId) return;
@@ -64,17 +69,23 @@ export default function ItemEstoqueList({
         return () => document.removeEventListener('pointerdown', fecharMenuAoClicarFora);
     }, [menuAbertoId]);
 
+
     const itensFiltrados = useMemo(() => {
         if (!tipoUnidadeSelecionada) return itens;
         return itens.filter(item => Number(item.tipoUnidadeMedida) === Number(tipoUnidadeSelecionada));
     }, [itens, tipoUnidadeSelecionada]);
+
 
     const totalFiltrado = useMemo(() => {
         if (!tipoUnidadeSelecionada) return itensFiltrados.length;
         return itensFiltrados.reduce((total, item) => total + Number(item.quantidade || 0), 0);
     }, [itensFiltrados]);
 
+
     const unidadeSelecionadaLabel = getTipoUnidadeSigla(tipoUnidadeSelecionada);
+
+    const arrowOffsetLeft = menuPos.triggerLeft - menuPos.left + menuPos.triggerWidth / 2 - 8;
+
     const renderEmptyState = (message) => (
         <div className="empty-state-plain">
             <div className="empty-state-icon">
@@ -83,8 +94,6 @@ export default function ItemEstoqueList({
             <p className="empty-state-text">{message}</p>
         </div>
     );
-
-    const arrowOffsetLeft = menuPos.triggerLeft - menuPos.left + menuPos.triggerWidth / 2 - 8;
 
     return (
         <div className="w-full inventory-list-fixed">
@@ -129,6 +138,7 @@ export default function ItemEstoqueList({
                 </div>
             </div>
 
+
             <div className={`inventory-list-scroll space-items-manager ${menuAbertoId ? 'space-items-manager-open' : ''}`}>
                 {loading ? (
                     <LoadingWaves variant="cards" rows={4} label="Carregando itens" />
@@ -169,18 +179,19 @@ export default function ItemEstoqueList({
                                                 const trigger = menuTriggerRefs.current[novoId];
                                                 if (trigger) {
                                                     const rect = trigger.getBoundingClientRect();
-                                                    const spaceBelow = window.innerHeight - rect.bottom;
+                                                    const spaceBelow = (window.visualViewport?.height ?? window.innerHeight) - rect.bottom;
                                                     const openUp = spaceBelow < 260;
                                                     const menuWidth = 220;
                                                     const leftPos = Math.max(4, rect.right - menuWidth);
 
                                                     setMenuDirection(openUp ? 'up' : 'down');
-                                                    setMenuPos({
-                                                        top: openUp ? rect.top : rect.bottom + 4,
+                                                   setMenuPos({
+                                                        top: openUp ? rect.top - 4 : rect.bottom + 8,
                                                         left: leftPos,
                                                         width: menuWidth,
                                                         triggerLeft: rect.left,
                                                         triggerWidth: rect.width,
+                                                        triggerBottom: rect.bottom
                                                     });
                                                 }
                                             }
@@ -197,6 +208,7 @@ export default function ItemEstoqueList({
                 )}
             </div>
 
+
             {menuAbertoId && (() => {
                 const item = itensFiltrados.find(i => i.itemEstoqueId === menuAbertoId);
                 if (!item) return null;
@@ -207,13 +219,15 @@ export default function ItemEstoqueList({
                         style={{
                             position: 'fixed',
                             top: menuDirection === 'down' ? menuPos.top : 'auto',
-                            bottom: menuDirection === 'up' ? window.innerHeight - menuPos.top : 'auto',
+                           bottom: menuDirection === 'up' ? window.innerHeight - menuPos.top : 'auto',
                             left: menuPos.left,
                             width: menuPos.width,
                             zIndex: 9999,
                             '--arrow-offset': `${arrowOffsetLeft}px`,
+                            overflow: 'visible',
                         }}
                     >
+                    
                         <button type="button" className="space-item-menu-action space-item-menu-entry" onClick={() => { setMenuAbertoId(null); onAbrirMovimentacao(item, 1); }}>
                             <ZeniteIcon name="plus" size={22} />
                             <span>Entrada</span>
@@ -243,6 +257,7 @@ export default function ItemEstoqueList({
                 );
             })()}
 
+
             <div className="detail-action-bar detail-action-bar-one">
                 <button className="button" onClick={onAbrirNovo}>
                     <ZeniteIcon name="plus" size={20} />
@@ -250,7 +265,8 @@ export default function ItemEstoqueList({
                 </button>
             </div>
 
+
             {messageModal}
         </div>
     );
-}
+}   
