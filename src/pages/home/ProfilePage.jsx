@@ -39,7 +39,7 @@ export default function ProfilePage({
 
                             <PasswordInput
                                 label="Confirmar Senha"
-                                placeholder="Confirme a senha"
+                                placeholder="Confirmar"
                                 value={formData.confirmaSenha}
                                 onChange={e => onChange({ ...formData, confirmaSenha: e.target.value })}
                                 error={!!fieldErrors.ConfirmaSenha}
