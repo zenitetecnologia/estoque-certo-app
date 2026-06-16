@@ -13,6 +13,7 @@ import Sun from 'lucide-react/dist/esm/icons/sun.mjs';
 import Trash2 from 'lucide-react/dist/esm/icons/trash-2.mjs';
 import Save from 'lucide-react/dist/esm/icons/save.mjs';
 import Arrowleft from 'lucide-react/dist/esm/icons/arrow-left.mjs';
+import X from 'lucide-react/dist/esm/icons/x.mjs';
 
 const ICONS = {
     ban: Ban,
@@ -29,7 +30,8 @@ const ICONS = {
     sun: Sun,
     save: Save,
     trash: Trash2,
-    'arrow-left': Arrowleft
+    'arrow-left': Arrowleft,
+    x: X
 };
 
 export default function ZeniteIcon({ name, className = '', size = 20, strokeWidth = 2.25 }) {
