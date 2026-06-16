@@ -52,3 +52,43 @@
 .space-item-menu-arrow-down {
     display: none !important;
 }
+
+.space-item-actions-menu .button {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--border-radius, 6px);
+    font-size: 0.875rem;
+}
+
+.space-item-menu-entry {
+    background-color: transparent !important;
+    border-color: #2e7d32 !important;
+    color: #fff !important;
+}
+.space-item-menu-exit {
+    background-color: transparent !important;
+    border-color: #c62828 !important;
+    color: #fff !important;
+}
+.space-item-menu-delete {
+    background-color: transparent !important;
+    border-color: #b71c1c !important;
+    color: #fff !important;
+}
+.space-item-menu-edit {
+    background-color: transparent !important;
+    border-color: #1565c0 !important;
+    color: #fff !important;
+}
+.space-item-menu-history {
+    background-color: transparent !important; 
+    border-color: #6a1b9a !important;
+    color: #fff !important;
+}
+
+.space-item-menu-entry:hover  { background-color: rgba(46,125,50,0.12) !important; }
+.space-item-menu-exit:hover   { background-color: rgba(198,40,40,0.12) !important; }
+.space-item-menu-delete:hover { background-color: rgba(183,28,28,0.12) !important; }
+.space-item-menu-edit:hover   { background-color: rgba(21,101,192,0.12) !important; }
+.space-item-menu-history:hover{ background-color: rgba(106,27,154,0.12) !important; }

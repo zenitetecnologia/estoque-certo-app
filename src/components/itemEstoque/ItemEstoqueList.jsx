@@ -49,7 +49,7 @@ export default function ItemEstoqueList({
     const [tipoUnidadeSelecionada, setTipoUnidadeSelecionada] = useState(TIPO_UNIDADE_LITROS);
     const [menuAbertoId, setMenuAbertoId] = useState(null);
     const [menuDirection, setMenuDirection] = useState('down');
-    const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 220, triggerLeft: 0, triggerWidth: 0, triggerBottom: 0 });
+    const [menuPos, setMenuPos] = useState({ top: 0,button: 'auto', left: 0, width: 220, triggerLeft: 0, triggerWidth: 0, triggerBottom: 0 });
     const menuTriggerRefs = useRef({});
 
 
@@ -65,9 +65,18 @@ export default function ItemEstoqueList({
             }
         };
 
+         const fecharMenuAoScroll = () => setMenuAbertoId(null);
+        const scrollContainer = document.querySelector('.inventory-list-scroll');
+
         document.addEventListener('pointerdown', fecharMenuAoClicarFora);
-        return () => document.removeEventListener('pointerdown', fecharMenuAoClicarFora);
+        scrollContainer?.addEventListener('scroll', fecharMenuAoScroll, { passive: true });
+
+        return () => {
+            document.removeEventListener('pointerdown', fecharMenuAoClicarFora);
+            scrollContainer?.removeEventListener('scroll', fecharMenuAoScroll);
+        };
     }, [menuAbertoId]);
+
 
 
     const itensFiltrados = useMemo(() => {
@@ -171,7 +180,7 @@ export default function ItemEstoqueList({
                                         type="button"
                                         ref={(el) => { menuTriggerRefs.current[item.itemEstoqueId] = el; }}
                                         className="space-item-menu-trigger"
-                                        onClick={() => {
+                                       onClick={() => {
                                             const novoId = menuAbertoId === item.itemEstoqueId ? null : item.itemEstoqueId;
                                             setMenuAbertoId(novoId);
 
@@ -179,19 +188,38 @@ export default function ItemEstoqueList({
                                                 const trigger = menuTriggerRefs.current[novoId];
                                                 if (trigger) {
                                                     const rect = trigger.getBoundingClientRect();
-                                                    const spaceBelow = (window.visualViewport?.height ?? window.innerHeight) - rect.bottom;
-                                                    const openUp = spaceBelow < 260;
-                                                    const menuWidth = 220;
-                                                    const leftPos = Math.max(4, rect.right - menuWidth);
+                                                    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+                                                    const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
+                                                    const menuWidth = Math.min(200, viewportWidth - 16); 
+                                                    const menuHeight = 260;
 
-                                                    setMenuDirection(openUp ? 'up' : 'down');
-                                                   setMenuPos({
-                                                        top: openUp ? rect.top - 4 : rect.bottom + 8,
+                                                    const spaceBelow = viewportHeight - rect.bottom - 8;
+                                                    const spaceAbove = rect.top - 8;
+
+                                                    const leftPos = Math.max(8, Math.min(rect.right - menuWidth, viewportWidth - menuWidth - 8));
+
+                                                    let topPos;
+                                                    let direction;
+
+                                                    if (spaceBelow >= menuHeight) {
+                                                        direction = 'down';
+                                                        topPos = rect.bottom + 4;
+                                                    } else if (spaceAbove >= menuHeight) {
+                                                        direction = 'up';
+                                                        bottomPos = viewportHeight - rect.top + 4;
+                                                    } else {
+                                                        direction = 'center';
+                                                        topPos = Math.max(8, (viewportHeight - menuHeight) / 2);
+                                                    }
+
+                                                    setMenuDirection(direction);
+                                                    setMenuPos({
+                                                        top: topPos,
                                                         left: leftPos,
                                                         width: menuWidth,
                                                         triggerLeft: rect.left,
                                                         triggerWidth: rect.width,
-                                                        triggerBottom: rect.bottom
+                                                        triggerBottom: rect.bottom,
                                                     });
                                                 }
                                             }
@@ -218,38 +246,41 @@ export default function ItemEstoqueList({
                         className={`space-item-actions-menu space-item-actions-menu-${menuDirection}`}
                         style={{
                             position: 'fixed',
-                            top: menuDirection === 'down' ? menuPos.top : 'auto',
-                           bottom: menuDirection === 'up' ? window.innerHeight - menuPos.top : 'auto',
-                            left: menuPos.left,
-                            width: menuPos.width,
+                            top:    menuPos.top,
+                            bottom: menuPos.bottom,
+                            left:   menuPos.left,
+                            width:  menuPos.width,
                             zIndex: 9999,
                             '--arrow-offset': `${arrowOffsetLeft}px`,
-                            overflow: 'visible',
+                            maxHeight: menuDirection === 'down'
+                                ? `calc(100dvh - ${menuPos.top}px - 8px)`
+                                : `calc(100dvh - ${menuPos.bottom}px - 8px)`,
+                            overflowY: 'auto',
                         }}
                     >
                     
-                        <button type="button" className="space-item-menu-action space-item-menu-entry" onClick={() => { setMenuAbertoId(null); onAbrirMovimentacao(item, 1); }}>
+                        <button type="button" className="button button-sm space-item-action space-item-menu-entry" onClick={() => { setMenuAbertoId(null); onAbrirMovimentacao(item, 1); }}>
                             <ZeniteIcon name="plus" size={22} />
                             <span>Entrada</span>
                         </button>
-                        <button type="button" className="space-item-menu-action space-item-menu-exit" onClick={() => { setMenuAbertoId(null); onAbrirMovimentacao(item, 2); }}>
+                        <button type="button" className="button button-sm space-item-action space-item-menu-exit" onClick={() => { setMenuAbertoId(null); onAbrirMovimentacao(item, 2); }}>
                             <ZeniteIcon name="minus" size={22} />
                             <span>Saída</span>
                         </button>
                         <button
                             type="button"
-                            className="space-item-menu-action space-item-menu-delete"
+                            className="button button-sm space-item-action space-item-menu-delete"
                             onClick={() => { setMenuAbertoId(null); onExcluirItem(item); }}
                             disabled={excluindoItemId === item.itemEstoqueId}
                         >
                             <ZeniteIcon name="trash" size={22} />
                             <span>Excluir</span>
                         </button>
-                        <button type="button" className="space-item-menu-action space-item-menu-edit" onClick={() => { setMenuAbertoId(null); onEditarItem(item); }}>
+                        <button type="button" className="button button-sm space-item-action space-item-menu-edit" onClick={() => { setMenuAbertoId(null); onEditarItem(item); }}>
                             <ZeniteIcon name="pencil" size={22} />
                             <span>Editar</span>
                         </button>
-                        <button type="button" className="space-item-menu-action space-item-menu-history" onClick={() => { setMenuAbertoId(null); onHistoricoItem(item); }}>
+                        <button type="button" className="button button-sm space-item-action space-item-menu-history" onClick={() => { setMenuAbertoId(null); onHistoricoItem(item); }}>
                             <ZeniteIcon name="clock" size={22} />
                             <span>Histórico</span>
                         </button>
