@@ -50,9 +50,16 @@
 .space-item-actions-menu .button {
     width: 100%;
     justify-content: flex-start;
-    padding: 0.5rem 0.75rem;
-    border-radius: var(--border-radius, 6px);
-    font-size: 0.875rem;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    gap: 0.75rem;
+    border-width: 2.5px;
+    border-style: solid;
+    min-height: 2.4rem;
+    max-height: 180px;
 }
 
 .space-item-menu-entry {
@@ -81,26 +88,26 @@
 
 .space-item-menu-edit {
     background-color: transparent !important;
-    border-color: #1565c0 !important;
-    color: #1565c0 !important;
+    border-color: #1976D2 !important;
+    color: #1976D2 !important;
 }
 
 .space-item-menu-history {
     background-color: transparent !important;
-    border-color: #6a1b9a !important;
-    color: #6a1b9a !important;
+    border-color: #8E24AA !important;
+    color: #8E24AA !important;
 }
 
 .space-item-menu-entry:hover {
-    background-color: rgba(46, 125, 50, 0.12) !important;
+    background-color: rgba(40, 167, 69, 0.12) !important;
 }
 
 .space-item-menu-exit:hover {
-    background-color: rgba(198, 40, 40, 0.12) !important;
+    background-color: rgba(220, 53, 69, 0.12) !important;
 }
 
 .space-item-menu-delete:hover {
-    background-color: rgba(183, 28, 28, 0.12) !important;
+    background-color: rgba(220, 53, 69, 0.12) !important;
 }
 
 .space-item-menu-transfer:hover {
@@ -108,9 +115,9 @@
 }
 
 .space-item-menu-edit:hover {
-    background-color: rgba(21, 101, 192, 0.12) !important;
+    background-color: rgba(25, 118, 210, 0.12) !important;
 }
 
 .space-item-menu-history:hover {
-    background-color: rgba(106, 27, 154, 0.12) !important;
+    background-color: rgba(142, 36, 170, 0.12) !important;
 }
