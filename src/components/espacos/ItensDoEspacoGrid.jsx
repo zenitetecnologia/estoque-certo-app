@@ -237,16 +237,16 @@ export default function ItensDoEspacoGrid({
                         className={`space-item-actions-menu space-item-actions-menu-${menuDirection}`}
                         style={{
                             position: 'fixed',
-                            top: menuPos.top,
-                            bottom: menuPos.bottom,
+                            top: menuPos.top ?? 'auto' ,
+                            bottom: menuPos.bottom ?? 'auto',
                             left: menuPos.left,
                             width: menuPos.width,
                             zIndex: 9999,
                             '--arrow-offset': `${arrowOffsetLeft}px`,
-                            maxHeight: menuDirection === 'down'
-                                ? `calc(100dvh - ${menuPos.top}px - 8px)`
-                                : `calc(100dvh - ${menuPos.bottom}px - 8px)`,
-                            overflowY: 'auto',
+                                ...(menuDirection === 'down' && {
+                                maxHeight: `calc(100dvh - ${menuPos.top ?? 0}px - 8px)`,
+                                overflowY: 'auto',
+                            }),
                         }}
                     >
                         <button type="button" className="button button-sm space-item-action space-item-menu-entry" onClick={() => { setMenuAbertoId(null); onAbrirMovimentacao(item, 1); }}>
