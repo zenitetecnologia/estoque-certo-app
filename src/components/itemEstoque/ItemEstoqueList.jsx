@@ -38,6 +38,7 @@ export default function ItemEstoqueList({
     onEditarItem,
     onExcluirItem,
     onHistoricoItem,
+    onTransferirItem,
     pesquisa,
     excluindoItemId,
     messageModal
@@ -187,7 +188,7 @@ export default function ItemEstoqueList({
                                                     const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
                                                     const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
                                                     const menuWidth = Math.min(200, viewportWidth - 16);
-                                                    const menuHeight = 260;
+                                                    const menuHeight = 310;
 
                                                     const spaceBelow = viewportHeight - rect.bottom - 8;
                                                     const spaceAbove = rect.top - 8;
@@ -195,6 +196,7 @@ export default function ItemEstoqueList({
                                                     const leftPos = Math.max(8, Math.min(rect.right - menuWidth, viewportWidth - menuWidth - 8));
 
                                                     let topPos;
+                                                    let bottomPos;
                                                     let direction;
 
                                                     if (spaceBelow >= menuHeight) {
@@ -261,6 +263,10 @@ export default function ItemEstoqueList({
                         <button type="button" className="button button-sm space-item-action space-item-menu-exit" onClick={() => { setMenuAbertoId(null); onAbrirMovimentacao(item, 2); }}>
                             <ZeniteIcon name="minus" size={22} />
                             <span>Saída</span>
+                        </button>
+                        <button type="button" className="button button-sm space-item-action space-item-menu-transfer" onClick={() => { setMenuAbertoId(null); onTransferirItem(item); }}>
+                            <ZeniteIcon name="transfer" size={22} />
+                            <span>Transferir</span>
                         </button>
                         <button
                             type="button"

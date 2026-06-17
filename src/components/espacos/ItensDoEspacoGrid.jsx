@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { TIPO_UNIDADE, getTipoUnidadeSigla } from '../../constants/tipoUnidade';
 import { formatQuantityMasked } from '../../utils/quantity';
 import LoadingWaves from '../LoadingWaves';
@@ -36,25 +36,37 @@ export default function ItensDoEspacoGrid({
     onEditarItem,
     onExcluirItem,
     onHistoricoItem,
+    onTransferirItem,
     excluindoItemId
 }) {
     const [pesquisa, setPesquisa] = useState('');
     const [tipoUnidadeSelecionada, setTipoUnidadeSelecionada] = useState(TIPO_UNIDADE_LITROS);
     const [menuAbertoId, setMenuAbertoId] = useState(null);
+    const [menuDirection, setMenuDirection] = useState('down');
+    const [menuPos, setMenuPos] = useState({ top: 0, bottom: 'auto', left: 0, width: 220, triggerLeft: 0, triggerWidth: 0, triggerBottom: 0 });
+    const menuTriggerRefs = useRef({});
 
     useEffect(() => {
         if (!menuAbertoId) return;
 
         const fecharMenuAoClicarFora = (event) => {
-            if (!event.target.closest('.space-item-management-menu')) {
+            if (
+                !event.target.closest('.space-item-management-menu') &&
+                !event.target.closest('.space-item-actions-menu')
+            ) {
                 setMenuAbertoId(null);
             }
         };
 
+        const fecharMenuAoScroll = () => setMenuAbertoId(null);
+        const scrollContainer = document.querySelector('.inventory-list-scroll');
+
         document.addEventListener('pointerdown', fecharMenuAoClicarFora);
+        scrollContainer?.addEventListener('scroll', fecharMenuAoScroll, { passive: true });
 
         return () => {
             document.removeEventListener('pointerdown', fecharMenuAoClicarFora);
+            scrollContainer?.removeEventListener('scroll', fecharMenuAoScroll);
         };
     }, [menuAbertoId]);
 
@@ -73,6 +85,7 @@ export default function ItensDoEspacoGrid({
     }, [itensFiltrados]);
 
     const unidadeSelecionadaLabel = getTipoUnidadeSigla(tipoUnidadeSelecionada);
+    const arrowOffsetLeft = menuPos.triggerLeft - menuPos.left + menuPos.triggerWidth / 2 - 8;
 
     const renderEmptyState = (message) => (
         <div className="empty-state-plain">
@@ -156,49 +169,118 @@ export default function ItensDoEspacoGrid({
                                 <div className="space-item-management-menu">
                                     <button
                                         type="button"
+                                        ref={(el) => { menuTriggerRefs.current[item.itemEstoqueId] = el; }}
                                         className="space-item-menu-trigger"
-                                        onClick={() => setMenuAbertoId(menuAbertoId === item.itemEstoqueId ? null : item.itemEstoqueId)}
+                                        onClick={() => {
+                                            const novoId = menuAbertoId === item.itemEstoqueId ? null : item.itemEstoqueId;
+                                            setMenuAbertoId(novoId);
+
+                                            if (novoId) {
+                                                const trigger = menuTriggerRefs.current[novoId];
+                                                if (trigger) {
+                                                    const rect = trigger.getBoundingClientRect();
+                                                    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+                                                    const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
+                                                    const menuWidth = Math.min(200, viewportWidth - 16);
+                                                    const menuHeight = 310;
+
+                                                    const spaceBelow = viewportHeight - rect.bottom - 8;
+                                                    const spaceAbove = rect.top - 8;
+                                                    const leftPos = Math.max(8, Math.min(rect.right - menuWidth, viewportWidth - menuWidth - 8));
+
+                                                    let topPos;
+                                                    let bottomPos;
+                                                    let direction;
+
+                                                    if (spaceBelow >= menuHeight) {
+                                                        direction = 'down';
+                                                        topPos = rect.bottom + 4;
+                                                    } else if (spaceAbove >= menuHeight) {
+                                                        direction = 'up';
+                                                        bottomPos = viewportHeight - rect.top + 4;
+                                                    } else {
+                                                        direction = 'center';
+                                                        topPos = Math.max(8, (viewportHeight - menuHeight) / 2);
+                                                    }
+
+                                                    setMenuDirection(direction);
+                                                    setMenuPos({
+                                                        top: topPos,
+                                                        bottom: bottomPos,
+                                                        left: leftPos,
+                                                        width: menuWidth,
+                                                        triggerLeft: rect.left,
+                                                        triggerWidth: rect.width,
+                                                        triggerBottom: rect.bottom,
+                                                    });
+                                                }
+                                            }
+                                        }}
                                         aria-label={`Abrir ações de ${item.descricao}`}
                                         aria-expanded={menuAbertoId === item.itemEstoqueId}
                                     >
                                         <ZeniteIcon name="ellipsis" size={28} />
                                     </button>
-
-                                    {menuAbertoId === item.itemEstoqueId && (
-                                        <div className="space-item-actions-menu">
-                                            <button type="button" className="space-item-menu-action space-item-menu-entry" onClick={() => { setMenuAbertoId(null); onAbrirMovimentacao(item, 1); }}>
-                                                <ZeniteIcon name="plus" size={22} />
-                                                <span>Entrada</span>
-                                            </button>
-                                            <button type="button" className="space-item-menu-action space-item-menu-exit" onClick={() => { setMenuAbertoId(null); onAbrirMovimentacao(item, 2); }}>
-                                                <ZeniteIcon name="minus" size={22} />
-                                                <span>Saída</span>
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="space-item-menu-action space-item-menu-delete"
-                                                onClick={() => { setMenuAbertoId(null); onExcluirItem(item); }}
-                                                disabled={excluindoItemId === item.itemEstoqueId}
-                                            >
-                                                <ZeniteIcon name="trash" size={22} />
-                                                <span>Excluir</span>
-                                            </button>
-                                            <button type="button" className="space-item-menu-action space-item-menu-edit" onClick={() => { setMenuAbertoId(null); onEditarItem(item); }}>
-                                                <ZeniteIcon name="pencil" size={22} />
-                                                <span>Editar</span>
-                                            </button>
-                                            <button type="button" className="space-item-menu-action space-item-menu-history" onClick={() => { setMenuAbertoId(null); onHistoricoItem(item); }}>
-                                                <ZeniteIcon name="clock" size={22} />
-                                                <span>Histórico</span>
-                                            </button>
-                                        </div>
-                                    )}
                                 </div>
                             </article>
                         ))}
                     </div>
                 )}
             </div>
+
+            {menuAbertoId && (() => {
+                const item = itensFiltrados.find(i => i.itemEstoqueId === menuAbertoId);
+                if (!item) return null;
+
+                return (
+                    <div
+                        className={`space-item-actions-menu space-item-actions-menu-${menuDirection}`}
+                        style={{
+                            position: 'fixed',
+                            top: menuPos.top,
+                            bottom: menuPos.bottom,
+                            left: menuPos.left,
+                            width: menuPos.width,
+                            zIndex: 9999,
+                            '--arrow-offset': `${arrowOffsetLeft}px`,
+                            maxHeight: menuDirection === 'down'
+                                ? `calc(100dvh - ${menuPos.top}px - 8px)`
+                                : `calc(100dvh - ${menuPos.bottom}px - 8px)`,
+                            overflowY: 'auto',
+                        }}
+                    >
+                        <button type="button" className="button button-sm space-item-action space-item-menu-entry" onClick={() => { setMenuAbertoId(null); onAbrirMovimentacao(item, 1); }}>
+                            <ZeniteIcon name="plus" size={22} />
+                            <span>Entrada</span>
+                        </button>
+                        <button type="button" className="button button-sm space-item-action space-item-menu-exit" onClick={() => { setMenuAbertoId(null); onAbrirMovimentacao(item, 2); }}>
+                            <ZeniteIcon name="minus" size={22} />
+                            <span>Saída</span>
+                        </button>
+                        <button type="button" className="button button-sm space-item-action space-item-menu-transfer" onClick={() => { setMenuAbertoId(null); onTransferirItem(item); }}>
+                            <ZeniteIcon name="transfer" size={22} />
+                            <span>Transferir</span>
+                        </button>
+                        <button
+                            type="button"
+                            className="button button-sm space-item-action space-item-menu-delete"
+                            onClick={() => { setMenuAbertoId(null); onExcluirItem(item); }}
+                            disabled={excluindoItemId === item.itemEstoqueId}
+                        >
+                            <ZeniteIcon name="trash" size={22} />
+                            <span>Excluir</span>
+                        </button>
+                        <button type="button" className="button button-sm space-item-action space-item-menu-edit" onClick={() => { setMenuAbertoId(null); onEditarItem(item); }}>
+                            <ZeniteIcon name="pencil" size={22} />
+                            <span>Editar</span>
+                        </button>
+                        <button type="button" className="button button-sm space-item-action space-item-menu-history" onClick={() => { setMenuAbertoId(null); onHistoricoItem(item); }}>
+                            <ZeniteIcon name="clock" size={22} />
+                            <span>Histórico</span>
+                        </button>
+                    </div>
+                );
+            })()}
         </>
     );
 }

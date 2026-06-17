@@ -4,13 +4,15 @@ import LoadingWaves from '../../components/LoadingWaves';
 import MessageModal from '../../components/MessageModal';
 import EspacoDetail from '../../components/espacos/EspacoDetail';
 import MovimentarEstoqueModal from '../../components/itemEstoque/MovimentarEstoqueModal';
+import TransferirItemModal from '../../components/itemEstoque/TransferirItemModal';
 import {
     atualizarEspaco,
     excluirEspaco,
+    listarEspacos,
     listarItensDoEspaco,
     obterEspaco
 } from '../../services/espacoService';
-import { excluirItemEstoque, movimentarItemEstoque } from '../../services/itemEstoqueService';
+import { excluirItemEstoque, movimentarItemEstoque, transferirItemEstoque } from '../../services/itemEstoqueService';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../../utils/apiUtils';
 import { criarPayloadEspaco } from '../../utils/espacoViewModel';
 import { criarPayloadMovimentacao } from '../../utils/itemEstoqueViewModel';
@@ -22,6 +24,7 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
     const { espacoId } = useParams();
 
     const [espacoSelecionado, setEspacoSelecionado] = useState(null);
+    const [espacos, setEspacos] = useState([]);
     const [formEdicao, setFormEdicao] = useState({ nome: '', descricao: '' });
     const [itensDoEspaco, setItensDoEspaco] = useState([]);
     const [excluindoItemId, setExcluindoItemId] = useState(null);
@@ -33,6 +36,8 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemParaExcluir, setItemParaExcluir] = useState(null);
     const [itemParaMovimentar, setItemParaMovimentar] = useState(null);
+    const [itemParaTransferir, setItemParaTransferir] = useState(null);
+    const [novoEspacoId, setNovoEspacoId] = useState('');
     const [movimentacaoData, setMovimentacaoData] = useState({ tipoMovimentacao: 1, quantidadeMovimento: '' });
 
     const carregarItens = useCallback(async () => {
@@ -65,14 +70,17 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
 
         try {
             const response = await obterEspaco({ token, espacoId });
+            const responseEspacos = await listarEspacos({ token, unidadeOrganizacionalId });
 
-            if (response.ok) {
+            if (response.ok && responseEspacos.ok) {
                 const espaco = await response.json();
+                const espacosRecebidos = await responseEspacos.json();
                 setEspacoSelecionado(espaco);
+                setEspacos(espacosRecebidos);
                 setFormEdicao({ nome: espaco.nome, descricao: espaco.descricao || '' });
                 carregarItens();
             } else {
-                const mensagem = await extrairErro(response);
+                const mensagem = await extrairErro(!response.ok ? response : responseEspacos);
                 if (mensagem) setErro(mensagem);
             }
         } catch (err) {
@@ -80,7 +88,7 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
         } finally {
             setLoading(false);
         }
-    }, [token, espacoId, carregarItens]);
+    }, [token, espacoId, unidadeOrganizacionalId, carregarItens]);
 
     useEffect(() => {
         if (!espacoId) {
@@ -226,6 +234,36 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
         }
     };
 
+    const handleTransferirItem = async (event) => {
+        event.preventDefault();
+        if (!itemParaTransferir) return;
+
+        setErro('');
+        setSucesso('');
+
+        try {
+            const response = await transferirItemEstoque({
+                token,
+                itemEstoqueId: itemParaTransferir.itemEstoqueId,
+                novoEspacoId,
+                usuarioId
+            });
+
+            if (response.ok) {
+                const mensagem = await extrairMensagem(response);
+                setItensDoEspaco(prev => prev.filter(item => item.itemEstoqueId !== itemParaTransferir.itemEstoqueId));
+                setItemParaTransferir(null);
+                setNovoEspacoId('');
+                if (mensagem) setSucesso(mensagem);
+            } else {
+                const mensagem = await extrairErro(response);
+                setErro(mensagem);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     const messageModal = (erro || sucesso) && (
         <MessageModal
             type={erro ? 'error' : 'success'}
@@ -268,6 +306,10 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
                 onHistoricoItem={(item) => navigate(`/itens-estoque/${item.itemEstoqueId}?secao=historico`, { state: { espacoOrigemId: espacoId } })}
                 onNovoItem={() => navigate(`/itens-estoque/novo?espacoId=${espacoId}`, { state: { espacoId } })}
                 onAbrirMovimentacaoItem={abrirMovimentacaoItem}
+                onTransferirItem={(item) => {
+                    setItemParaTransferir(item);
+                    setNovoEspacoId('');
+                }}
                 onOpenDelete={() => setShowDeleteModal(true)}
                 onVoltar={() => navigate('/espacos')}
                 excluindoItemId={excluindoItemId}
@@ -282,6 +324,19 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
                     onChange={setMovimentacaoData}
                     onClose={() => setItemParaMovimentar(null)}
                     onSubmit={handleMovimentarItem}
+                />
+            )}
+            {itemParaTransferir && (
+                <TransferirItemModal
+                    espacos={espacos}
+                    item={itemParaTransferir}
+                    novoEspacoId={novoEspacoId}
+                    onChange={setNovoEspacoId}
+                    onClose={() => {
+                        setItemParaTransferir(null);
+                        setNovoEspacoId('');
+                    }}
+                    onSubmit={handleTransferirItem}
                 />
             )}
         </>
