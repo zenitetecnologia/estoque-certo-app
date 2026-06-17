@@ -195,14 +195,14 @@ export default function ItemEstoqueList({
 
                                                     const leftPos = Math.max(8, Math.min(rect.right - menuWidth, viewportWidth - menuWidth - 8));
 
-                                                    let topPos;
-                                                    let bottomPos;
                                                     let direction;
+                                                    let topPos = undefined;
+                                                    let bottomPos = undefined;
 
                                                     if (spaceBelow >= menuHeight) {
                                                         direction = 'down';
                                                         topPos = rect.bottom + 4;
-                                                    } else if (spaceAbove >= menuHeight) {
+                                                   } else if (spaceAbove >= menuHeight) {
                                                         direction = 'up';
                                                         bottomPos = viewportHeight - rect.top + 4;
                                                     } else {
@@ -213,6 +213,7 @@ export default function ItemEstoqueList({
                                                     setMenuDirection(direction);
                                                     setMenuPos({
                                                         top: topPos,
+                                                        bottom: bottomPos,
                                                         left: leftPos,
                                                         width: menuWidth,
                                                         triggerLeft: rect.left,
@@ -243,16 +244,16 @@ export default function ItemEstoqueList({
                         className={`space-item-actions-menu space-item-actions-menu-${menuDirection}`}
                         style={{
                             position: 'fixed',
-                            top: menuPos.top,
-                            bottom: menuPos.bottom,
+                            top: menuPos.top ?? 'auto',
+                            bottom: menuPos.bottom ?? 'auto',
                             left: menuPos.left,
                             width: menuPos.width,
                             zIndex: 9999,
                             '--arrow-offset': `${arrowOffsetLeft}px`,
-                            maxHeight: menuDirection === 'down'
-                                ? `calc(100dvh - ${menuPos.top}px - 8px)`
-                                : `calc(100dvh - ${menuPos.bottom}px - 8px)`,
-                            overflowY: 'auto',
+                            ...(menuDirection === 'down' && {
+                                maxHeight: `calc(100dvh - ${menuPos.top ?? 0}px - 8px)`,
+                                overflowY: 'auto',
+                            }),
                         }}
                     >
 
