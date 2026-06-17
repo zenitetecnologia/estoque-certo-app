@@ -214,8 +214,8 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
 
                 const quantidadeAtual = parseQuantity(itemParaMovimentar.quantidade);
                 const novaQuantidade = payload.tipoMovimentacao === 1
-                    ? quantidadeAtual + payload.quantidade
-                    : quantidadeAtual - payload.quantidade;
+                    ? quantidadeAtual + payload.quantidadeMovimento
+                    : quantidadeAtual - payload.quantidadeMovimento;
 
                 setItensDoEspaco(prev => prev.map(item => (
                     item.itemEstoqueId === itemParaMovimentar.itemEstoqueId

@@ -121,8 +121,8 @@ export default function ItemEstoqueView({ token, unidadeOrganizacionalId, usuari
 
                 const quantidadeAtual = parseQuantity(itemParaMovimentar.quantidade);
                 const novaQuantidade = payload.tipoMovimentacao === 1
-                    ? quantidadeAtual + payload.quantidade
-                    : quantidadeAtual - payload.quantidade;
+                    ? quantidadeAtual + payload.quantidadeMovimento
+                    : quantidadeAtual - payload.quantidadeMovimento;
 
                 setItens(prev => prev.map(item => (
                     item.itemEstoqueId === itemParaMovimentar.itemEstoqueId

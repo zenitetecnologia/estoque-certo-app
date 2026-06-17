@@ -209,8 +209,8 @@ export default function ItemEstoqueDetailPage({ token, unidadeOrganizacionalId, 
 
                 carregarHistorico();
                 const novaQtde = payload.tipoMovimentacao === 1
-                    ? parseQuantity(itemAtivo.quantidade) + payload.quantidade
-                    : parseQuantity(itemAtivo.quantidade) - payload.quantidade;
+                    ? parseQuantity(itemAtivo.quantidade) + payload.quantidadeMovimento
+                    : parseQuantity(itemAtivo.quantidade) - payload.quantidadeMovimento;
 
                 setItemAtivo(prev => ({ ...prev, quantidade: novaQtde }));
                 setFormEdicao(prev => ({ ...prev, quantidade: formatQuantityMasked(novaQtde) }));
