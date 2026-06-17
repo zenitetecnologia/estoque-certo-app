@@ -97,31 +97,36 @@ export default function ItensDoEspacoGrid({
                     </div>
                 </div>
 
-                <label className="space-items-search">
-                    <ZeniteIcon name="search" size={22} />
-                    <input
-                        type="text"
-                        value={pesquisa}
-                        onChange={event => setPesquisa(event.target.value)}
-                        placeholder="Pesquisar ..."
-                        className="space-items-search-input"
-                    />
-                </label>
-
-                <div className="space-items-unit-filter" role="radiogroup" aria-label="Filtrar por unidade de medida">
-                    {TIPOS_UNIDADE_FILTRO.map(unidade => (
-                        <label key={unidade.value} className="space-items-unit-option">
+                <details className="space-items-filter-accordion" open>
+                    <summary>Filtros</summary>
+                    <div className="space-items-filter-content">
+                        <label className="space-items-search">
+                            <ZeniteIcon name="search" size={22} />
                             <input
-                                type="radio"
-                                name="tipoUnidadeMedidaEspaco"
-                                value={unidade.value}
-                                checked={Number(tipoUnidadeSelecionada) === unidade.value}
-                                onChange={() => setTipoUnidadeSelecionada(unidade.value)}
+                                type="text"
+                                value={pesquisa}
+                                onChange={event => setPesquisa(event.target.value)}
+                                placeholder="Pesquisar ..."
+                                className="space-items-search-input"
                             />
-                            <span>{unidade.label}</span>
                         </label>
-                    ))}
-                </div>
+
+                        <div className="space-items-unit-filter" role="radiogroup" aria-label="Filtrar por unidade de medida">
+                            {TIPOS_UNIDADE_FILTRO.map(unidade => (
+                                <label key={unidade.value} className="space-items-unit-option">
+                                    <input
+                                        type="radio"
+                                        name="tipoUnidadeMedidaEspaco"
+                                        value={unidade.value}
+                                        checked={Number(tipoUnidadeSelecionada) === unidade.value}
+                                        onChange={() => setTipoUnidadeSelecionada(unidade.value)}
+                                    />
+                                    <span>{unidade.label}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                </details>
             </div>
 
             <div className={`inventory-list-scroll space-items-manager ${menuAbertoId ? 'space-items-manager-open' : ''}`}>
