@@ -147,7 +147,7 @@ export default function ItemEstoqueList({
 
             <div className={`inventory-list-scroll space-items-manager ${menuAbertoId ? 'space-items-manager-open' : ''}`}>
                 {loading ? (
-                    <LoadingWaves variant="cards" rows={4} label="Carregando itens" />
+                    <LoadingWaves variant="cards" rows={4} label="Carregando itens" className="space-items-list" />
                 ) : itens.length === 0 ? (
                     renderEmptyState('Nenhum item de estoque cadastrado.')
                 ) : itensFiltrados.length === 0 ? (

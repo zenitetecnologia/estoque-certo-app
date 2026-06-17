@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import LoadingWaves from '../../components/LoadingWaves';
 import PizzaDashboardChart from '../../components/charts/PizzaDashboardChart';
 import { listarEspacos } from '../../services/espacoService';
 import { obterPizzaDashboard } from '../../services/relatorioService';
@@ -106,9 +107,7 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
           </h3>
 
           {loading && (
-            <p className="dashboard-body-text dashboard-text-center">
-              Carregando dados do dashboard...
-            </p>
+            <LoadingWaves variant="dashboard" rows={1} label="Carregando dados do dashboard" />
           )}
 
           {!loading && pizzaData.length === 0 && (
@@ -195,9 +194,7 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
             </h3>
 
             {loading && (
-              <p className="dashboard-body-text dashboard-text-center">
-                Carregando totais...
-              </p>
+              <LoadingWaves variant="dashboard" rows={1} label="Carregando totais" />
             )}
 
             {!loading && pizzaData.length === 0 && (

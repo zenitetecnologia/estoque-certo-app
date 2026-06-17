@@ -242,11 +242,13 @@ export default function ItemEstoqueDetailPage({ token, unidadeOrganizacionalId, 
 
     if (loading || !itemAtivo) {
         return (
-            <div className="detail-view w-full">
+            <div className="detail-view w-full detail-form-view">
                 <div className="detail-heading">
-                    <h2 className="no-margin">Detalhes do Item</h2>
+                    <h2 className="page-title no-margin">Detalhes do Item</h2>
                 </div>
-                <LoadingWaves variant="list" rows={1} label="Carregando item" />
+                <div className="detail-form-layout">
+                    <LoadingWaves variant="detail" rows={1} label="Carregando item" className="detail-loading-waves" />
+                </div>
                 {messageModal}
             </div>
         );
