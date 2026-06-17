@@ -188,9 +188,9 @@ export default function ItensDoEspacoGrid({
                                                     const spaceAbove = rect.top - 8;
                                                     const leftPos = Math.max(8, Math.min(rect.right - menuWidth, viewportWidth - menuWidth - 8));
 
-                                                    let topPos;
-                                                    let bottomPos;
                                                     let direction;
+                                                    let topPos = undefined;
+                                                    let bottomPos = undefined;
 
                                                     if (spaceBelow >= menuHeight) {
                                                         direction = 'down';
@@ -237,13 +237,13 @@ export default function ItensDoEspacoGrid({
                         className={`space-item-actions-menu space-item-actions-menu-${menuDirection}`}
                         style={{
                             position: 'fixed',
-                            top: menuPos.top ?? 'auto' ,
+                            top: menuPos.top ?? 'auto',
                             bottom: menuPos.bottom ?? 'auto',
                             left: menuPos.left,
                             width: menuPos.width,
                             zIndex: 9999,
                             '--arrow-offset': `${arrowOffsetLeft}px`,
-                                ...(menuDirection === 'down' && {
+                            ...(menuDirection === 'down' && {
                                 maxHeight: `calc(100dvh - ${menuPos.top ?? 0}px - 8px)`,
                                 overflowY: 'auto',
                             }),

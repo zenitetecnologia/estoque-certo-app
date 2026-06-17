@@ -37,7 +37,6 @@ export default function Sidebar({ isAdmin, isInstalled, onInstallClick, onLogout
                     <div className="sidebar-nav">
                         <NavLink to="/" end onClick={closeMenu}>Início</NavLink>
                         <NavLink to="/espacos" onClick={closeMenu}>Espaços</NavLink>
-                        <NavLink to="/itens-estoque" onClick={closeMenu}>Itens de Estoque</NavLink>
 
                         {isAdmin && (
                             <NavLink to="/aprovar-usuarios" onClick={closeMenu}>Aprovar Usuários</NavLink>
