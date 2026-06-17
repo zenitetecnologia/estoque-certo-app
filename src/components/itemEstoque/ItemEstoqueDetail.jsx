@@ -36,9 +36,10 @@ export default function ItemEstoqueDetail({
     messageModal
 }) {
     const isHistoricoMode = mode === 'historico';
+    const viewClassName = `detail-view w-full ${isHistoricoMode ? 'detail-history-view' : 'detail-form-view'}`;
 
     return (
-        <div className={`detail-view w-full ${!isHistoricoMode ? 'detail-form-view' : ''}`}>
+        <div className={viewClassName}>
             <div className="detail-heading">
                 <h2 className="no-margin">{isHistoricoMode ? 'Histórico do Item' : 'Detalhes do Item'}</h2>
             </div>

@@ -275,11 +275,13 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
 
     if (loading || !espacoSelecionado) {
         return (
-            <div className="detail-view w-full">
+            <div className="detail-view w-full detail-form-view">
                 <div className="detail-heading">
                     <h2 className="page-title no-margin">Detalhes do Espaço</h2>
                 </div>
-                <LoadingWaves variant="list" rows={1} label="Carregando espaço" />
+                <div className="detail-form-layout">
+                    <LoadingWaves variant="detail" rows={1} label="Carregando espaço" className="detail-loading-waves" />
+                </div>
                 {messageModal}
             </div>
         );
