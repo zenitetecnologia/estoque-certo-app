@@ -116,6 +116,7 @@ export default function ItemEstoqueDetail({
             {showTransferirModal && (
                 <TransferirItemModal
                     espacos={espacos}
+                    fieldErrors={fieldErrors}
                     item={itemAtivo}
                     novoEspacoId={novoEspacoId}
                     onChange={onChangeNovoEspaco}

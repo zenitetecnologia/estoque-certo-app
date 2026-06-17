@@ -240,6 +240,7 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
 
         setErro('');
         setSucesso('');
+        setFieldErrors({});
 
         try {
             const response = await transferirItemEstoque({
@@ -255,6 +256,8 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
                 setItemParaTransferir(null);
                 setNovoEspacoId('');
                 if (mensagem) setSucesso(mensagem);
+            } else if (response.status === 400) {
+                await aplicarErrosCampos(response, setFieldErrors, setErro);
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);
@@ -311,6 +314,7 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
                 onTransferirItem={(item) => {
                     setItemParaTransferir(item);
                     setNovoEspacoId('');
+                    setFieldErrors({});
                 }}
                 onOpenDelete={() => setShowDeleteModal(true)}
                 onVoltar={() => navigate('/espacos')}
@@ -331,12 +335,14 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
             {itemParaTransferir && (
                 <TransferirItemModal
                     espacos={espacos}
+                    fieldErrors={fieldErrors}
                     item={itemParaTransferir}
                     novoEspacoId={novoEspacoId}
                     onChange={setNovoEspacoId}
                     onClose={() => {
                         setItemParaTransferir(null);
                         setNovoEspacoId('');
+                        setFieldErrors({});
                     }}
                     onSubmit={handleTransferirItem}
                 />

@@ -170,6 +170,7 @@ export default function ItemEstoqueDetailPage({ token, unidadeOrganizacionalId, 
         event.preventDefault();
         setErro('');
         setSucesso('');
+        setFieldErrors({});
 
         try {
             const response = await transferirItemEstoque({ token, itemEstoqueId, novoEspacoId, usuarioId });
@@ -182,6 +183,8 @@ export default function ItemEstoqueDetailPage({ token, unidadeOrganizacionalId, 
                 setFormEdicao(prev => ({ ...prev, espacoId: novoEspacoId }));
                 setNovoEspacoId('');
                 carregarHistorico();
+            } else if (response.status === 400) {
+                await aplicarErrosCampos(response, setFieldErrors, setErro);
             } else {
                 const mensagem = await extrairErro(response);
                 setErro(mensagem);
@@ -278,6 +281,7 @@ export default function ItemEstoqueDetailPage({ token, unidadeOrganizacionalId, 
             onOpenDelete={() => setShowDeleteModal(true)}
             onOpenTransferir={() => {
                 setNovoEspacoId('');
+                setFieldErrors({});
                 setShowTransferirModal(true);
             }}
             onSubmitMovimentar={handleMovimentar}
