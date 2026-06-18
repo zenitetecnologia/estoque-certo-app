@@ -25,7 +25,7 @@ export default function InstallIosPage() {
         return () => observer.disconnect();
     }, []);
 
-    const themedImage = (name) => useLightTutorialImages ? `/${name}-white.jpeg` : `/${name}.jpeg`;
+    const themedImage = (name) => useLightTutorialImages ? `/${name}-white.png` : `/${name}.png`;
 
     if (android) {
         return (
@@ -65,7 +65,7 @@ export default function InstallIosPage() {
 
             <p>Depois clique em <b>"Adicionar"</b> </p>
 
-            <img src="/pg4.jpeg" alt="Tutorial de instalação 4" className="install-step-image" />
+            <img src="/pg4.png" alt="Tutorial de instalação 4" className="install-step-image" />
 
             <p> assim o aplicativo será adicionado à sua tela de início.</p>
 
