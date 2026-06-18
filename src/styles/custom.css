@@ -121,3 +121,35 @@
 .space-item-menu-history:hover {
     background-color: rgba(142, 36, 170, 0.12) !important;
 }
+
+.landscape-warning-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background-color: rgba(0, 0, 0, 0.8);
+    align-items: center;
+    justify-content: center;
+}
+
+.landscape-warning-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 2rem;
+    border-radius: 16px;
+    background-color: var(--color-surface, #1c2340);
+    border: 1px solid rgb(255, 255, 255, 0.1);
+    max-width: 280px;
+    text-align: center;
+    color: var(--color-text, #fff);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+@media (orientation: landscape) {
+    .landscape-warning-overlay {
+        display: flex;
+    }
+}
