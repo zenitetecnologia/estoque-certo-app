@@ -44,6 +44,7 @@ export default function ItemEstoqueList({
     messageModal
 }) {
     const [tipoUnidadeSelecionada, setTipoUnidadeSelecionada] = useState(TIPO_UNIDADE_LITROS);
+    const [filtrosAbertos, setFiltrosAbertos] = useState(true);
     const [menuAbertoId, setMenuAbertoId] = useState(null);
     const [menuDirection, setMenuDirection] = useState('down');
     const [menuPos, setMenuPos] = useState({ top: 0, button: 'auto', left: 0, width: 220, triggerLeft: 0, triggerWidth: 0, triggerBottom: 0 });
@@ -113,8 +114,15 @@ export default function ItemEstoqueList({
                     </div>
                 </div>
 
-                <details className="space-items-filter-accordion" open>
-                    <summary>Filtros</summary>
+                <section className={`space-items-filter-accordion ${filtrosAbertos ? 'is-open' : ''}`}>
+                    <button
+                        type="button"
+                        className="space-items-filter-summary"
+                        aria-expanded={filtrosAbertos}
+                        onClick={() => setFiltrosAbertos(prev => !prev)}
+                    >
+                        Filtros
+                    </button>
                     <div className="space-items-filter-content">
                         <label className="space-items-search">
                             <ZeniteIcon name="search" size={24} />
@@ -142,7 +150,7 @@ export default function ItemEstoqueList({
                             ))}
                         </div>
                     </div>
-                </details>
+                </section>
             </div>
 
             <div className={`inventory-list-scroll space-items-manager ${menuAbertoId ? 'space-items-manager-open' : ''}`}>
@@ -202,7 +210,7 @@ export default function ItemEstoqueList({
                                                     if (spaceBelow >= menuHeight) {
                                                         direction = 'down';
                                                         topPos = rect.bottom + 4;
-                                                   } else if (spaceAbove >= menuHeight) {
+                                                    } else if (spaceAbove >= menuHeight) {
                                                         direction = 'up';
                                                         bottomPos = viewportHeight - rect.top + 4;
                                                     } else {

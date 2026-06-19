@@ -4,6 +4,7 @@ import LoadingWaves from '../../components/LoadingWaves';
 import PizzaDashboardChart from '../../components/charts/PizzaDashboardChart';
 import { TIPO_UNIDADE, getTipoUnidadeSigla } from '../../constants/tipoUnidade';
 import { listarEspacos } from '../../services/espacoService';
+import { listarItensEstoque } from '../../services/itemEstoqueService';
 import { obterPizzaDashboard } from '../../services/relatorioService';
 import { formatQuantityMasked } from '../../utils/quantity';
 
@@ -25,6 +26,7 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
   const [loading, setLoading] = useState(false);
   const [theme, setTheme] = useState(getCurrentTheme());
   const [isOpen, setIsOpen] = useState(false);
+  const [filtrosAbertos, setFiltrosAbertos] = useState(true);
   const [searchEspaco, setSearchEspaco] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [listPosition, setListPosition] = useState(null);
@@ -61,17 +63,39 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
     if (!token || !unidadeOrganizacionalId) return;
     setLoading(true);
 
-    obterPizzaDashboard({
-      token,
-      unidadeOrganizacionalId,
-      espacoId: espacoId || undefined,
-      tipoUnidadeMedida,
-    })
-      .then(async (res) => {
-        if (!res.ok) throw new Error('Erro ao carregar dashboard');
-        const data = await res.json();
-        setPizzaData(Array.isArray(data) ? data : []);
+    const carregarDadosPizza = espacoId
+      ? listarItensEstoque({
+        token,
+        unidadeOrganizacionalId,
+        top: 1000,
       })
+        .then(async (res) => {
+          if (!res.ok) throw new Error('Erro ao carregar itens do espaço');
+          const data = await res.json();
+          const itensDoEspaco = Array.isArray(data)
+            ? data.filter(item => (
+              item.espacoId === espacoId &&
+              Number(item.tipoUnidadeMedida) === Number(tipoUnidadeMedida)
+            ))
+            : [];
+
+          return itensDoEspaco.map(item => ({
+            label: item.descricao || 'Item sem descrição',
+            value: Number(item.quantidade || 0),
+          }));
+        })
+      : obterPizzaDashboard({
+        token,
+        unidadeOrganizacionalId,
+        tipoUnidadeMedida,
+      })
+        .then(async (res) => {
+          if (!res.ok) throw new Error('Erro ao carregar dashboard');
+          return res.json();
+        });
+
+    carregarDadosPizza
+      .then((data) => setPizzaData(Array.isArray(data) ? data : []))
       .catch((err) => {
         console.error(err);
         setPizzaData([]);
@@ -214,8 +238,15 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
 
         <section className="dashboard-side-column">
           <div className="card inventory-card inventory-card-surface dashboard-filter-card dashboard-totals-card">
-            <details className="space-items-filter-accordion dashboard-filter-section" open>
-              <summary>Filtros</summary>
+            <section className={`space-items-filter-accordion dashboard-filter-section ${filtrosAbertos ? 'is-open' : ''}`}>
+              <button
+                type="button"
+                className="space-items-filter-summary"
+                aria-expanded={filtrosAbertos}
+                onClick={() => setFiltrosAbertos(prev => !prev)}
+              >
+                Filtros
+              </button>
               <div className="space-items-filter-content">
                 <div className="mb-1">
                   <label className="label-sm">Espaço</label>
@@ -304,7 +335,7 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
                   ))}
                 </div>
               </div>
-            </details>
+            </section>
 
             <div className="dashboard-totals-section">
               <h3 className="inventory-card-title dashboard-card-title dashboard-card-title-center dashboard-card-title-nowrap dashboard-card-title-fixed">
@@ -324,10 +355,10 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
               {!loading && !espacoId && pizzaData.length > 0 && (
                 <div className="totais-scroll dashboard-totals-scroll">
                   <ul className="dashboard-totals-list">
-                  {pizzaDataOrdenada.map((item, index) => (
-                    <li
-                      key={`${item.label}-${index}`}
-                      className="dashboard-totals-item"
+                    {pizzaDataOrdenada.map((item, index) => (
+                      <li
+                        key={`${item.label}-${index}`}
+                        className="dashboard-totals-item"
                       >
                         <span
                           className="dashboard-totals-label"
@@ -337,31 +368,49 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
                         </span>
                         <span className="dashboard-totals-value">
                           {formatQuantityMasked(item.value)} {unidadeSelecionadaSigla}
+                        </span>
+                      </li>
+                    ))}
+                    <li className="dashboard-totals-item dashboard-totals-summary">
+                      <span className="dashboard-totals-label">
+                        Total geral
+                      </span>
+                      <span className="dashboard-totals-value">
+                        {formatQuantityMasked(totalTodosEspacos)} {unidadeSelecionadaSigla}
                       </span>
                     </li>
-                  ))}
-                  <li className="dashboard-totals-item dashboard-totals-summary">
-                    <span className="dashboard-totals-label">
-                      Total geral
-                    </span>
-                    <span className="dashboard-totals-value">
-                      {formatQuantityMasked(totalTodosEspacos)} {unidadeSelecionadaSigla}
-                    </span>
-                  </li>
-                </ul>
-              </div>
-            )}
+                  </ul>
+                </div>
+              )}
 
-              {!loading && espacoId && espacoSelecionado && (
-                <div className="dashboard-selected-total dashboard-body-text">
-                  <p>
-                    <strong>{espacoSelecionado.nome}</strong>
-                  </p>
-                  <p>
-                    Quantidade total:{' '}
-                    <strong>{formatQuantityMasked(totalEspacoSelecionado)}</strong>{' '}
-                    {unidadeSelecionadaSigla}
-                  </p>
+              {!loading && espacoId && pizzaData.length > 0 && (
+                <div className="totais-scroll dashboard-totals-scroll">
+                  <ul className="dashboard-totals-list">
+                    {pizzaDataOrdenada.map((item, index) => (
+                      <li
+                        key={`${item.label}-${index}`}
+                        className="dashboard-totals-item"
+                      >
+                        <span
+                          className="dashboard-totals-label"
+                          title={item.label}
+                        >
+                          {item.label}
+                        </span>
+                        <span className="dashboard-totals-value">
+                          {formatQuantityMasked(item.value)} {unidadeSelecionadaSigla}
+                        </span>
+                      </li>
+                    ))}
+                    <li className="dashboard-totals-item dashboard-totals-summary">
+                      <span className="dashboard-totals-label">
+                        Total geral
+                      </span>
+                      <span className="dashboard-totals-value">
+                        {formatQuantityMasked(totalEspacoSelecionado)} {unidadeSelecionadaSigla}
+                      </span>
+                    </li>
+                  </ul>
                 </div>
               )}
             </div>
