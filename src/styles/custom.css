@@ -122,6 +122,32 @@
     background-color: rgba(142, 36, 170, 0.12) !important;
 }
 
+/* --- REGRAS PARA MODO CLARO DO SUBMENU --- */
+[data-theme="light"] .space-item-actions-menu .button.space-item-menu-entry {
+    color: #28A745 !important;
+}
+
+[data-theme="light"] .space-item-actions-menu .button.space-item-menu-exit {
+    color: #DC3545 !important;
+}
+
+[data-theme="light"] .space-item-actions-menu .button.space-item-menu-delete {
+    color: #DC3545 !important;
+}
+
+[data-theme="light"] .space-item-actions-menu .button.space-item-menu-transfer {
+    color: var(--zf-accent) !important;
+}
+
+[data-theme="light"] .space-item-actions-menu .button.space-item-menu-edit {
+    color: #1976D2 !important;
+}
+
+[data-theme="light"] .space-item-actions-menu .button.space-item-menu-history {
+    color: #8E24AA !important;
+}
+/* ----------------------------------------- */
+
 .landscape-warning-overlay {
     display: none;
     position: fixed;
