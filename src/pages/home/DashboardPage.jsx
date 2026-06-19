@@ -215,131 +215,131 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
 
   return (
     <div className="dashboard-page">
-      <div className="dashboard-layout">
-        <section className="card inventory-card inventory-card-surface dashboard-chart-card">
-          <h3 className="inventory-card-title dashboard-card-title dashboard-card-title-center">
-            Visão geral do estoque
-          </h3>
+      <div className="dashboard-page-header">
+        <h2 className="page-title no-margin dashboard-page-title">Visão geral do estoque</h2>
 
-          {loading && (
-            <LoadingWaves variant="dashboard" rows={1} label="Carregando dados do dashboard" />
-          )}
+        <section className={`space-items-filter-accordion dashboard-filter-section ${filtrosAbertos ? 'is-open' : ''}`}>
+          <button
+            type="button"
+            className="space-items-filter-summary"
+            aria-expanded={filtrosAbertos}
+            onClick={() => setFiltrosAbertos(prev => !prev)}
+          >
+            Filtros
+          </button>
+          <div className="space-items-filter-content">
+            <div className="mb-1">
+              <label className="label-sm">Espaço</label>
+              <div ref={comboRef} className={`zf-combobox zf-combobox-custom-arrow combobox-field ${isOpen ? 'active' : ''}`}>
+                <input
+                  type="text"
+                  placeholder="Pesquisar espaço..."
+                  value={displayEspacoValue}
+                  onClick={() => setIsOpen(true)}
+                  onChange={(event) => {
+                    setSearchEspaco(event.target.value);
+                    setIsOpen(true);
+                    setHighlightedIndex(-1);
+                  }}
+                  onKeyDown={handleEspacoKeyDown}
+                  onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+                  className="zf-combobox-input combobox-input"
+                />
 
-          {!loading && pizzaData.length === 0 && (
-            <p className="dashboard-body-text dashboard-text-center">
-              Não há dados para exibir com o filtro selecionado.
-            </p>
-          )}
+                {isOpen && listPosition && createPortal(
+                  <ul
+                    className="zf-combobox-list zf-combobox-list-floating is-open"
+                    ref={listRef}
+                    style={{
+                      top: `${listPosition.top}px`,
+                      left: `${listPosition.left}px`,
+                      width: `${listPosition.width}px`,
+                      maxHeight: `${listPosition.maxHeight}px`
+                    }}
+                  >
+                    <li
+                      className={`zf-combobox-item ${highlightedIndex === 0 ? 'highlighted' : ''}`}
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => handleSelecionarEspaco('')}
+                      onMouseEnter={() => setHighlightedIndex(0)}
+                    >
+                      <div className="zf-cb-left">
+                        <span className="zf-cb-name">Todos os espaços</span>
+                      </div>
+                    </li>
 
-          {!loading && pizzaData.length > 0 && (
-            <PizzaDashboardChart data={pizzaData} theme={theme} unidade={unidadeSelecionadaSigla} />
-          )}
-        </section>
-
-        <section className="dashboard-side-column">
-          <div className="card inventory-card inventory-card-surface dashboard-filter-card dashboard-totals-card">
-            <section className={`space-items-filter-accordion dashboard-filter-section ${filtrosAbertos ? 'is-open' : ''}`}>
-              <button
-                type="button"
-                className="space-items-filter-summary"
-                aria-expanded={filtrosAbertos}
-                onClick={() => setFiltrosAbertos(prev => !prev)}
-              >
-                Filtros
-              </button>
-              <div className="space-items-filter-content">
-                <div className="mb-1">
-                  <label className="label-sm">Espaço</label>
-                  <div ref={comboRef} className={`zf-combobox zf-combobox-custom-arrow combobox-field ${isOpen ? 'active' : ''}`}>
-                    <input
-                      type="text"
-                      placeholder="Pesquisar espaço..."
-                      value={displayEspacoValue}
-                      onClick={() => setIsOpen(true)}
-                      onChange={(event) => {
-                        setSearchEspaco(event.target.value);
-                        setIsOpen(true);
-                        setHighlightedIndex(-1);
-                      }}
-                      onKeyDown={handleEspacoKeyDown}
-                      onBlur={() => setTimeout(() => setIsOpen(false), 200)}
-                      className="zf-combobox-input combobox-input"
-                    />
-
-                    {isOpen && listPosition && createPortal(
-                      <ul
-                        className="zf-combobox-list zf-combobox-list-floating is-open"
-                        ref={listRef}
-                        style={{
-                          top: `${listPosition.top}px`,
-                          left: `${listPosition.left}px`,
-                          width: `${listPosition.width}px`,
-                          maxHeight: `${listPosition.maxHeight}px`
-                        }}
+                    {espacosFiltrados.map((espaco, index) => (
+                      <li
+                        key={espaco.espacoId}
+                        className={`zf-combobox-item ${highlightedIndex === index + 1 ? 'highlighted' : ''}`}
+                        onMouseDown={(event) => event.preventDefault()}
+                        onClick={() => handleSelecionarEspaco(espaco.espacoId)}
+                        onMouseEnter={() => setHighlightedIndex(index + 1)}
                       >
-                        <li
-                          className={`zf-combobox-item ${highlightedIndex === 0 ? 'highlighted' : ''}`}
-                          onMouseDown={(event) => event.preventDefault()}
-                          onClick={() => handleSelecionarEspaco('')}
-                          onMouseEnter={() => setHighlightedIndex(0)}
-                        >
-                          <div className="zf-cb-left">
-                            <span className="zf-cb-name">Todos os espaços</span>
-                          </div>
-                        </li>
+                        <div className="zf-cb-left">
+                          <span className="zf-cb-name">{espaco.nome}</span>
+                          {espaco.descricao && <span className="zf-cb-cpf">{espaco.descricao}</span>}
+                        </div>
+                      </li>
+                    ))}
 
-                        {espacosFiltrados.map((espaco, index) => (
-                          <li
-                            key={espaco.espacoId}
-                            className={`zf-combobox-item ${highlightedIndex === index + 1 ? 'highlighted' : ''}`}
-                            onMouseDown={(event) => event.preventDefault()}
-                            onClick={() => handleSelecionarEspaco(espaco.espacoId)}
-                            onMouseEnter={() => setHighlightedIndex(index + 1)}
-                          >
-                            <div className="zf-cb-left">
-                              <span className="zf-cb-name">{espaco.nome}</span>
-                              {espaco.descricao && <span className="zf-cb-cpf">{espaco.descricao}</span>}
-                            </div>
-                          </li>
-                        ))}
-
-                        {espacos.length === 0 && (
-                          <li className="zf-combobox-empty" aria-live="polite">
-                            Nenhum espaço cadastrado
-                          </li>
-                        )}
-
-                        {semEspacosEncontrados && (
-                          <li className="zf-combobox-empty" aria-live="polite">
-                            Não encontrado
-                          </li>
-                        )}
-                      </ul>,
-                      document.body
+                    {espacos.length === 0 && (
+                      <li className="zf-combobox-empty" aria-live="polite">
+                        Nenhum espaço cadastrado
+                      </li>
                     )}
-                  </div>
-                </div>
 
-                <div className="space-items-unit-filter" role="radiogroup" aria-label="Filtrar por unidade de medida">
-                  {TIPOS_UNIDADE_FILTRO.map(unidade => (
-                    <label key={unidade.value} className="space-items-unit-option">
-                      <input
-                        type="radio"
-                        name="tipoUnidadeMedidaDashboard"
-                        value={unidade.value}
-                        checked={Number(tipoUnidadeMedida) === unidade.value}
-                        onChange={() => setTipoUnidadeMedida(unidade.value)}
-                      />
-                      <span>{unidade.label}</span>
-                    </label>
-                  ))}
-                </div>
+                    {semEspacosEncontrados && (
+                      <li className="zf-combobox-empty" aria-live="polite">
+                        Não encontrado
+                      </li>
+                    )}
+                  </ul>,
+                  document.body
+                )}
               </div>
-            </section>
+            </div>
+
+            <div className="space-items-unit-filter" role="radiogroup" aria-label="Filtrar por unidade de medida">
+              {TIPOS_UNIDADE_FILTRO.map(unidade => (
+                <label key={unidade.value} className="space-items-unit-option">
+                  <input
+                    type="radio"
+                    name="tipoUnidadeMedidaDashboard"
+                    value={unidade.value}
+                    checked={Number(tipoUnidadeMedida) === unidade.value}
+                    onChange={() => setTipoUnidadeMedida(unidade.value)}
+                  />
+                  <span>{unidade.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div className="dashboard-page-scroll">
+        <div className="dashboard-layout">
+          <section className="card inventory-card inventory-card-surface dashboard-summary-card">
+            <div className="dashboard-summary-chart">
+              {loading && (
+                <LoadingWaves variant="dashboard" rows={1} label="Carregando dados do dashboard" />
+              )}
+
+              {!loading && pizzaData.length === 0 && (
+                <p className="dashboard-body-text dashboard-text-center">
+                  Não há dados para exibir com o filtro selecionado.
+                </p>
+              )}
+
+              {!loading && pizzaData.length > 0 && (
+                <PizzaDashboardChart data={pizzaData} theme={theme} unidade={unidadeSelecionadaSigla} />
+              )}
+            </div>
 
             <div className="dashboard-totals-section">
               <h3 className="inventory-card-title dashboard-card-title dashboard-card-title-center dashboard-card-title-nowrap dashboard-card-title-fixed">
-                {espacoId ? 'Total do espaço' : 'Totais por espaço'}
+                {espacoId ? 'Totais por item' : 'Totais por espaço'}
               </h3>
 
               {loading && (
@@ -352,7 +352,7 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
                 </p>
               )}
 
-              {!loading && !espacoId && pizzaData.length > 0 && (
+              {!loading && pizzaData.length > 0 && (
                 <div className="totais-scroll dashboard-totals-scroll">
                   <ul className="dashboard-totals-list">
                     {pizzaDataOrdenada.map((item, index) => (
@@ -376,46 +376,15 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
                         Total geral
                       </span>
                       <span className="dashboard-totals-value">
-                        {formatQuantityMasked(totalTodosEspacos)} {unidadeSelecionadaSigla}
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              )}
-
-              {!loading && espacoId && pizzaData.length > 0 && (
-                <div className="totais-scroll dashboard-totals-scroll">
-                  <ul className="dashboard-totals-list">
-                    {pizzaDataOrdenada.map((item, index) => (
-                      <li
-                        key={`${item.label}-${index}`}
-                        className="dashboard-totals-item"
-                      >
-                        <span
-                          className="dashboard-totals-label"
-                          title={item.label}
-                        >
-                          {item.label}
-                        </span>
-                        <span className="dashboard-totals-value">
-                          {formatQuantityMasked(item.value)} {unidadeSelecionadaSigla}
-                        </span>
-                      </li>
-                    ))}
-                    <li className="dashboard-totals-item dashboard-totals-summary">
-                      <span className="dashboard-totals-label">
-                        Total geral
-                      </span>
-                      <span className="dashboard-totals-value">
-                        {formatQuantityMasked(totalEspacoSelecionado)} {unidadeSelecionadaSigla}
+                        {formatQuantityMasked(espacoId ? totalEspacoSelecionado : totalTodosEspacos)} {unidadeSelecionadaSigla}
                       </span>
                     </li>
                   </ul>
                 </div>
               )}
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
     </div>
   );
