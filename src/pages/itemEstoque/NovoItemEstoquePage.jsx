@@ -6,6 +6,7 @@ import { criarItemEstoque } from '../../services/itemEstoqueService';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../../utils/apiUtils';
 import { criarPayloadItemEstoque } from '../../utils/itemEstoqueViewModel';
 import { maskQuantityInputFixed3 } from '../../utils/quantity';
+import ZeniteIcon from '../../components/ZeniteIcon';
 
 const getInputClassName = (isError) => `w-full no-field-margin ${isError ? 'is-invalid' : ''}`;
 
@@ -110,10 +111,12 @@ export default function NovoItemEstoquePage({ token, unidadeOrganizacionalId }) 
 
                 <div className="detail-action-bar detail-action-bar-two">
                     <button type="button" className="button button-outline" onClick={() => navigate(espacoOrigemId ? `/espacos/${espacoOrigemId}/itens` : '/itens-estoque')}>
-                        Voltar
+                        <ZeniteIcon name="moveleft" size={18}/>
+                        <span className="button-icon-text"> Voltar</span> 
                     </button>
                     <button type="submit" className="button">
-                        Salvar
+                        <ZeniteIcon name="save" size={18}/>
+                        <span className="button-icon-text"> Salvar</span>
                     </button>
                 </div>
             </form>

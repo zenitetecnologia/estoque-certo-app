@@ -16,6 +16,7 @@ import Save from 'lucide-react/dist/esm/icons/save.mjs';
 import Arrowleft from 'lucide-react/dist/esm/icons/arrow-left.mjs';
 import X from 'lucide-react/dist/esm/icons/x.mjs';
 import RotateCcw  from 'lucide-react/dist/esm/icons/rotate-ccw.mjs';
+import MoveLeft from 'lucide-react/dist/esm/icons/move-left.mjs';
 
 const ICONS = {
     ban: Ban,
@@ -35,7 +36,8 @@ const ICONS = {
     trash: Trash2,
     'arrow-left': Arrowleft,
     x: X,
-    'rotate-ccw': RotateCcw
+    'rotate-ccw': RotateCcw ,
+    moveleft: MoveLeft
 };
 
 export default function ZeniteIcon({ name, className = '', size = 20, strokeWidth = 2.25 }) {

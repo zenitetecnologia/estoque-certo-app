@@ -4,6 +4,7 @@ import MessageModal from '../../components/MessageModal';
 import { criarEspaco } from '../../services/espacoService';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../../utils/apiUtils';
 import { criarPayloadEspaco } from '../../utils/espacoViewModel';
+import ZeniteIcon from '../../components/ZeniteIcon';
 
 export default function NovoEspacoPage({ token, unidadeOrganizacionalId }) {
     const navigate = useNavigate();
@@ -73,10 +74,12 @@ export default function NovoEspacoPage({ token, unidadeOrganizacionalId }) {
 
                 <div className="detail-action-bar detail-action-bar-two">
                     <button type="button" className="button button-outline" onClick={() => navigate('/espacos')}>
-                        <span className="button-icon-text">Voltar</span>
+                        <ZeniteIcon name="moveleft" size= {18} />
+                        <span className="button-icon-text"> Voltar</span>
                     </button>
                     <button type="submit" className="button">
-                        <span className="button-icon-text">Salvar</span>
+                        <ZeniteIcon name="save" size={18} />
+                        <span className="button-icon-text"> Salvar</span>
                     </button>
                 </div>
             </form>
