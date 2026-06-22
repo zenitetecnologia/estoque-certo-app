@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import MessageModal from '../../components/MessageModal';
+import ZeniteIcon from '../../components/ZeniteIcon';
 import { TIPO_UNIDADE } from '../../constants/tipoUnidade';
 import { criarItemEstoque } from '../../services/itemEstoqueService';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../../utils/apiUtils';
 import { criarPayloadItemEstoque } from '../../utils/itemEstoqueViewModel';
 import { maskQuantityInputFixed3 } from '../../utils/quantity';
-import ZeniteIcon from '../../components/ZeniteIcon';
 
 const getInputClassName = (isError) => `w-full no-field-margin ${isError ? 'is-invalid' : ''}`;
 
@@ -55,7 +55,7 @@ export default function NovoItemEstoquePage({ token, unidadeOrganizacionalId }) 
     };
 
     return (
-        <div className="detail-view detail-form-view w-full">
+        <div className="detail-view detail-form-view space-detail-form-view space-create-form-view w-full">
             <div className="detail-heading">
                 <h2 className="no-margin">Novo Item</h2>
             </div>
@@ -111,11 +111,11 @@ export default function NovoItemEstoquePage({ token, unidadeOrganizacionalId }) 
 
                 <div className="detail-action-bar detail-action-bar-two">
                     <button type="button" className="button button-outline" onClick={() => navigate(espacoOrigemId ? `/espacos/${espacoOrigemId}/itens` : '/itens-estoque')}>
-                        <ZeniteIcon name="moveleft" size={18}/>
-                        <span className="button-icon-text"> Voltar</span> 
+                        <ZeniteIcon name="moveleft" size={18} />
+                        <span className="button-icon-text"> Voltar</span>
                     </button>
                     <button type="submit" className="button">
-                        <ZeniteIcon name="save" size={18}/>
+                        <ZeniteIcon name="save" size={18} />
                         <span className="button-icon-text"> Salvar</span>
                     </button>
                 </div>

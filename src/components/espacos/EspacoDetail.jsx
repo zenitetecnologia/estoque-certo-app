@@ -32,7 +32,7 @@ export default function EspacoDetail({
     const isItensMode = mode === 'itens';
 
     return (
-        <div className={isItensMode ? 'w-full inventory-list-fixed' : 'detail-view w-full detail-form-view space-detail-form-view'}>
+        <div className={isItensMode ? 'w-full inventory-list-fixed' : 'detail-view w-full detail-form-view space-detail-form-view space-create-form-view'}>
             {!isItensMode && (
                 <div className="detail-heading">
                     <h2 className="page-title no-margin">Detalhes do Espaço</h2>
@@ -57,7 +57,7 @@ export default function EspacoDetail({
                             <div className="column-12 mb-1">
                                 <label className="label-sm">Descrição</label>
                                 <textarea
-                                    rows={4}
+                                    rows={10}
                                     placeholder="Descreva o espaço"
                                     value={formEdicao.descricao}
                                     onChange={e => onChangeFormEdicao({ ...formEdicao, descricao: e.target.value })}
