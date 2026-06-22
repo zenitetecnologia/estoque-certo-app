@@ -41,14 +41,6 @@ export default defineConfig(({ mode }) => {
           ]
         }
       })
-    ],
-    server: {
-      fs: {
-        allow: [
-          'C:/Users/jf030/OneDrive/Área de Trabalho/repositories/estoque-certo-app',
-          'C:/Users/jf030/OneDrive/Área de Trabalho/repositories/zenite-ui'
-        ]
-      }
-    }
+    ]
   };
 });
