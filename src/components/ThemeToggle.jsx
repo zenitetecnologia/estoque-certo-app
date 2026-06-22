@@ -1,16 +1,47 @@
 import { useEffect, useState } from 'react';
 import ZeniteIcon from './ZeniteIcon';
 
+const THEME_STORAGE_KEY = 'theme';
+
+function getStoredTheme() {
+    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    return storedTheme === 'light' || storedTheme === 'dark' ? storedTheme : null;
+}
+
+function getSystemTheme() {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
 export default function ThemeToggle({ fixo = true }) {
-    const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+    const [theme, setTheme] = useState(() => getStoredTheme() || getSystemTheme());
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
     }, [theme]);
 
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        const syncTheme = () => {
+            setTheme(getStoredTheme() || getSystemTheme());
+        };
+
+        mediaQuery.addEventListener('change', syncTheme);
+        window.addEventListener('storage', syncTheme);
+        window.addEventListener('themechange', syncTheme);
+
+        return () => {
+            mediaQuery.removeEventListener('change', syncTheme);
+            window.removeEventListener('storage', syncTheme);
+            window.removeEventListener('themechange', syncTheme);
+        };
+    }, []);
+
     const toggleTheme = () => {
-        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+        const nextTheme = theme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+        setTheme(nextTheme);
+        window.dispatchEvent(new Event('themechange'));
     };
 
     return (
