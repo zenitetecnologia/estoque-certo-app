@@ -36,7 +36,7 @@ export default function NovoEspacoPage({ token, unidadeOrganizacionalId }) {
     };
 
     return (
-        <div className="detail-view detail-form-view w-full">
+        <div className="detail-view detail-form-view space-detail-form-view w-full">
             <div className="detail-heading">
                 <h2 className="page-title no-margin">Novo Espaço</h2>
             </div>
@@ -44,7 +44,7 @@ export default function NovoEspacoPage({ token, unidadeOrganizacionalId }) {
             <form className="detail-form-layout" onSubmit={handleSubmit} noValidate>
                 <div className="card detail-card detail-form-scroll-card">
                     <div className="detail-card-body">
-                        <div className="row">
+                        <div className="row detail-form-fields">
                             <div className="column-12 mb-1">
                                 <label className="label-sm">Nome</label>
                                 <input
@@ -59,7 +59,7 @@ export default function NovoEspacoPage({ token, unidadeOrganizacionalId }) {
                             <div className="column-12 mb-1">
                                 <label className="label-sm">Descrição</label>
                                 <textarea
-                                    rows={5}
+                                    rows={4}
                                     placeholder="Descreva o espaço"
                                     value={formData.descricao}
                                     onChange={e => setFormData({ ...formData, descricao: e.target.value })}

@@ -32,7 +32,7 @@ export default function EspacoDetail({
     const isItensMode = mode === 'itens';
 
     return (
-        <div className={isItensMode ? 'w-full inventory-list-fixed' : 'detail-view w-full detail-form-view'}>
+        <div className={isItensMode ? 'w-full inventory-list-fixed' : 'detail-view w-full detail-form-view space-detail-form-view'}>
             {!isItensMode && (
                 <div className="detail-heading">
                     <h2 className="page-title no-margin">Detalhes do Espaço</h2>
@@ -42,8 +42,8 @@ export default function EspacoDetail({
             {!isItensMode && (
                 <div className="card detail-card detail-form-scroll-card">
                     <div className="detail-card-body">
-                        <div className="row">
-                            <div className="column-6 mb-1">
+                        <div className="row detail-form-fields">
+                            <div className="column-12 mb-1">
                                 <label className="label-sm">Nome</label>
                                 <input
                                     type="text"
@@ -54,7 +54,7 @@ export default function EspacoDetail({
                                 />
                                 {fieldErrors.Nome && <small className="invalid-feedback d-block">{fieldErrors.Nome}</small>}
                             </div>
-                            <div className="column-6 mb-1">
+                            <div className="column-12 mb-1">
                                 <label className="label-sm">Descrição</label>
                                 <textarea
                                     rows={4}
@@ -86,7 +86,7 @@ export default function EspacoDetail({
                 </>
             )}
 
-            <div className={`detail-action-bar ${isItensMode ? 'detail-action-bar-two' : ''}`}>
+            <div className={`detail-action-bar ${isItensMode ? 'detail-action-bar-two' : 'space-detail-actions'}`}>
                 <button className="button button-outline" onClick={onVoltar}>
                     Voltar
                 </button>
