@@ -43,7 +43,7 @@ export default function HistoricoMovimentacoes({ historico, loading }) {
 
     if (historico.length === 0) {
         return (
-            <div className="detail-history-scroll">
+            <div className="detail-history-scroll detail-history-scroll-empty">
                 <div className="card history-empty-card">
                     <div className="empty-state-body-compact">
                         <p className="empty-state-text">Nenhuma movimentação registrada.</p>
