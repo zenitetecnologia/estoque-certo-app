@@ -305,12 +305,10 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
                 messageModal={messageModal}
                 mode={mode}
                 onChangeFormEdicao={setFormEdicao}
-                onCloseDelete={() => setShowDeleteModal(false)}
                 onCloseDeleteItem={() => setItemParaExcluir(null)}
                 onConfirmarEdicao={handleConfirmarEdicao}
                 onConfirmDeleteItem={handleExcluirItem}
                 onEditarItem={(item) => navigate(`/itens-estoque/${item.itemEstoqueId}`, { state: { espacoOrigemId: espacoId } })}
-                onExcluir={handleExcluirEspaco}
                 onExcluirItem={setItemParaExcluir}
                 onHistoricoItem={(item) => navigate(`/itens-estoque/${item.itemEstoqueId}?secao=historico`, { state: { espacoOrigemId: espacoId } })}
                 onNovoItem={() => navigate(`/itens-estoque/novo?espacoId=${espacoId}`, { state: { espacoId } })}
@@ -320,11 +318,9 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
                     setNovoEspacoId('');
                     setFieldErrors({});
                 }}
-                onOpenDelete={() => setShowDeleteModal(true)}
                 onVoltar={() => navigate('/espacos')}
                 excluindoItemId={excluindoItemId}
                 showDeleteItemModal={!!itemParaExcluir}
-                showDeleteModal={showDeleteModal}
             />
             {itemParaMovimentar && (
                 <MovimentarEstoqueModal
