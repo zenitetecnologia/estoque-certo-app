@@ -152,7 +152,7 @@ export default function ItensDoEspacoGrid({
 
             <div className={`inventory-list-scroll space-items-manager ${menuAbertoId ? 'space-items-manager-open' : ''}`}>
                 {loading ? (
-                    <LoadingWaves variant="cards" rows={3} label="Carregando inventário" className="space-items-list" />
+                    <LoadingWaves variant="cards" rows={4} label="Carregando inventário" className="space-items-list" />
                 ) : itens.length === 0 ? (
                     renderEmptyState('Este espaço ainda não possui itens cadastrados.')
                 ) : itensFiltrados.length === 0 ? (

@@ -258,7 +258,7 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
 
     if ((loading || !espacoSelecionado) && mode !== 'itens') {
         return (
-            <div className="detail-view w-full detail-form-view">
+            <div className="detail-view detail-form-view space-detail-form-view space-create-form-view w-full">
                 <div className="detail-heading">
                     <h2 className="page-title no-margin">Detalhes do Espaço</h2>
                 </div>
