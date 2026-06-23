@@ -7,7 +7,6 @@ import MovimentarEstoqueModal from '../../components/itemEstoque/MovimentarEstoq
 import TransferirItemModal from '../../components/itemEstoque/TransferirItemModal';
 import {
     atualizarEspaco,
-    excluirEspaco,
     listarEspacos,
     listarItensDoEspaco,
     obterEspaco
@@ -37,7 +36,6 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemParaExcluir, setItemParaExcluir] = useState(null);
     const [itemParaMovimentar, setItemParaMovimentar] = useState(null);
     const [itemParaTransferir, setItemParaTransferir] = useState(null);
@@ -136,28 +134,6 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
             }
         } catch (error) {
             console.error(error);
-        }
-    };
-
-    const handleExcluirEspaco = async () => {
-        setErro('');
-        setSucesso('');
-
-        try {
-            const response = await excluirEspaco({ token, espacoId });
-
-            if (response.ok || response.status === 204) {
-                const mensagem = await extrairMensagem(response);
-                setShowDeleteModal(false);
-                navigate('/espacos', { replace: true, state: { sucesso: mensagem } });
-            } else {
-                const mensagem = await extrairErro(response);
-                setErro(mensagem);
-                setShowDeleteModal(false);
-            }
-        } catch (error) {
-            console.error(error);
-            setShowDeleteModal(false);
         }
     };
 
