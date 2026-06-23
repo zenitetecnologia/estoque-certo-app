@@ -6,7 +6,7 @@ export default function ProfilePage({
     onSubmit
 }) {
     return (
-        <div className="detail-view detail-form-view space-detail-form-view w-full">
+        <div className="detail-view detail-form-view space-detail-form-view space-create-form-view w-full">
             <div className="detail-heading">
                 <h2 className="page-title no-margin">Alterar Meus Dados</h2>
             </div>

@@ -146,6 +146,7 @@
 [data-theme="light"] .space-item-actions-menu .button.space-item-menu-history {
     color: #8E24AA !important;
 }
+
 /* ----------------------------------------- */
 
 .landscape-warning-overlay {
@@ -177,39 +178,5 @@
 @media (orientation: landscape) {
     .landscape-warning-overlay {
         display: flex;
-    }
-}
-
-/* Mobile: empilha busca e botão */
-.inventory-list-header-row {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-}
-
-.inventory-search-wrapper {
-    width: 100%;
-    max-width: 100%;
-}
-
-.inventory-page-title {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 4rem;
-}
-
-/* Desktop: busca 50% + botão na mesma linha */
-@media (min-width: 900px) {
-    .inventory-list-header-row {
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .inventory-search-wrapper {
-        flex: 0 0 40%;
-        max-width: 40%;
     }
 }

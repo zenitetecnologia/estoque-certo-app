@@ -23,9 +23,13 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
     const location = useLocation();
     const { espacoId } = useParams();
 
-    const [espacoSelecionado, setEspacoSelecionado] = useState(null);
+    const espacoState = location.state?.espaco || null;
+    const [espacoSelecionado, setEspacoSelecionado] = useState(espacoState);
     const [espacos, setEspacos] = useState([]);
-    const [formEdicao, setFormEdicao] = useState({ nome: '', descricao: '' });
+    const [formEdicao, setFormEdicao] = useState({
+        nome: espacoState?.nome || '',
+        descricao: espacoState?.descricao || ''
+    });
     const [itensDoEspaco, setItensDoEspaco] = useState([]);
     const [excluindoItemId, setExcluindoItemId] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -276,7 +280,7 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
         />
     );
 
-    if (loading || !espacoSelecionado) {
+    if ((loading || !espacoSelecionado) && mode !== 'itens') {
         return (
             <div className="detail-view w-full detail-form-view">
                 <div className="detail-heading">
@@ -297,7 +301,7 @@ export default function EspacoDetailPage({ token, unidadeOrganizacionalId, usuar
                 formEdicao={formEdicao}
                 houveMudanca={houveMudanca}
                 itensDoEspaco={itensDoEspaco}
-                loadingItens={loadingItens}
+                loadingItens={mode === 'itens' ? loading || loadingItens : loadingItens}
                 messageModal={messageModal}
                 mode={mode}
                 onChangeFormEdicao={setFormEdicao}
