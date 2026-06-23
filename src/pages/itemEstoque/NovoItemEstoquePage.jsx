@@ -111,8 +111,7 @@ export default function NovoItemEstoquePage({ token, unidadeOrganizacionalId }) 
 
                 <div className="detail-action-bar detail-action-bar-two">
                     <button type="button" className="button button-outline" onClick={() => navigate(espacoOrigemId ? `/espacos/${espacoOrigemId}/itens` : '/itens-estoque')}>
-                        <ZeniteIcon name="moveleft" size={18} />
-                        <span className="button-icon-text"> Voltar</span>
+                        Voltar
                     </button>
                     <button type="submit" className="button">
                         <ZeniteIcon name="save" size={18} />
