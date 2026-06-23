@@ -74,6 +74,11 @@ export default function EspacoList({
                                                 {espaco.descricao || 'Sem descrição'}
                                             </p>
                                         </div>
+                                    </div>
+                                    <div className="inventory-card-footer space-list-card-footer">
+                                        <button className="button button-outline inventory-card-action" onClick={() => onGerenciarItens(espaco)}>
+                                            Itens
+                                        </button>
                                         <div className="space-list-card-actions">
                                             <button
                                                 type="button"
@@ -92,11 +97,6 @@ export default function EspacoList({
                                                 <ZeniteIcon name="trash" size={22} />
                                             </button>
                                         </div>
-                                    </div>
-                                    <div className="inventory-card-footer">
-                                        <button className="button button-outline inventory-card-action" onClick={() => onGerenciarItens(espaco)}>
-                                            Itens
-                                        </button>
                                     </div>
                                 </div>
                             </div>
