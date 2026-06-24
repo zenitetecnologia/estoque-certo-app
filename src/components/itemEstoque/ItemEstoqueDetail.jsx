@@ -57,7 +57,7 @@ export default function ItemEstoqueDetail({
                                 </div>
                                 <div className="column-12 mb-1">
                                     <span className="label-sm text-muted">Unidade</span>
-                                    <div className="space-items-unit-filter" role="radiogroup" aria-label="Unidade de medida">
+                                    <div className="space-items-unit-filter item-form-unit-filter" role="radiogroup" aria-label="Unidade de medida">
                                         {Object.entries(TIPO_UNIDADE).map(([key, val]) => (
                                             <label key={key} className="space-items-unit-option">
                                                 <input
