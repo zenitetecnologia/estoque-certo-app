@@ -26,7 +26,7 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
   const [loading, setLoading] = useState(false);
   const [theme, setTheme] = useState(getCurrentTheme());
   const [isOpen, setIsOpen] = useState(false);
-  const [filtrosAbertos, setFiltrosAbertos] = useState(true);
+  const [filtrosAbertos, setFiltrosAbertos] = useState(false);
   const [searchEspaco, setSearchEspaco] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [listPosition, setListPosition] = useState(null);
