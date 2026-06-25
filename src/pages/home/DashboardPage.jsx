@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import LoadingWaves from '../../components/LoadingWaves';
+import ZeniteIcon from '../../components/ZeniteIcon';
 import PizzaDashboardChart from '../../components/charts/PizzaDashboardChart';
 import { TIPO_UNIDADE, getTipoUnidadeSigla } from '../../constants/tipoUnidade';
 import { listarEspacos } from '../../services/espacoService';
@@ -320,73 +321,72 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
 
       <div className="dashboard-page-scroll">
         <div className="dashboard-layout">
-          <section className="card inventory-card inventory-card-surface dashboard-summary-card">
-            <div className="dashboard-summary-chart">
-              {loading && (
-                <LoadingWaves variant="dashboard" rows={1} label="Carregando dados do dashboard" />
-              )}
+          <section className={
+            !loading && pizzaData.length === 0
+              ? 'card inventory-card-surface dashboard-empty-card'
+              : 'card inventory-card inventory-card-surface dashboard-summary-card'
+          }>
+            {!loading && pizzaData.length === 0 ? (
+              <div className="empty-state-plain dashboard-empty-state">
+                <div className="empty-state-icon">
+                  <ZeniteIcon name="ban" size={92} strokeWidth={1.7} />
+                </div>
+                <p className="empty-state-text">Não há dados para exibir com o filtro selecionado.</p>
+              </div>
+            ) : (
+              <>
+                <div className="dashboard-summary-chart">
+                  {loading ? (
+                    <LoadingWaves variant="dashboard" rows={1} label="Carregando dados do dashboard" />
+                  ) : (
+                    <PizzaDashboardChart data={pizzaData} theme={theme} unidade={unidadeSelecionadaSigla} />
+                  )}
+                </div>
 
-              {!loading && pizzaData.length === 0 && (
-                <p className="dashboard-body-text dashboard-text-center">
-                  Não há dados para exibir com o filtro selecionado.
-                </p>
-              )}
+                <div className="dashboard-totals-section">
+                  <h3 className="inventory-card-title dashboard-card-title dashboard-card-title-center dashboard-card-title-nowrap dashboard-card-title-fixed">
+                    {espacoId ? 'Totais por item' : 'Totais por espaço'}
+                  </h3>
 
-              {!loading && pizzaData.length > 0 && (
-                <PizzaDashboardChart data={pizzaData} theme={theme} unidade={unidadeSelecionadaSigla} />
-              )}
-            </div>
-
-            <div className="dashboard-totals-section">
-              <h3 className="inventory-card-title dashboard-card-title dashboard-card-title-center dashboard-card-title-nowrap dashboard-card-title-fixed">
-                {espacoId ? 'Totais por item' : 'Totais por espaço'}
-              </h3>
-
-              {loading && (
-                <LoadingWaves variant="dashboard" rows={1} label="Carregando totais" />
-              )}
-
-              {!loading && pizzaData.length === 0 && (
-                <p className="dashboard-body-text dashboard-text-center">
-                  Sem dados para exibir.
-                </p>
-              )}
-
-              {!loading && pizzaData.length > 0 && (
-                <>
-                  <div className="totais-scroll dashboard-totals-scroll">
-                    <ul className="dashboard-totals-list">
-                      {pizzaDataOrdenada.map((item, index) => (
-                        <li
-                          key={`${item.label}-${index}`}
-                          className="dashboard-totals-item"
-                        >
-                          <span
-                            className="dashboard-totals-label"
-                            title={item.label}
-                          >
-                            {item.label}
+                  {loading ? (
+                    <LoadingWaves variant="dashboard" rows={1} label="Carregando totais" />
+                  ) : (
+                    <>
+                      <div className="totais-scroll dashboard-totals-scroll">
+                        <ul className="dashboard-totals-list">
+                          {pizzaDataOrdenada.map((item, index) => (
+                            <li
+                              key={`${item.label}-${index}`}
+                              className="dashboard-totals-item"
+                            >
+                              <span
+                                className="dashboard-totals-label"
+                                title={item.label}
+                              >
+                                {item.label}
+                              </span>
+                              <span className="dashboard-totals-value">
+                                {formatQuantityMasked(item.value)} {unidadeSelecionadaSigla}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <ul className="dashboard-totals-list dashboard-totals-footer">
+                        <li className="dashboard-totals-item dashboard-totals-summary">
+                          <span className="dashboard-totals-label">
+                            Total geral
                           </span>
                           <span className="dashboard-totals-value">
-                            {formatQuantityMasked(item.value)} {unidadeSelecionadaSigla}
+                            {formatQuantityMasked(espacoId ? totalEspacoSelecionado : totalTodosEspacos)} {unidadeSelecionadaSigla}
                           </span>
                         </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <ul className="dashboard-totals-list dashboard-totals-footer">
-                    <li className="dashboard-totals-item dashboard-totals-summary">
-                      <span className="dashboard-totals-label">
-                        Total geral
-                      </span>
-                      <span className="dashboard-totals-value">
-                        {formatQuantityMasked(espacoId ? totalEspacoSelecionado : totalTodosEspacos)} {unidadeSelecionadaSigla}
-                      </span>
-                    </li>
-                  </ul>
-                </>
-              )}
-            </div>
+                      </ul>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
           </section>
         </div>
       </div>
