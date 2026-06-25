@@ -55,8 +55,14 @@ export const useProfileForm = ({ token, usuario }) => {
     };
 
     const clearMessages = () => {
+        const shouldNavigateHome = Boolean(sucesso);
+
         setErro('');
         setSucesso('');
+
+        if (shouldNavigateHome) {
+            navigate('/', { replace: true });
+        }
     };
 
     return {
