@@ -180,3 +180,21 @@
         display: flex;
     }
 }
+
+.detail-action-bar-two {
+    display: grid !important;
+    grid-template-columns: auto auto !important;
+    justify-content: center !important;         
+    gap: 16px !important;                       
+    padding: 1.5rem 1rem !important;            
+}
+
+.detail-action-bar .button {
+    width: auto !important;
+    min-width: 250px !important;
+    padding: 12px 46px !important;
+    border-radius: 9999px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
