@@ -29,6 +29,30 @@ export function maskQuantityInputFixed3(value) {
     return `${integerPart},${decimalPart}`;
 }
 
+export function keepMaskedValueCursorAtEnd(event) {
+    const input = event?.currentTarget;
+    if (!input || typeof input.setSelectionRange !== 'function') return;
+
+    const moveCursorToEnd = () => {
+        if (!input.isConnected) return;
+
+        const end = input.value.length;
+        if (input.selectionStart !== end || input.selectionEnd !== end) {
+            input.setSelectionRange(end, end);
+        }
+    };
+
+    moveCursorToEnd();
+    requestAnimationFrame(moveCursorToEnd);
+    setTimeout(moveCursorToEnd, 50);
+    setTimeout(moveCursorToEnd, 150);
+}
+
+export function preventMaskedValueContextMenu(event) {
+    event.preventDefault();
+    keepMaskedValueCursorAtEnd(event);
+}
+
 export function parseQuantity(value) {
     if (typeof value === 'number') return value;
     const normalized = String(value ?? '')

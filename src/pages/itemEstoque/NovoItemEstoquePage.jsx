@@ -6,7 +6,11 @@ import { TIPO_UNIDADE } from '../../constants/tipoUnidade';
 import { criarItemEstoque } from '../../services/itemEstoqueService';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../../utils/apiUtils';
 import { criarPayloadItemEstoque } from '../../utils/itemEstoqueViewModel';
-import { maskQuantityInputFixed3 } from '../../utils/quantity';
+import {
+    keepMaskedValueCursorAtEnd,
+    maskQuantityInputFixed3,
+    preventMaskedValueContextMenu
+} from '../../utils/quantity';
 
 const getInputClassName = (isError) => `w-full no-field-margin ${isError ? 'is-invalid' : ''}`;
 
@@ -101,6 +105,13 @@ export default function NovoItemEstoquePage({ token, unidadeOrganizacionalId }) 
                                     inputMode="numeric"
                                     value={formData.quantidade}
                                     onChange={e => setFormData({ ...formData, quantidade: maskQuantityInputFixed3(e.target.value) })}
+                                    onFocus={keepMaskedValueCursorAtEnd}
+                                    onSelect={keepMaskedValueCursorAtEnd}
+                                    onClick={keepMaskedValueCursorAtEnd}
+                                    onPointerUp={keepMaskedValueCursorAtEnd}
+                                    onTouchEnd={keepMaskedValueCursorAtEnd}
+                                    onKeyUp={keepMaskedValueCursorAtEnd}
+                                    onContextMenu={preventMaskedValueContextMenu}
                                     className={getInputClassName(fieldErrors.Quantidade)}
                                 />
                                 {fieldErrors.Quantidade && <small className="invalid-feedback d-block">{fieldErrors.Quantidade}</small>}

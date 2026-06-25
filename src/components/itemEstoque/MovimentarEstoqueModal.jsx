@@ -1,4 +1,8 @@
-import { maskQuantityInputFixed3 } from '../../utils/quantity';
+import {
+    keepMaskedValueCursorAtEnd,
+    maskQuantityInputFixed3,
+    preventMaskedValueContextMenu
+} from '../../utils/quantity';
 import ZeniteIcon from '../ZeniteIcon';
 
 const getInputClassName = (isError) => `w-full no-field-margin ${isError ? 'is-invalid' : ''}`;
@@ -44,6 +48,13 @@ export default function MovimentarEstoqueModal({
                                 inputMode="decimal"
                                 value={movimentacaoData.quantidadeMovimento}
                                 onChange={e => onChange({ ...movimentacaoData, quantidadeMovimento: maskMovementQuantity(e.target.value) })}
+                                onFocus={keepMaskedValueCursorAtEnd}
+                                onSelect={keepMaskedValueCursorAtEnd}
+                                onClick={keepMaskedValueCursorAtEnd}
+                                onPointerUp={keepMaskedValueCursorAtEnd}
+                                onTouchEnd={keepMaskedValueCursorAtEnd}
+                                onKeyUp={keepMaskedValueCursorAtEnd}
+                                onContextMenu={preventMaskedValueContextMenu}
                                 placeholder="0,000"
                                 className={getInputClassName(fieldErrors.QuantidadeMovimento)}
                             />
