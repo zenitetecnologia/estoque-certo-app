@@ -353,24 +353,28 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
               )}
 
               {!loading && pizzaData.length > 0 && (
-                <div className="totais-scroll dashboard-totals-scroll">
-                  <ul className="dashboard-totals-list">
-                    {pizzaDataOrdenada.map((item, index) => (
-                      <li
-                        key={`${item.label}-${index}`}
-                        className="dashboard-totals-item"
-                      >
-                        <span
-                          className="dashboard-totals-label"
-                          title={item.label}
+                <>
+                  <div className="totais-scroll dashboard-totals-scroll">
+                    <ul className="dashboard-totals-list">
+                      {pizzaDataOrdenada.map((item, index) => (
+                        <li
+                          key={`${item.label}-${index}`}
+                          className="dashboard-totals-item"
                         >
-                          {item.label}
-                        </span>
-                        <span className="dashboard-totals-value">
-                          {formatQuantityMasked(item.value)} {unidadeSelecionadaSigla}
-                        </span>
-                      </li>
-                    ))}
+                          <span
+                            className="dashboard-totals-label"
+                            title={item.label}
+                          >
+                            {item.label}
+                          </span>
+                          <span className="dashboard-totals-value">
+                            {formatQuantityMasked(item.value)} {unidadeSelecionadaSigla}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <ul className="dashboard-totals-list dashboard-totals-footer">
                     <li className="dashboard-totals-item dashboard-totals-summary">
                       <span className="dashboard-totals-label">
                         Total geral
@@ -380,7 +384,7 @@ export default function DashboardPage({ token, unidadeOrganizacionalId }) {
                       </span>
                     </li>
                   </ul>
-                </div>
+                </>
               )}
             </div>
           </section>
