@@ -45,7 +45,7 @@ export default function EspacoList({
 
             <div className="inventory-list-scroll">
                 {loading ? (
-                    <LoadingWaves variant="cards" rows={4} label="Carregando espaços" className="inventory-grid" />
+                    <LoadingWaves variant="cards" rows={3} label="Carregando espaços" className="inventory-grid space-list-grid" />
                 ) : espacosFiltrados.length === 0 ? (
                     espacos.length === 0 ? (
                         <div className="empty-state-plain">
@@ -63,7 +63,7 @@ export default function EspacoList({
                         </div>
                     )
                 ) : (
-                    <div className="inventory-grid">
+                    <div className="inventory-grid space-list-grid">
                         {espacosFiltrados.map(espaco => (
                             <div key={espaco.espacoId} className="inventory-grid-item">
                                 <div className="card inventory-card inventory-list-card space-list-card inventory-card-surface">
