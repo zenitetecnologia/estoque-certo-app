@@ -44,10 +44,11 @@ export default function HistoricoMovimentacoes({ historico, loading }) {
     if (historico.length === 0) {
         return (
             <div className="detail-history-scroll detail-history-scroll-empty">
-                <div className="card history-empty-card">
-                    <div className="empty-state-body-compact">
-                        <p className="empty-state-text">Nenhuma movimentação registrada.</p>
+                <div className="empty-state-plain">
+                    <div className="empty-state-icon">
+                        <ZeniteIcon name="ban" size={92} strokeWidth={1.7} />
                     </div>
+                    <p className="empty-state-text">Nenhuma movimentação registrada.</p>
                 </div>
             </div>
         );
