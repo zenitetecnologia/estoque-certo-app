@@ -42,6 +42,28 @@ const tratarSessaoExpirada = (response, message) => {
     notificarSessaoExpirada(message);
 };
 
+const focarPrimeiroCampoInvalido = () => {
+    if (typeof document === 'undefined') return;
+
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            const campoInvalido = document.querySelector(
+                'input.is-invalid:not([disabled]), textarea.is-invalid:not([disabled]), select.is-invalid:not([disabled]), .is-invalid input:not([disabled]), .is-invalid textarea:not([disabled]), .is-invalid select:not([disabled])'
+            );
+
+            if (!campoInvalido || typeof campoInvalido.focus !== 'function') return;
+
+            campoInvalido.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            try {
+                campoInvalido.focus({ preventScroll: true });
+            } catch (error) {
+                campoInvalido.focus();
+            }
+        });
+    });
+};
+
 export const lerRespostaApi = async (response) => {
     const text = await response.text();
     if (!text) return null;
@@ -161,7 +183,9 @@ export const aplicarErrosCampos = async (response, setFieldErrors, setErro) => {
     const { fieldErrors, message } = await extrairErrosCampos(response);
     setFieldErrors(fieldErrors);
 
-    if (Object.keys(fieldErrors).length === 0 && message) {
+    if (Object.keys(fieldErrors).length > 0) {
+        focarPrimeiroCampoInvalido();
+    } else if (message) {
         setErro(message);
     }
 };
