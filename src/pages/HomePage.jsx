@@ -16,6 +16,7 @@ export default function HomePage({ token, onLogout }) {
         sucesso,
         fieldErrors,
         formData,
+        hasChanges,
         setFormData,
         handleUpdateData,
         handleCancelProfile,
@@ -77,6 +78,7 @@ export default function HomePage({ token, onLogout }) {
                 <AuthenticatedRoutes
                     fieldErrors={fieldErrors}
                     formData={formData}
+                    hasProfileChanges={hasChanges}
                     isAdmin={usuario.isAdmin}
                     onCancelProfile={handleCancelProfile}
                     onChangeProfile={setFormData}

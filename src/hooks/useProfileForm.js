@@ -6,20 +6,24 @@ import { encryptedJsonBody } from '../utils/payloadCrypto';
 
 export const useProfileForm = ({ token, usuario }) => {
     const navigate = useNavigate();
+    const nomeOriginal = usuario.nome || '';
     const [formData, setFormData] = useState({
-        nome: usuario.nome,
+        nome: nomeOriginal,
         username: usuario.username,
         unidadeOrganizacionalId: usuario.unidadeOrganizacionalId
     });
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
+    const hasChanges = formData.nome.trim() !== nomeOriginal.trim();
 
     const handleUpdateData = async (e) => {
         e.preventDefault();
         setErro('');
         setSucesso('');
         setFieldErrors({});
+
+        if (!hasChanges) return;
 
         const payload = { nome: formData.nome };
 
@@ -70,6 +74,7 @@ export const useProfileForm = ({ token, usuario }) => {
         sucesso,
         fieldErrors,
         formData,
+        hasChanges,
         setFormData,
         handleUpdateData,
         handleCancelProfile,

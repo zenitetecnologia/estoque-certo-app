@@ -13,6 +13,7 @@ import NovoItemEstoquePage from '../pages/itemEstoque/NovoItemEstoquePage';
 export default function AuthenticatedRoutes({
     fieldErrors,
     formData,
+    hasProfileChanges,
     isAdmin,
     onCancelProfile,
     onChangeProfile,
@@ -71,6 +72,7 @@ export default function AuthenticatedRoutes({
                     <ProfilePage
                         fieldErrors={fieldErrors}
                         formData={formData}
+                        hasChanges={hasProfileChanges}
                         onCancel={onCancelProfile}
                         onChange={onChangeProfile}
                         onSubmit={onSubmitProfile}

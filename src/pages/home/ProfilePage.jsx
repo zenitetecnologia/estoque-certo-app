@@ -1,6 +1,7 @@
 export default function ProfilePage({
     fieldErrors,
     formData,
+    hasChanges,
     onCancel,
     onChange,
     onSubmit
@@ -32,7 +33,7 @@ export default function ProfilePage({
 
                 <div className="detail-action-bar detail-action-bar-two">
                     <button type="button" className="button button-outline" onClick={onCancel}>Cancelar</button>
-                    <button type="submit" className="button">Salvar</button>
+                    <button type="submit" className="button" disabled={!hasChanges}>Salvar</button>
                 </div>
             </form>
         </div>
