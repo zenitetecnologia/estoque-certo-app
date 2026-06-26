@@ -7,7 +7,7 @@ const isIOS = () => {
     return /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
 };
 
-export default function Sidebar({ isAdmin, isInstalled, onInstallClick, onLogoutClick }) {
+export default function Sidebar({ isAdmin, isInstalled, organizacaoNome, onInstallClick, onLogoutClick, usuarioNome }) {
     const navigate = useNavigate();
 
     const closeMenu = () => {
@@ -61,6 +61,13 @@ export default function Sidebar({ isAdmin, isInstalled, onInstallClick, onLogout
                 </div>
 
                 <div className="sidebar-footer">
+                    {(usuarioNome || organizacaoNome) && (
+                        <div className="sidebar-user-block">
+                            {usuarioNome && <p className="sidebar-user-name">{usuarioNome}</p>}
+                            {organizacaoNome && <p className="sidebar-user-org">{organizacaoNome}</p>}
+                        </div>
+                    )}
+
                     <NavLink
                         to="/perfil"
                         onClick={closeMenu}

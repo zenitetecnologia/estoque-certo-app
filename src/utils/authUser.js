@@ -7,6 +7,7 @@ export const getUserFromToken = (token) => {
             usuarioId: '',
             username: '',
             unidadeOrganizacionalId: '',
+            unidadeOrganizacionalNome: '',
             nome: '',
             isAdmin: false
         };
@@ -18,6 +19,7 @@ export const getUserFromToken = (token) => {
         usuarioId: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || decoded.nameid || '',
         username: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || decoded.unique_name || '',
         unidadeOrganizacionalId: decoded.UnidadeOrganizacionalId || '',
+        unidadeOrganizacionalNome: decoded.UnidadeOrganizacionalNome || decoded.NomeUnidadeOrganizacional || decoded.nomeUnidadeOrganizacional || '',
         nome: decoded.Nome || decoded.nome || '',
         cadastroCompleto: decoded.CadastroCompleto === 'True' || decoded.CadastroCompleto === true,
         jornadaUsuario: decoded.JornadaUsuario || '',
