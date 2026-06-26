@@ -81,7 +81,7 @@ export default function EspacoDetail({
                 </>
             )}
 
-            <div className="detail-action-bar detail-action-bar-two">
+            <div className={`detail-action-bar detail-action-bar-two ${isItensMode ? 'space-items-action-bar' : ''}`}>
                 <button className="button button-outline" onClick={onVoltar}>
                     Voltar
                 </button>

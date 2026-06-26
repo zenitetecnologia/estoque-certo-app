@@ -28,7 +28,7 @@ export default function LandscapeWarning() {
     return (
         <div className="landscape-warning-overlay">
             <div className="landscape-warning-card">
-                <ZeniteIcon name="rotate-ccw" size={64} strokeWidth={1.5} />
+                <ZeniteIcon className="landscape-warning-icon" name="rotate-ccw" size={64} strokeWidth={1.5} />
                 <p>Volte o telefone para o modo retrato para melhor experiência.</p>
             </div>
         </div>
