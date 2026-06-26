@@ -88,14 +88,14 @@ export default function ItemEstoqueDetail({
                 <HistoricoMovimentacoes historico={historico} loading={loadingHistorico} />
             )}
 
-            <div className={`detail-action-bar ${isHistoricoMode ? 'detail-action-bar-one' : 'detail-action-bar-two'}`}>
+            <div className="detail-action-bar detail-action-bar-two">
                 <button className="button button-outline" onClick={onVoltar}>
                     Voltar
                 </button>
                 {!isHistoricoMode && (
                     <button className="button" onClick={onConfirmarEdicao} disabled={!houveMudanca}>
-                        <ZeniteIcon name="save" size={18}/>
-                       <span className="button-icon-text"> Salvar</span>
+                        <ZeniteIcon name="save" size={18} />
+                        <span className="button-icon-text"> Salvar</span>
                     </button>
                 )}
             </div>
