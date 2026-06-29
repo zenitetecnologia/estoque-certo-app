@@ -8,30 +8,37 @@ export default function PendingApprovalPage() {
     return (
         <>
             <div className="container">
-                <div className="auth-page">
-                    <ThemeToggle fixo={false} />
-                    <div className="card auth-card pending-approval-card text-center">
-                        <div className="pending-approval-icon">
-                            <ZeniteIcon name="rocket" size={120} strokeWidth={1.6} />
+                <div className="auth-page pending-approval-page detail-history-view">
+                    <div className="auth-page-theme">
+                        <ThemeToggle fixo={false} />
+                    </div>
+
+                    <div className="pending-approval-content">
+                        <div className="card auth-card pending-approval-card text-center">
+                            <div className="pending-approval-icon">
+                                <ZeniteIcon name="rocket" size={120} strokeWidth={1.6} />
+                            </div>
+
+                            <h1 className="pending-approval-title">Quase lá!</h1>
+
+                            <p className="pending-approval-main">
+                                Seu acesso ao aplicativo está aguardando a aprovação final.
+                            </p>
+
+                            <p className="pending-approval-description">
+                                Isso pode levar algumas horas.
+                            </p>
                         </div>
+                    </div>
 
-                        <h1 className="pending-approval-title">Quase lá!</h1>
-
-                        <p className="pending-approval-main">
-                            Seu aplicativo está aguardando a aprovação final.
-                        </p>
-
-                        <p className="pending-approval-description">
-                            Isso pode levar algumas horas.
-                        </p>
+                    <div className="detail-action-bar detail-action-bar-one">
                         <button
                             type="button"
-                            className="button button-full pending-approval-action"
+                            className="button button-outline"
                             onClick={() => navigate('/login', { replace: true })}
                         >
                             Entendi
                         </button>
-
                     </div>
                 </div>
             </div>
