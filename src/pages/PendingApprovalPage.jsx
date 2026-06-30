@@ -8,7 +8,7 @@ export default function PendingApprovalPage() {
     return (
         <>
             <div className="container">
-                <div className="auth-page pending-approval-page detail-history-view">
+                <div className="auth-page pending-approval-page">
                     <div className="auth-page-theme">
                         <ThemeToggle fixo={false} />
                     </div>
