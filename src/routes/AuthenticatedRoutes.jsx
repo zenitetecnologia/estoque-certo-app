@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import AprovarUnidadeOrganizacionalView from '../components/AprovarEmpresasView';
 import EspacoView from '../components/EspacoView';
 import ItemEstoqueView from '../components/ItemEstoqueView';
 import ValidarUsuariosView from '../components/ValidarUsuariosView';
@@ -64,6 +65,10 @@ export default function AuthenticatedRoutes({
             <Route
                 path="aprovar-usuarios"
                 element={isAdmin ? <ValidarUsuariosView token={token} /> : <Navigate to="/" replace />}
+            />
+            <Route
+                path="aprovar-empresas"
+                element={isAdmin ? <AprovarUnidadeOrganizacionalView token={token} /> : <Navigate to="/" replace />}
             />
             <Route path="instalar-ios" element={<InstallIosPage />} />
             <Route

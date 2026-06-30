@@ -42,6 +42,10 @@ export default function Sidebar({ isAdmin, isInstalled, organizacaoNome, onInsta
                             <NavLink to="/aprovar-usuarios" onClick={closeMenu}>Aprovar Usuários</NavLink>
                         )}
 
+                        {isAdmin && (
+                            <NavLink to="/aprovar-empresas" onClick={closeMenu}>Aprovar Empresas</NavLink>
+                        )}
+
                         {!isInstalled && (
                             <NavLink
                                 to="/instalar-ios"

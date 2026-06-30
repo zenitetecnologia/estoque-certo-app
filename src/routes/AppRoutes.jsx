@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import CodeValidatePage from '../pages/CodeValidatePage';
+import CompanyPendingApprovalPage from '../pages/CompanyPendingApprovalPage';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
@@ -47,6 +48,10 @@ export default function AppRoutes({
             <Route
                 path="/waiting-approval"
                 element={token ? <Navigate to="/" replace /> : <PendingApprovalPage />}
+            />
+            <Route
+                path="/empresa-aguardando-aprovacao"
+                element={token ? <Navigate to="/" replace /> : <CompanyPendingApprovalPage />}
             />
             <Route
                 path="/*"

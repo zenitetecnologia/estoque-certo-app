@@ -4,7 +4,7 @@ import MessageModal from '../components/MessageModal';
 import PhoneInput from '../components/PhoneInput';
 import ThemeToggle from '../components/ThemeToggle';
 import { getBaseUrl } from '../utils/apiConfig';
-import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
+import { aplicarErrosCampos, extrairErro } from '../utils/apiUtils';
 import { formatCnpj } from '../utils/cnpj';
 import { encryptedJsonBody } from '../utils/payloadCrypto';
 
@@ -17,7 +17,6 @@ export default function UnidadeOrganizacionalRegisterPage() {
         email: ''
     });
     const [erro, setErro] = useState('');
-    const [sucesso, setSucesso] = useState('');
     const [fieldErrors, setFieldErrors] = useState({});
 
     const setCampo = (campo, valor) => {
@@ -34,7 +33,6 @@ export default function UnidadeOrganizacionalRegisterPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErro('');
-        setSucesso('');
         setFieldErrors({});
 
         try {
@@ -45,13 +43,7 @@ export default function UnidadeOrganizacionalRegisterPage() {
             });
 
             if (response.ok) {
-                const mensagem = await extrairMensagem(response);
-                if (mensagem) {
-                    setSucesso(mensagem);
-                    return;
-                }
-
-                navigate('/login');
+                navigate('/empresa-aguardando-aprovacao', { replace: true });
                 return;
             }
 
@@ -64,11 +56,6 @@ export default function UnidadeOrganizacionalRegisterPage() {
         } catch (error) {
             setErro(error.message);
         }
-    };
-
-    const fecharSucesso = () => {
-        setSucesso('');
-        navigate('/login');
     };
 
     const erroRazaoSocial = getErroCampo('RazaoSocial', 'razaoSocial');
@@ -160,14 +147,6 @@ export default function UnidadeOrganizacionalRegisterPage() {
                 />
             )}
 
-            {sucesso && (
-                <MessageModal
-                    type="success"
-                    message={sucesso}
-                    onClose={fecharSucesso}
-                    autoClose={8000}
-                />
-            )}
         </>
     );
 }
