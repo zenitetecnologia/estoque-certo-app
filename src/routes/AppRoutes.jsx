@@ -6,6 +6,7 @@ import LoginPage from '../pages/LoginPage';
 import PendingApprovalPage from '../pages/PendingApprovalPage';
 import RegisterPage from '../pages/RegisterPage';
 import ResetPasswordPage from '../pages/ResetPasswordPage';
+import UnidadeOrganizacionalRegisterPage from '../pages/UnidadeOrganizacionalRegisterPage';
 
 export default function AppRoutes({
     token,
@@ -22,6 +23,10 @@ export default function AppRoutes({
             <Route
                 path="/register"
                 element={token ? <Navigate to="/" replace /> : <RegisterPage />}
+            />
+            <Route
+                path="/unidades-organizacionais/novo"
+                element={token ? <Navigate to="/" replace /> : <UnidadeOrganizacionalRegisterPage />}
             />
             <Route
                 path="/forgot-password"

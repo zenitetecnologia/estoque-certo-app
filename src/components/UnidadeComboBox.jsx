@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { getBaseUrl } from '../utils/apiConfig';
 import { formatCnpj } from '../utils/cnpj';
 
-export default function UnidadeComboBox({ value, onChange, error, errorMessage }) {
+export default function UnidadeComboBox({ value, onChange, error, errorMessage, action }) {
     const [unidades, setUnidades] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
@@ -155,13 +155,8 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
         }
     };
 
-    return (
-        <div className="mb-1">
-            <label>
-                Unidade Organizacional
-            </label>
-
-            <div ref={comboRef} className={`zf-combobox zf-combobox-custom-arrow combobox-field ${isOpen ? 'active' : ''}`}>
+    const combo = (
+        <div ref={comboRef} className={`zf-combobox zf-combobox-custom-arrow combobox-field ${isOpen ? 'active' : ''}`}>
                 <input
                     type="text"
                     placeholder="Pesquisar..."
@@ -207,7 +202,21 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage }
                     </ul>,
                     document.body
                 )}
-            </div>
+        </div>
+    );
+
+    return (
+        <div className="mb-1">
+            <label>
+                Unidade Organizacional
+            </label>
+
+            {action ? (
+                <div className="zf-combobox-action-row">
+                    {combo}
+                    {action}
+                </div>
+            ) : combo}
             {error && <small className="invalid-feedback d-block">{errorMessage}</small>}
         </div>
     );

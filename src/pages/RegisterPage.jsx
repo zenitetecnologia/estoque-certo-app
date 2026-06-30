@@ -5,6 +5,7 @@ import PasswordInput from '../components/PasswordInput';
 import PhoneInput from '../components/PhoneInput';
 import ThemeToggle from '../components/ThemeToggle';
 import UnidadeComboBox from '../components/UnidadeComboBox';
+import ZeniteIcon from '../components/ZeniteIcon';
 import { getBaseUrl } from '../utils/apiConfig';
 import { aplicarErrosCampos, extrairErro, extrairMensagem } from '../utils/apiUtils';
 import { JORNADA_USUARIO_NOME } from '../utils/jornadaUsuario';
@@ -117,6 +118,16 @@ export default function RegisterPage() {
                                     onChange={val => setFormData({ ...formData, unidadeOrganizacionalId: val })}
                                     error={!!(fieldErrors.UnidadeOrganizacionalId || fieldErrors.unidadeOrganizacionalId)}
                                     errorMessage={fieldErrors.UnidadeOrganizacionalId || fieldErrors.unidadeOrganizacionalId}
+                                    action={
+                                        <button
+                                            type="button"
+                                            className="button button-outline zf-combobox-action-button"
+                                            aria-label="Registrar unidade organizacional"
+                                            onClick={() => navigate('/unidades-organizacionais/novo')}
+                                        >
+                                            <ZeniteIcon name="plus" size={22} />
+                                        </button>
+                                    }
                                 />
                             </div>
 

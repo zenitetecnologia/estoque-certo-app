@@ -1,6 +1,6 @@
 import { formatPhone } from '../utils/phone';
 
-export default function PhoneInput({ value, onChange, error, errorMessage }) {
+export default function PhoneInput({ value, onChange, label = 'Login', error, errorMessage }) {
     const handleChange = (e) => {
         const input = e.target;
         const cursorPosition = input.selectionStart;
@@ -23,7 +23,7 @@ export default function PhoneInput({ value, onChange, error, errorMessage }) {
     return (
         <div className="mb-1">
             <label>
-                Login
+                {label}
             </label>
             <input
                 type="tel"
