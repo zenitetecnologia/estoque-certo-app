@@ -15,6 +15,7 @@ import Trash2 from 'lucide-react/dist/esm/icons/trash-2.mjs';
 import Save from 'lucide-react/dist/esm/icons/save.mjs';
 import X from 'lucide-react/dist/esm/icons/x.mjs';
 import RotateCcw  from 'lucide-react/dist/esm/icons/rotate-ccw.mjs';
+import plus from 'lucide-react/dist/esm/icons/plus.mjs';
 
 const ICONS = {
     ban: Ban,
@@ -33,7 +34,8 @@ const ICONS = {
     save: Save,
     trash: Trash2,
     x: X,
-    'rotate-ccw': RotateCcw
+    'rotate-ccw': RotateCcw,
+    'plus': plus
 };
 
 export default function ZeniteIcon({ name, className = '', size = 20, strokeWidth = 2.25 }) {

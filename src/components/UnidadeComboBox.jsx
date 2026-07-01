@@ -212,7 +212,7 @@ export default function UnidadeComboBox({ value, onChange, error, errorMessage, 
             </label>
 
             {action ? (
-                <div className="zf-combobox-action-row">
+                <div className="zf-input-with-action">
                     {combo}
                     {action}
                 </div>

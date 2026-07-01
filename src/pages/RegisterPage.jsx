@@ -113,7 +113,7 @@ export default function RegisterPage() {
                                     errorMessage={fieldErrors.ConfirmaSenha || fieldErrors.confirmaSenha}
                                 />
 
-                                <UnidadeComboBox
+                               <UnidadeComboBox
                                     value={formData.unidadeOrganizacionalId}
                                     onChange={val => setFormData({ ...formData, unidadeOrganizacionalId: val })}
                                     error={!!(fieldErrors.UnidadeOrganizacionalId || fieldErrors.unidadeOrganizacionalId)}
@@ -121,7 +121,7 @@ export default function RegisterPage() {
                                     action={
                                         <button
                                             type="button"
-                                            className="button button-outline zf-combobox-action-button"
+                                            className="button zf-input-with-action__button"
                                             aria-label="Registrar unidade organizacional"
                                             onClick={() => navigate('/unidades-organizacionais/novo')}
                                         >
