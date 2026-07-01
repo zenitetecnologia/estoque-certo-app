@@ -22,9 +22,9 @@ import { formatQuantityMasked, parseQuantity } from '../../utils/quantity';
 export default function ItemEstoqueDetailPage({ token, unidadeOrganizacionalId, usuarioId }) {
     const navigate = useNavigate();
     const location = useLocation();
-    const { itemEstoqueId } = useParams();
+    const { espacoId, itemEstoqueId } = useParams();
     const mode = new URLSearchParams(location.search).get('secao') === 'historico' ? 'historico' : 'editar';
-    const espacoOrigemId = location.state?.espacoOrigemId || '';
+    const espacoOrigemId = espacoId || location.state?.espacoOrigemId || '';
 
     const [itemAtivo, setItemAtivo] = useState(null);
     const [espacos, setEspacos] = useState([]);
