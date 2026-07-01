@@ -51,6 +51,10 @@ export default function AuthenticatedRoutes({
                 element={<ItemEstoqueDetailPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} usuarioId={usuarioId} />}
             />
             <Route
+                path="espacos/:espacoId/itens/:itemEstoqueId/historico"
+                element={<ItemEstoqueDetailPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} usuarioId={usuarioId} />}
+            />
+            <Route
                 path="espacos/:espacoId"
                 element={<EspacoDetailPage token={token} unidadeOrganizacionalId={unidadeOrganizacionalId} usuarioId={usuarioId} mode="editar" />}
             />

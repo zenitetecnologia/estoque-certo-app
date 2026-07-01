@@ -23,7 +23,7 @@ export default function ItemEstoqueDetailPage({ token, unidadeOrganizacionalId, 
     const navigate = useNavigate();
     const location = useLocation();
     const { espacoId, itemEstoqueId } = useParams();
-    const mode = new URLSearchParams(location.search).get('secao') === 'historico' ? 'historico' : 'editar';
+    const mode = location.pathname.endsWith('/historico') || new URLSearchParams(location.search).get('secao') === 'historico' ? 'historico' : 'editar';
     const espacoOrigemId = espacoId || location.state?.espacoOrigemId || '';
 
     const [itemAtivo, setItemAtivo] = useState(null);
