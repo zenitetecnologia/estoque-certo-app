@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import MessageModal from '../../components/MessageModal';
 import ZeniteIcon from '../../components/ZeniteIcon';
 import { TIPO_UNIDADE } from '../../constants/tipoUnidade';
@@ -16,9 +16,8 @@ const getInputClassName = (isError) => `w-full no-field-margin ${isError ? 'is-i
 
 export default function NovoItemEstoquePage({ token, unidadeOrganizacionalId }) {
     const navigate = useNavigate();
-    const location = useLocation();
-    const searchParams = new URLSearchParams(location.search);
-    const espacoOrigemId = location.state?.espacoId || searchParams.get('espacoId') || '';
+    const { espacoId } = useParams();
+    const espacoOrigemId = espacoId || '';
     const [formData, setFormData] = useState({ espacoId: espacoOrigemId, descricao: '', tipoUnidadeMedida: 1, quantidade: '0,000' });
     const [fieldErrors, setFieldErrors] = useState({});
     const [erro, setErro] = useState('');
