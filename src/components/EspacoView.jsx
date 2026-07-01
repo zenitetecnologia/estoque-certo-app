@@ -103,7 +103,7 @@ export default function EspacoView({ token, unidadeOrganizacionalId }) {
                 espacosFiltrados={espacosFiltrados}
                 loading={loading}
                 messageModal={messageModal}
-                onEditarEspaco={(espaco) => navigate(`/espacos/${espaco.espacoId}`)}
+                onEditarEspaco={(espaco) => navigate(`/espacos/${espaco.espacoId}/editar`)}
                 onExcluirEspaco={setEspacoParaExcluir}
                 onGerenciarItens={(espaco) => navigate(`/espacos/${espaco.espacoId}/itens`, { state: { espaco } })}
                 onAbrirNovo={() => navigate('/espacos/novo')}
