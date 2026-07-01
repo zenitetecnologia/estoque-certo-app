@@ -73,7 +73,7 @@ export default function Sidebar({ isAdmin, isInstalled, organizacaoNome, onInsta
                     )}
 
                     <NavLink
-                        to="/perfil"
+                        to="/meus-dados"
                         onClick={closeMenu}
                         className={({ isActive }) => `link-action text-center d-block mb-1 ${isActive ? 'active' : ''}`}
                     >

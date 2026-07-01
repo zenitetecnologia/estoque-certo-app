@@ -80,7 +80,7 @@ export default function AuthenticatedRoutes({
             />
             <Route path="instalar-ios" element={<InstallIosPage />} />
             <Route
-                path="perfil"
+                path="meus-dados"
                 element={
                     <ProfilePage
                         fieldErrors={fieldErrors}
